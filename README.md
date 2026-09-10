@@ -67,8 +67,9 @@ See [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md) for details.
 
 ## Compatibility and limitations
 
-- **Tested:** Windows 10 Home 22H2 x64 at 150% display scale, including the final EXE, native bilingual UI and real quota integration.
-- **Not yet tested:** Windows 11 for this release, ARM64 and other physical display scales. The verified Codex baseline was 0.153.4; changes to its interfaces may affect compatibility.
+- **Tested on Windows 10 and Windows 11 x64.** Windows 10 validation covered Home 22H2 at 150% display scale, including the final EXE, native bilingual UI and real quota integration.
+- **Windows 11 user acceptance testing:** A user downloaded the official public GitHub release win-x64 ZIP for v0.4.0-rc.3, extracted it on a physical Windows 11 x64 PC, and used it normally for one full workday. No issues were reported with quota updates, keeping the monitor running, or general operation. This does not guarantee compatibility with every Windows 10/11 environment.
+- **Not yet tested:** ARM64 and other physical display scales. The verified Codex baseline was 0.153.4; changes to its interfaces may affect compatibility.
 - Daily figures are estimates from observed decreases, not billing totals or a complete account ledger. Time when the monitor is closed can leave gaps.
 - Radar covers a limited set of sources. A source such as the OpenAI Help Center may reject automated requests; a successful HTTP response does not itself mean a relevant announcement was found. A reset observation does not establish account-level causation.
 - The EXE is **unsigned**, so Windows or SmartScreen may show a warning. Follow your computer's security policy. Checksums help compare downloaded files; they are not a security certification or proof of publisher identity.
