@@ -1,0 +1,47 @@
+{
+  "classification": "SYNTHETIC_REVIEW_INPUTS_NOT_OFFICIAL_NEWS",
+  "fixed_now_utc": "2026-09-08T12:00:00Z",
+  "do_not_edit_system_clock": true,
+  "must_run": "actual AnnouncementParser.Parse -> ResetRadar.Apply -> SuggestionKey/InfoCard path, not Candidate-only tests",
+  "cases": [
+    {
+      "file": "F01_article_publication_metadata.html",
+      "expected_candidates": 1,
+      "expected_reset_utc": "2026-09-10T01:00:00Z",
+      "time_quality": "APPROXIMATE",
+      "note": "Read publication from article time metadata; tomorrow resolves in PT. Do not substitute fetch time."
+    },
+    {
+      "file": "F02_distinct_same_day_articles.html",
+      "expected_candidates": 2,
+      "distinct_event_ids": true,
+      "scopes": [
+        "PLUS",
+        "PRO"
+      ],
+      "reset_utc": [
+        "2026-09-09T01:00:00Z",
+        "2026-09-09T02:00:00Z"
+      ],
+      "read_one_leaves_other_unread": true
+    },
+    {
+      "file": "F03_banked_credit_not_automatic_refill.html",
+      "expected_effect": "BANKED_CREDIT_GRANT",
+      "automatic_refill": false,
+      "forbidden_suggestions": [
+        "SuggestPlannedWork",
+        "SuggestKeepReset"
+      ],
+      "global_replenishment_correlation_allowed": false,
+      "note": "Preserve useful credit notice without treating all paid plans (scope) as automatic global reset (effect)."
+    },
+    {
+      "file": "F04_split_date_and_body.html",
+      "expected_candidates": 1,
+      "expected_reset_utc": "2026-09-10T01:00:00Z",
+      "time_quality": "APPROXIMATE",
+      "note": "Use reliable publication date in same article only; never combine unrelated articles."
+    }
+  ]
+}

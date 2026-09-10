@@ -1,0 +1,257 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="Title" xml:space="preserve">
+    <value>使用紀錄</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>今天</value>
+  </data>
+  <data name="Yesterday" xml:space="preserve">
+    <value>昨天</value>
+  </data>
+  <data name="SevenDays" xml:space="preserve">
+    <value>7 天</value>
+  </data>
+  <data name="ThirtyDays" xml:space="preserve">
+    <value>30 天</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>套用</value>
+  </data>
+  <data name="Advanced" xml:space="preserve">
+    <value>進階</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>時間</value>
+  </data>
+  <data name="Used" xml:space="preserve">
+    <value>已使用</value>
+  </data>
+  <data name="Remaining" xml:space="preserve">
+    <value>剩餘</value>
+  </data>
+  <data name="Change" xml:space="preserve">
+    <value>變化</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>紀錄</value>
+  </data>
+  <data name="Observed" xml:space="preserve">
+    <value>已觀察</value>
+  </data>
+  <data name="Resumed" xml:space="preserve">
+    <value>監測缺口後重新取得</value>
+  </data>
+  <data name="Started" xml:space="preserve">
+    <value>開始記錄</value>
+  </data>
+  <data name="NoData" xml:space="preserve">
+    <value>此日期範圍沒有觀察紀錄。</value>
+  </data>
+  <data name="ChartTitle" xml:space="preserve">
+    <value>每週剩餘額度</value>
+  </data>
+  <data name="LatestSegment" xml:space="preserve">
+    <value>最近區段</value>
+  </data>
+  <data name="FullRange" xml:space="preserve">
+    <value>完整範圍</value>
+  </data>
+  <data name="ZoomedScale" xml:space="preserve">
+    <value>縱軸已放大：{0}–{1}%</value>
+  </data>
+  <data name="FullScale" xml:space="preserve">
+    <value>完整縱軸：0–100%</value>
+  </data>
+  <data name="MonitoringGap" xml:space="preserve">
+    <value>監測缺口</value>
+  </data>
+  <data name="OneObservation" xml:space="preserve">
+    <value>此區段目前只有一筆觀察。</value>
+  </data>
+  <data name="CurrentRemaining" xml:space="preserve">
+    <value>目前每週剩餘</value>
+  </data>
+  <data name="PreviousPage" xml:space="preserve">
+    <value>上一頁</value>
+  </data>
+  <data name="NextPage" xml:space="preserve">
+    <value>下一頁</value>
+  </data>
+  <data name="AddNote" xml:space="preserve">
+    <value>紀錄備註</value>
+  </data>
+  <data name="ExportCSV" xml:space="preserve">
+    <value>匯出 CSV</value>
+  </data>
+  <data name="ExportAnalysis" xml:space="preserve">
+    <value>匯出分析 Log</value>
+  </data>
+  <data name="FullExportHint" xml:space="preserve">
+    <value>匯出包含完整選定期間，不受分頁或圖表視圖限制。</value>
+  </data>
+  <data name="ViewedRange" xml:space="preserve">
+    <value>{0} – {1}</value>
+  </data>
+  <data name="ChartTooltip" xml:space="preserve">
+    <value>{0}
+已使用 {1} · 剩餘 {2}
+{3}
+階梯代表觀察值，不是事件精確發生時間。</value>
+  </data>
+  <data name="LocalObservation" xml:space="preserve">
+    <value>本機觀察紀錄</value>
+  </data>
+  <data name="EmptyHint" xml:space="preserve">
+    <value>此工具運作時才會累積觀察紀錄。</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>正在讀取本機紀錄…</value>
+  </data>
+  <data name="FromDate" xml:space="preserve">
+    <value>起日，yyyy-MM-dd</value>
+  </data>
+  <data name="ToDate" xml:space="preserve">
+    <value>迄日，yyyy-MM-dd</value>
+  </data>
+  <data name="Pool" xml:space="preserve">
+    <value>額度池</value>
+  </data>
+  <data name="Window" xml:space="preserve">
+    <value>額度時窗</value>
+  </data>
+  <data name="Quality" xml:space="preserve">
+    <value>觀察品質</value>
+  </data>
+  <data name="Events" xml:space="preserve">
+    <value>事件類型</value>
+  </data>
+  <data name="AllSamples" xml:space="preserve">
+    <value>全部採樣</value>
+  </data>
+  <data name="Weekly" xml:space="preserve">
+    <value>每週</value>
+  </data>
+  <data name="FiveHours" xml:space="preserve">
+    <value>5 小時</value>
+  </data>
+  <data name="AllWindows" xml:space="preserve">
+    <value>全部時窗</value>
+  </data>
+  <data name="AllQuality" xml:space="preserve">
+    <value>全部品質</value>
+  </data>
+  <data name="ValidData" xml:space="preserve">
+    <value>有效資料</value>
+  </data>
+  <data name="SourceIssue" xml:space="preserve">
+    <value>來源異常</value>
+  </data>
+  <data name="AllEvents" xml:space="preserve">
+    <value>全部事件</value>
+  </data>
+  <data name="Decrease" xml:space="preserve">
+    <value>額度下降</value>
+  </data>
+  <data name="Increase" xml:space="preserve">
+    <value>額度回升</value>
+  </data>
+  <data name="ContextChange" xml:space="preserve">
+    <value>重置或來源變更</value>
+  </data>
+  <data name="TableDescription" xml:space="preserve">
+    <value>歷史表格：時間、已使用、剩餘、變化、紀錄</value>
+  </data>
+  <data name="SelectedView" xml:space="preserve">
+    <value>已選取的圖表視圖</value>
+  </data>
+  <data name="SelectView" xml:space="preserve">
+    <value>切換為此圖表視圖</value>
+  </data>
+  <data name="InvalidDate" xml:space="preserve">
+    <value>請輸入有效西曆日期，格式為 yyyy-MM-dd。</value>
+  </data>
+  <data name="ReversedDates" xml:space="preserve">
+    <value>起日必須早於或等於迄日。</value>
+  </data>
+  <data name="ReadFailed" xml:space="preserve">
+    <value>本機歷史暫時無法讀取；既有檔案保留。</value>
+  </data>
+  <data name="Unchanged" xml:space="preserve">
+    <value>持平</value>
+  </data>
+  <data name="RemainingChange" xml:space="preserve">
+    <value>剩餘 {0} 個百分點</value>
+  </data>
+  <data name="UnavailableObservation" xml:space="preserve">
+    <value>觀察值無法取得</value>
+  </data>
+  <data name="IncreaseUnknown" xml:space="preserve">
+    <value>額度回升 · 原因未知</value>
+  </data>
+  <data name="ContextBoundary" xml:space="preserve">
+    <value>新的可比觀察區段</value>
+  </data>
+  <data name="ChangeTooltip" xml:space="preserve">
+    <value>pp 代表百分點。此欄是相鄰可比觀察間的剩餘額度變化。</value>
+  </data>
+  <data name="PageStatus" xml:space="preserve">
+    <value>第 {0} / {1} 頁 · {2} 筆紀錄</value>
+  </data>
+  <data name="PageStatusUnsaved" xml:space="preserve">
+    <value>第 {0} / {1} 頁 · {2} 筆紀錄 · 部分歷史未保存</value>
+  </data>
+  <data name="SelectDetail" xml:space="preserve">
+    <value>選取紀錄查看觀察區間與資料品質。</value>
+  </data>
+  <data name="ScopeVerified" xml:space="preserve">
+    <value>帳號範圍穩定</value>
+  </data>
+  <data name="ScopeLimited" xml:space="preserve">
+    <value>帳號範圍尚未完全驗證</value>
+  </data>
+  <data name="DetailText" xml:space="preserve">
+    <value>{0} · {1} · {2} 分鐘
+{3}
+{4} · {5}。觀察時間無法證明後端事件的精確發生時間或原因。</value>
+  </data>
+  <data name="ExportingCsv" xml:space="preserve">
+    <value>正在匯出 CSV…</value>
+  </data>
+  <data name="CsvDone" xml:space="preserve">
+    <value>CSV 已匯出 · {0}</value>
+  </data>
+  <data name="ExportFailed" xml:space="preserve">
+    <value>匯出失敗，原有歷史未變更。</value>
+  </data>
+  <data name="NoEventForNote" xml:space="preserve">
+    <value>這筆採樣沒有變化事件可註記。</value>
+  </data>
+  <data name="NoteTitle" xml:space="preserve">
+    <value>觀察備註</value>
+  </data>
+  <data name="NoteBody" xml:space="preserve">
+    <value>備註正文</value>
+  </data>
+  <data name="SaveNote" xml:space="preserve">
+    <value>儲存備註</value>
+  </data>
+  <data name="NoteFailed" xml:space="preserve">
+    <value>備註未保存，既有內容保留。</value>
+  </data>
+  <data name="SegmentBoundary" xml:space="preserve">
+    <value>新區段</value>
+  </data>
+</root>

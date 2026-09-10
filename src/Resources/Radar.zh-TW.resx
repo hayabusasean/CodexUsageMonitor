@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="CardTitle" xml:space="preserve">
+    <value>Codex 重置公告</value>
+  </data>
+  <data name="TimeUnknown" xml:space="preserve">
+    <value>時間尚未確認</value>
+  </data>
+  <data name="TimeUnknownDate" xml:space="preserve">
+    <value>時間尚未確認 · 來源日期 {0}</value>
+  </data>
+  <data name="TimeAround" xml:space="preserve">
+    <value>約 {0}</value>
+  </data>
+  <data name="TimeBy" xml:space="preserve">
+    <value>不晚於 {0}</value>
+  </data>
+  <data name="TimeExact" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>關閉</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>下一則</value>
+  </data>
+  <data name="OpenSource" xml:space="preserve">
+    <value>查看原文來源</value>
+  </data>
+  <data name="NoNotices" xml:space="preserve">
+    <value>目前沒有重要重置公告</value>
+  </data>
+  <data name="Official" xml:space="preserve">
+    <value>OpenAI 公開公告</value>
+  </data>
+  <data name="TeamReported" xml:space="preserve">
+    <value>團隊公開訊息</value>
+  </data>
+  <data name="Unverified" xml:space="preserve">
+    <value>未經官方確認的第三方資訊</value>
+  </data>
+  <data name="LocalTime" xml:space="preserve">
+    <value>本機時間</value>
+  </data>
+  <data name="WeeklyRemaining" xml:space="preserve">
+    <value>每週剩餘</value>
+  </data>
+  <data name="ResetCount" xml:space="preserve">
+    <value>可用完整重置券：{0}</value>
+  </data>
+  <data name="NotProvided" xml:space="preserve">
+    <value>來源未提供</value>
+  </data>
+  <data name="CoverageAvailable" xml:space="preserve">
+    <value>僅檢查可用的公開來源；公告可能延遲或漏報。</value>
+  </data>
+  <data name="CoverageLimited" xml:space="preserve">
+    <value>公告覆蓋有限。部分公開來源暫時無法讀取，公告可能延遲或漏報。</value>
+  </data>
+  <data name="CoverageDisabled" xml:space="preserve">
+    <value>公告檢查已關閉；額度監測仍持續運作。</value>
+  </data>
+  <data name="SuggestCancelled" xml:space="preserve">
+    <value>這次預定重置已取消。請依目前可用額度安排工作。</value>
+  </data>
+  <data name="SuggestPassed" xml:space="preserve">
+    <value>公告時間已過；本機尚未觀察到額度回升。</value>
+  </data>
+  <data name="SuggestUnknown" xml:space="preserve">
+    <value>時間或目前方案的適用條件尚未確認，請依現有額度安排工作。</value>
+  </data>
+  <data name="SuggestObserved" xml:space="preserve">
+    <value>官方已公告重置，本機也在接近時間觀察到額度回升；本帳號的實際原因仍未知。</value>
+  </data>
+  <data name="SuggestCompleted" xml:space="preserve">
+    <value>來源記載重置已執行；本機尚未觀察到額度回升。</value>
+  </data>
+  <data name="SuggestPlannedWork" xml:space="preserve">
+    <value>若已有重要工作計畫，可考慮在公告重置前使用剩餘額度。</value>
+  </data>
+  <data name="SuggestKeepReset" xml:space="preserve">
+    <value>若工作可以稍候，可考慮先保留完整重置券。</value>
+  </data>
+  <data name="SuggestNeutral" xml:space="preserve">
+    <value>依既有工作需求安排用量，並留意額度更新。</value>
+  </data>
+  <data name="EvidenceProbable" xml:space="preserve">
+    <value>本機在公告時間附近觀察到可比較的額度回升。兩者可能相關，原因仍未知。</value>
+  </data>
+  <data name="EvidenceNotComparable" xml:space="preserve">
+    <value>本機觀察無法可靠比較。
+官方公告不能證明本帳號的重置原因。</value>
+  </data>
+  <data name="EvidenceNoObservation" xml:space="preserve">
+    <value>尚無可比較的本機回升與此公告連結。
+官方公告不能證明本帳號的重置原因。</value>
+  </data>
+
+<data name="SuggestCreditGrant" xml:space="preserve"><value>這是重置券發放公告，不代表額度會自動補滿。</value></data>
+<data name="SuggestMechanism" xml:space="preserve"><value>這是重置方式或購買說明，不代表額度會自動補滿。</value></data>
+<data name="CreditGrantTime" xml:space="preserve"><value>發券時間 · 本機時間</value></data>
+<data name="NoticeTime" xml:space="preserve"><value>公告時間 · 本機時間</value></data>
+</root>

@@ -1,0 +1,257 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="Title" xml:space="preserve">
+    <value>Usage History</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="Yesterday" xml:space="preserve">
+    <value>Yesterday</value>
+  </data>
+  <data name="SevenDays" xml:space="preserve">
+    <value>7 days</value>
+  </data>
+  <data name="ThirtyDays" xml:space="preserve">
+    <value>30 days</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Advanced" xml:space="preserve">
+    <value>Advanced</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="Used" xml:space="preserve">
+    <value>Used</value>
+  </data>
+  <data name="Remaining" xml:space="preserve">
+    <value>Remaining</value>
+  </data>
+  <data name="Change" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Observed" xml:space="preserve">
+    <value>Observed</value>
+  </data>
+  <data name="Resumed" xml:space="preserve">
+    <value>Resumed after a monitoring gap</value>
+  </data>
+  <data name="Started" xml:space="preserve">
+    <value>Recording started</value>
+  </data>
+  <data name="NoData" xml:space="preserve">
+    <value>No observations in this date range.</value>
+  </data>
+  <data name="ChartTitle" xml:space="preserve">
+    <value>Weekly quota remaining</value>
+  </data>
+  <data name="LatestSegment" xml:space="preserve">
+    <value>Latest segment</value>
+  </data>
+  <data name="FullRange" xml:space="preserve">
+    <value>Full range</value>
+  </data>
+  <data name="ZoomedScale" xml:space="preserve">
+    <value>Zoomed scale: {0}–{1}%</value>
+  </data>
+  <data name="FullScale" xml:space="preserve">
+    <value>Full scale: 0–100%</value>
+  </data>
+  <data name="MonitoringGap" xml:space="preserve">
+    <value>Monitoring gap</value>
+  </data>
+  <data name="OneObservation" xml:space="preserve">
+    <value>One observation in this segment.</value>
+  </data>
+  <data name="CurrentRemaining" xml:space="preserve">
+    <value>Current weekly remaining</value>
+  </data>
+  <data name="PreviousPage" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="NextPage" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="AddNote" xml:space="preserve">
+    <value>Add note</value>
+  </data>
+  <data name="ExportCSV" xml:space="preserve">
+    <value>Export CSV</value>
+  </data>
+  <data name="ExportAnalysis" xml:space="preserve">
+    <value>Export analysis log</value>
+  </data>
+  <data name="FullExportHint" xml:space="preserve">
+    <value>Exports include the entire selected period, regardless of page or chart view.</value>
+  </data>
+  <data name="ViewedRange" xml:space="preserve">
+    <value>{0} – {1}</value>
+  </data>
+  <data name="ChartTooltip" xml:space="preserve">
+    <value>{0}
+Used {1} · Remaining {2}
+{3}
+Steps show observations, not exact event times.</value>
+  </data>
+  <data name="LocalObservation" xml:space="preserve">
+    <value>Local observation</value>
+  </data>
+  <data name="EmptyHint" xml:space="preserve">
+    <value>Records appear while this tool is running.</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Reading local history…</value>
+  </data>
+  <data name="FromDate" xml:space="preserve">
+    <value>From date, yyyy-MM-dd</value>
+  </data>
+  <data name="ToDate" xml:space="preserve">
+    <value>To date, yyyy-MM-dd</value>
+  </data>
+  <data name="Pool" xml:space="preserve">
+    <value>Quota pool</value>
+  </data>
+  <data name="Window" xml:space="preserve">
+    <value>Quota window</value>
+  </data>
+  <data name="Quality" xml:space="preserve">
+    <value>Observation quality</value>
+  </data>
+  <data name="Events" xml:space="preserve">
+    <value>Event type</value>
+  </data>
+  <data name="AllSamples" xml:space="preserve">
+    <value>All samples</value>
+  </data>
+  <data name="Weekly" xml:space="preserve">
+    <value>Weekly</value>
+  </data>
+  <data name="FiveHours" xml:space="preserve">
+    <value>5 hours</value>
+  </data>
+  <data name="AllWindows" xml:space="preserve">
+    <value>All windows</value>
+  </data>
+  <data name="AllQuality" xml:space="preserve">
+    <value>All quality</value>
+  </data>
+  <data name="ValidData" xml:space="preserve">
+    <value>Valid data</value>
+  </data>
+  <data name="SourceIssue" xml:space="preserve">
+    <value>Source issue</value>
+  </data>
+  <data name="AllEvents" xml:space="preserve">
+    <value>All events</value>
+  </data>
+  <data name="Decrease" xml:space="preserve">
+    <value>Quota decreased</value>
+  </data>
+  <data name="Increase" xml:space="preserve">
+    <value>Quota increased</value>
+  </data>
+  <data name="ContextChange" xml:space="preserve">
+    <value>Reset or source changed</value>
+  </data>
+  <data name="TableDescription" xml:space="preserve">
+    <value>History table: Time, Used, Remaining, Change, Status</value>
+  </data>
+  <data name="SelectedView" xml:space="preserve">
+    <value>Selected chart view</value>
+  </data>
+  <data name="SelectView" xml:space="preserve">
+    <value>Select this chart view</value>
+  </data>
+  <data name="InvalidDate" xml:space="preserve">
+    <value>Enter a valid Gregorian date in yyyy-MM-dd format.</value>
+  </data>
+  <data name="ReversedDates" xml:space="preserve">
+    <value>The start date must be on or before the end date.</value>
+  </data>
+  <data name="ReadFailed" xml:space="preserve">
+    <value>Local history could not be read. Existing files are unchanged.</value>
+  </data>
+  <data name="Unchanged" xml:space="preserve">
+    <value>Unchanged</value>
+  </data>
+  <data name="RemainingChange" xml:space="preserve">
+    <value>Remaining {0} pp</value>
+  </data>
+  <data name="UnavailableObservation" xml:space="preserve">
+    <value>Reading unavailable</value>
+  </data>
+  <data name="IncreaseUnknown" xml:space="preserve">
+    <value>Quota increased · cause unknown</value>
+  </data>
+  <data name="ContextBoundary" xml:space="preserve">
+    <value>New comparable segment</value>
+  </data>
+  <data name="ChangeTooltip" xml:space="preserve">
+    <value>pp means percentage points. This is a change in remaining quota between comparable observations.</value>
+  </data>
+  <data name="PageStatus" xml:space="preserve">
+    <value>Page {0} of {1} · Records: {2}</value>
+  </data>
+  <data name="PageStatusUnsaved" xml:space="preserve">
+    <value>Page {0} of {1} · Records: {2} · Some history was not saved</value>
+  </data>
+  <data name="SelectDetail" xml:space="preserve">
+    <value>Select a record to see its observation interval and data quality.</value>
+  </data>
+  <data name="ScopeVerified" xml:space="preserve">
+    <value>Stable account scope</value>
+  </data>
+  <data name="ScopeLimited" xml:space="preserve">
+    <value>Account scope not fully verified</value>
+  </data>
+  <data name="DetailText" xml:space="preserve">
+    <value>{0} · {1} · {2} minutes
+{3}
+{4} · {5}. Observation times do not establish the exact time or cause of a backend event.</value>
+  </data>
+  <data name="ExportingCsv" xml:space="preserve">
+    <value>Exporting CSV…</value>
+  </data>
+  <data name="CsvDone" xml:space="preserve">
+    <value>CSV exported · {0}</value>
+  </data>
+  <data name="ExportFailed" xml:space="preserve">
+    <value>Export failed. Your history is unchanged.</value>
+  </data>
+  <data name="NoEventForNote" xml:space="preserve">
+    <value>There is no change event to annotate for this sample.</value>
+  </data>
+  <data name="NoteTitle" xml:space="preserve">
+    <value>Observation note</value>
+  </data>
+  <data name="NoteBody" xml:space="preserve">
+    <value>Note text</value>
+  </data>
+  <data name="SaveNote" xml:space="preserve">
+    <value>Save note</value>
+  </data>
+  <data name="NoteFailed" xml:space="preserve">
+    <value>The note could not be saved. Existing notes are unchanged.</value>
+  </data>
+  <data name="SegmentBoundary" xml:space="preserve">
+    <value>New segment</value>
+  </data>
+</root>

@@ -1,0 +1,1120 @@
+{
+  "suite": "CUM_DAILY_USAGE_SPEC_R003",
+  "data_origin": "SYNTHETIC_ONLY_NOT_USER_USAGE",
+  "algorithm_version": "CUM_OBSERVED_DRAWDOWN_V1",
+  "note": "由ChatGPT以獨立參考計算驗證案例預期值，不是Windows成品測試通過；Codex仍須使正式產品計算器及UI/匯出通過。",
+  "cases": [
+    {
+      "id": "D01",
+      "description_zh": "同日正常下降，60→55→52，累計8點。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-07T09:00:00+08:00",
+          "remaining_percent": 60,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D01-s1"
+        },
+        {
+          "observed_at": "2026-09-07T09:01:30+08:00",
+          "remaining_percent": 55,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D01-s2"
+        },
+        {
+          "observed_at": "2026-09-07T09:03:00+08:00",
+          "remaining_percent": 52,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D01-s3"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-07": 8
+      }
+    },
+    {
+      "id": "D02",
+      "description_zh": "第一個樣本剩10%，不能反推今天用了90%。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-07T09:00:00+08:00",
+          "remaining_percent": 10,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D02-s1"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-07": null
+      },
+      "expected_ui": "累積中"
+    },
+    {
+      "id": "D03",
+      "description_zh": "有兩個平穩樣本才可顯示觀察到0點，仍非全日0。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-07T09:00:00+08:00",
+          "remaining_percent": 10,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D03-s1"
+        },
+        {
+          "observed_at": "2026-09-07T09:01:30+08:00",
+          "remaining_percent": 10,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D03-s2"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-07": 0
+      }
+    },
+    {
+      "id": "D04",
+      "description_zh": "同一來源有回升再下降；回升不抵扣，需標來源校正風險。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-07T09:00:00+08:00",
+          "remaining_percent": 60,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D04-s1"
+        },
+        {
+          "observed_at": "2026-09-07T09:01:30+08:00",
+          "remaining_percent": 50,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D04-s2"
+        },
+        {
+          "observed_at": "2026-09-07T09:03:00+08:00",
+          "remaining_percent": 55,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D04-s3"
+        },
+        {
+          "observed_at": "2026-09-07T09:04:30+08:00",
+          "remaining_percent": 48,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D04-s4"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-07": 17
+      },
+      "required_flags": [
+        "REBOUND_OR_CORRECTION"
+      ]
+    },
+    {
+      "id": "D05",
+      "description_zh": "一次已觀察消耗60點，補滿後再70點，同日可達130。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-07T09:00:00+08:00",
+          "remaining_percent": 100,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D05-s1"
+        },
+        {
+          "observed_at": "2026-09-07T09:01:30+08:00",
+          "remaining_percent": 40,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D05-s2"
+        },
+        {
+          "observed_at": "2026-09-07T09:03:00+08:00",
+          "remaining_percent": 100,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-14T09:00:00+08:00",
+          "quality": "VALID",
+          "sample_id": "D05-s3"
+        },
+        {
+          "observed_at": "2026-09-07T09:04:30+08:00",
+          "remaining_percent": 30,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-14T09:00:00+08:00",
+          "quality": "VALID",
+          "sample_id": "D05-s4"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-07": 130
+      },
+      "required_flags": [
+        "RESET_OR_CONTEXT_BOUNDARY"
+      ]
+    },
+    {
+      "id": "D06",
+      "description_zh": "跨補額10→75不能推補額中用了25；後續75→70才算5。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-07T09:00:00+08:00",
+          "remaining_percent": 10,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D06-s1"
+        },
+        {
+          "observed_at": "2026-09-07T09:01:30+08:00",
+          "remaining_percent": 75,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-14T09:00:00+08:00",
+          "quality": "VALID",
+          "sample_id": "D06-s2"
+        },
+        {
+          "observed_at": "2026-09-07T09:03:00+08:00",
+          "remaining_percent": 70,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-14T09:00:00+08:00",
+          "quality": "VALID",
+          "sample_id": "D06-s3"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-07": 5
+      },
+      "required_flags": [
+        "RESET_OR_CONTEXT_BOUNDARY"
+      ]
+    },
+    {
+      "id": "D07",
+      "description_zh": "中間跨度1小時：前後淨變化10點留未分配，後續短區間算1。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-07T09:00:00+08:00",
+          "remaining_percent": 20,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D07-s1"
+        },
+        {
+          "observed_at": "2026-09-07T10:00:00+08:00",
+          "remaining_percent": 10,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D07-s2"
+        },
+        {
+          "observed_at": "2026-09-07T10:01:30+08:00",
+          "remaining_percent": 9,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D07-s3"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-07": 1
+      },
+      "required_flags": [
+        "LONG_GAP"
+      ]
+    },
+    {
+      "id": "D08",
+      "description_zh": "90秒內有已知讀取失敗，亦不得用時間短掩蓋缺口。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-07T09:00:00+08:00",
+          "remaining_percent": 20,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D08-s1"
+        },
+        {
+          "observed_at": "2026-09-07T09:01:30+08:00",
+          "remaining_percent": 10,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "had_gap_since_previous": true,
+          "sample_id": "D08-s2"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-07": null
+      },
+      "required_flags": [
+        "KNOWN_GAP"
+      ]
+    },
+    {
+      "id": "D09",
+      "description_zh": "正常60秒跨午夜，2點用重疊秒數各估1點。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-06T23:59:30+08:00",
+          "remaining_percent": 60,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D09-s1"
+        },
+        {
+          "observed_at": "2026-09-07T00:00:30+08:00",
+          "remaining_percent": 58,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D09-s2"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-06": 1,
+        "2026-09-07": 1
+      },
+      "required_flags": [
+        "TIME_PROPORTIONAL_ESTIMATE"
+      ]
+    },
+    {
+      "id": "D10",
+      "description_zh": "60秒跨午夜，前20秒、後40秒，3點分1/2點。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-06T23:59:40+08:00",
+          "remaining_percent": 60,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D10-s1"
+        },
+        {
+          "observed_at": "2026-09-07T00:00:40+08:00",
+          "remaining_percent": 57,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D10-s2"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-06": 1,
+        "2026-09-07": 2
+      },
+      "required_flags": [
+        "TIME_PROPORTIONAL_ESTIMATE"
+      ]
+    },
+    {
+      "id": "D11",
+      "description_zh": "一小時跨午夜屬長缺口，不能按時間分給兩天。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-06T23:30:00+08:00",
+          "remaining_percent": 60,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D11-s1"
+        },
+        {
+          "observed_at": "2026-09-07T00:30:00+08:00",
+          "remaining_percent": 50,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D11-s2"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-06": null,
+        "2026-09-07": null
+      },
+      "required_flags": [
+        "LONG_GAP"
+      ]
+    },
+    {
+      "id": "D12",
+      "description_zh": "10080分鐘主池和Spark池不能相加。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-07T09:00:00+08:00",
+          "remaining_percent": 30,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D12-s1"
+        },
+        {
+          "observed_at": "2026-09-07T09:01:30+08:00",
+          "remaining_percent": 25,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D12-s2"
+        },
+        {
+          "observed_at": "2026-09-07T09:00:00+08:00",
+          "remaining_percent": 100,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex_bengalfox",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D12-s3"
+        },
+        {
+          "observed_at": "2026-09-07T09:01:30+08:00",
+          "remaining_percent": 50,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex_bengalfox",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D12-s4"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-07": 5
+      }
+    },
+    {
+      "id": "D13",
+      "description_zh": "重複sample_id不重算。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-07T09:00:00+08:00",
+          "remaining_percent": 30,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D13-s1"
+        },
+        {
+          "observed_at": "2026-09-07T09:01:30+08:00",
+          "remaining_percent": 25,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D13-s2"
+        },
+        {
+          "observed_at": "2026-09-07T09:01:30+08:00",
+          "remaining_percent": 25,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D13-s2"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-07": 5
+      }
+    },
+    {
+      "id": "D14",
+      "description_zh": "帳戶不同不能從10→100推重置。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-07T09:00:00+08:00",
+          "remaining_percent": 10,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D14-s1"
+        },
+        {
+          "observed_at": "2026-09-07T09:01:30+08:00",
+          "remaining_percent": 100,
+          "context": "ACCOUNT_B",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D14-s2"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-07": null
+      },
+      "required_flags": [
+        "RESET_OR_CONTEXT_BOUNDARY"
+      ]
+    },
+    {
+      "id": "D15",
+      "description_zh": "同日方案改變不把兩種百分點混成同一值。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-07T09:00:00+08:00",
+          "remaining_percent": 100,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D15-s1"
+        },
+        {
+          "observed_at": "2026-09-07T09:01:30+08:00",
+          "remaining_percent": 90,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D15-s2"
+        },
+        {
+          "observed_at": "2026-09-07T09:03:00+08:00",
+          "remaining_percent": 100,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "different-plan",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D15-s3"
+        },
+        {
+          "observed_at": "2026-09-07T09:04:30+08:00",
+          "remaining_percent": 80,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "different-plan",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D15-s4"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-07": null
+      },
+      "required_flags": [
+        "MIXED_BASIS"
+      ]
+    },
+    {
+      "id": "D16",
+      "description_zh": "小數保留，0.04點不能先取整變0。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-07T09:00:00+08:00",
+          "remaining_percent": 50,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D16-s1"
+        },
+        {
+          "observed_at": "2026-09-07T09:01:30+08:00",
+          "remaining_percent": 49.96,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D16-s2"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-07": 0.04
+      },
+      "expected_ui": "≈<0.1%"
+    },
+    {
+      "id": "D17",
+      "description_zh": "invalid樣本不能當0也不能跳過它假裝連續。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-07T09:00:00+08:00",
+          "remaining_percent": 20,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D17-s1"
+        },
+        {
+          "observed_at": "2026-09-07T09:01:30+08:00",
+          "remaining_percent": null,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "INVALID",
+          "sample_id": "D17-s2"
+        },
+        {
+          "observed_at": "2026-09-07T09:03:00+08:00",
+          "remaining_percent": 10,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D17-s3"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-07": null
+      },
+      "required_flags": [
+        "INVALID_ENDPOINT"
+      ]
+    },
+    {
+      "id": "D18",
+      "description_zh": "只有resetAt改變，即使剩餘不變亦分段，不算新增消耗。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-07T09:00:00+08:00",
+          "remaining_percent": 20,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D18-s1"
+        },
+        {
+          "observed_at": "2026-09-07T09:01:30+08:00",
+          "remaining_percent": 20,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-14T09:00:00+08:00",
+          "quality": "VALID",
+          "sample_id": "D18-s2"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-07": null
+      },
+      "required_flags": [
+        "RESET_OR_CONTEXT_BOUNDARY"
+      ]
+    },
+    {
+      "id": "D19",
+      "description_zh": "已到前次公告重置時間，數字較低也不可直接相減。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-07T09:00:00+08:00",
+          "remaining_percent": 20,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-07T09:01:00+08:00",
+          "quality": "VALID",
+          "sample_id": "D19-s1"
+        },
+        {
+          "observed_at": "2026-09-07T09:01:30+08:00",
+          "remaining_percent": 10,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-07T09:01:00+08:00",
+          "quality": "VALID",
+          "sample_id": "D19-s2"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-07": null
+      },
+      "required_flags": [
+        "RESET_OR_CONTEXT_BOUNDARY"
+      ]
+    },
+    {
+      "id": "D20",
+      "description_zh": "重連generation變更且來源範圍未驗證，不跨連線相減。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-07T09:00:00+08:00",
+          "remaining_percent": 20,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D20-s1"
+        },
+        {
+          "observed_at": "2026-09-07T09:01:30+08:00",
+          "remaining_percent": 10,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 2,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D20-s2"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-07": null
+      },
+      "required_flags": [
+        "RESET_OR_CONTEXT_BOUNDARY"
+      ]
+    },
+    {
+      "id": "D21",
+      "description_zh": "夏令時間回撥的一分鐘按UTC計，不能算成負59分鐘。",
+      "time_zone": "America/New_York",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-11-01T01:59:30-04:00",
+          "remaining_percent": 60,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-11-07T12:00:00-05:00",
+          "quality": "VALID",
+          "sample_id": "D21-s1"
+        },
+        {
+          "observed_at": "2026-11-01T01:00:30-05:00",
+          "remaining_percent": 58,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-11-07T12:00:00-05:00",
+          "quality": "VALID",
+          "sample_id": "D21-s2"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-11-01": 2
+      }
+    },
+    {
+      "id": "D22",
+      "description_zh": "完全沒有資料，前天昨天今天均未記錄。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-05": null,
+        "2026-09-06": null,
+        "2026-09-07": null
+      },
+      "expected_ui": "—"
+    },
+    {
+      "id": "D23",
+      "description_zh": "一段每週0%→0%可記觀察0，不能推論之後沒有額外點數消耗。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-07T09:00:00+08:00",
+          "remaining_percent": 0,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D23-s1"
+        },
+        {
+          "observed_at": "2026-09-07T09:01:30+08:00",
+          "remaining_percent": 0,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D23-s2"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-07": 0
+      },
+      "required_note": "主池0%不代表所有付費或其他窗口無活動。"
+    },
+    {
+      "id": "D24",
+      "description_zh": "已用槽位/窗口歧義不能隨手把不同窗口相减。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-07T09:00:00+08:00",
+          "remaining_percent": 20,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D24-s1"
+        },
+        {
+          "observed_at": "2026-09-07T09:01:30+08:00",
+          "remaining_percent": 10,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "secondary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D24-s2"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-07": null
+      },
+      "required_flags": [
+        "RESET_OR_CONTEXT_BOUNDARY"
+      ]
+    },
+    {
+      "id": "D25",
+      "description_zh": "同時刻不同sample值沒有可測時長，不能當有效消耗。",
+      "time_zone": "Asia/Taipei",
+      "poll_seconds": 90,
+      "samples": [
+        {
+          "observed_at": "2026-09-07T09:00:00+08:00",
+          "remaining_percent": 20,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D25-s1"
+        },
+        {
+          "observed_at": "2026-09-07T09:00:00+08:00",
+          "remaining_percent": 10,
+          "context": "ACCOUNT_A",
+          "limit_id": "codex",
+          "window_duration_mins": 10080,
+          "source_slot": "primary",
+          "generation": 1,
+          "plan": "pro",
+          "reset_at": "2026-09-12T22:59:30+08:00",
+          "quality": "VALID",
+          "sample_id": "D25-s2"
+        }
+      ],
+      "expected_daily_observed_drawdown_pp": {
+        "2026-09-07": null
+      },
+      "required_flags": [
+        "NONPOSITIVE_INTERVAL"
+      ]
+    }
+  ]
+}

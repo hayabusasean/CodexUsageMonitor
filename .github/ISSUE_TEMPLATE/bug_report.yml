@@ -1,0 +1,58 @@
+name: Bug report / 問題回報
+description: Report a reproducible problem / 回報可重現的問題
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        English and Traditional Chinese are welcome. Please review anything you share.
+        Do not include auth.json, credentials, private usage Logs, account responses or company code.
+        歡迎使用英文或繁體中文。請勿附上 auth.json、憑證、私人用量 Log、帳號原始回應或公司程式碼。
+        For sensitive security findings, use https://github.com/hayabusasean/CodexUsageMonitor/security/advisories/new.
+  - type: input
+    id: monitor_version
+    attributes:
+      label: Monitor version / 監測器版本
+      placeholder: v0.4.0-rc.3
+    validations:
+      required: true
+  - type: input
+    id: windows_version
+    attributes:
+      label: Windows version and display scale / Windows 版本與顯示縮放
+      placeholder: Windows 10 Home 22H2 x64, 150%
+    validations:
+      required: true
+  - type: input
+    id: codex_version
+    attributes:
+      label: Codex version, if known / Codex 版本（若已知）
+      description: Leave blank if unavailable; no need to find private files. / 不知道可留白，不必尋找私人檔案。
+  - type: textarea
+    id: what_happened
+    attributes:
+      label: What happened? / 發生什麼問題？
+      description: Include brief steps and the UI language, if relevant. / 請簡述操作步驟，必要時註明介面語言。
+    validations:
+      required: true
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: What did you expect? / 預期應該如何？
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot, optional / 截圖（選填）
+      description: Remove private information before attaching an image. / 附圖前請遮蔽私人資訊。
+  - type: dropdown
+    id: reproducible_after_restart
+    attributes:
+      label: Does it still happen after restarting the monitor? / 重開監測器後仍會發生嗎？
+      options:
+        - Yes / 會
+        - No / 不會
+        - Not tried / 尚未嘗試
+    validations:
+      required: true

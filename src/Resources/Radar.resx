@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="CardTitle" xml:space="preserve">
+    <value>Codex reset notice</value>
+  </data>
+  <data name="TimeUnknown" xml:space="preserve">
+    <value>Time not confirmed</value>
+  </data>
+  <data name="TimeUnknownDate" xml:space="preserve">
+    <value>Time not confirmed · Source date {0}</value>
+  </data>
+  <data name="TimeAround" xml:space="preserve">
+    <value>Around {0}</value>
+  </data>
+  <data name="TimeBy" xml:space="preserve">
+    <value>By {0}</value>
+  </data>
+  <data name="TimeExact" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Next notice</value>
+  </data>
+  <data name="OpenSource" xml:space="preserve">
+    <value>View original source</value>
+  </data>
+  <data name="NoNotices" xml:space="preserve">
+    <value>No important reset notices</value>
+  </data>
+  <data name="Official" xml:space="preserve">
+    <value>OpenAI public announcement</value>
+  </data>
+  <data name="TeamReported" xml:space="preserve">
+    <value>Reported publicly by the team</value>
+  </data>
+  <data name="Unverified" xml:space="preserve">
+    <value>Unverified third-party information</value>
+  </data>
+  <data name="LocalTime" xml:space="preserve">
+    <value>Local time</value>
+  </data>
+  <data name="WeeklyRemaining" xml:space="preserve">
+    <value>Weekly remaining</value>
+  </data>
+  <data name="ResetCount" xml:space="preserve">
+    <value>Full resets available: {0}</value>
+  </data>
+  <data name="NotProvided" xml:space="preserve">
+    <value>not provided</value>
+  </data>
+  <data name="CoverageAvailable" xml:space="preserve">
+    <value>Only available public sources are checked. Notices may be delayed or missed.</value>
+  </data>
+  <data name="CoverageLimited" xml:space="preserve">
+    <value>Coverage is limited. Some public sources are unavailable; notices may be delayed or missed.</value>
+  </data>
+  <data name="CoverageDisabled" xml:space="preserve">
+    <value>Announcement checks are off. Quota monitoring continues.</value>
+  </data>
+  <data name="SuggestCancelled" xml:space="preserve">
+    <value>This planned reset was cancelled. Arrange your work around the quota currently available.</value>
+  </data>
+  <data name="SuggestPassed" xml:space="preserve">
+    <value>The announced time has passed; no refill has been observed here yet.</value>
+  </data>
+  <data name="SuggestUnknown" xml:space="preserve">
+    <value>The time or eligibility is not confirmed for your plan. Arrange work around the quota currently available.</value>
+  </data>
+  <data name="SuggestObserved" xml:space="preserve">
+    <value>An official reset was announced and a refill was observed here around the same time. The account-specific cause is unknown.</value>
+  </data>
+  <data name="SuggestCompleted" xml:space="preserve">
+    <value>The source reports that the reset took place. No refill has been observed on this PC yet.</value>
+  </data>
+  <data name="SuggestPlannedWork" xml:space="preserve">
+    <value>If you already have important work planned, you could use the remaining quota before the announced reset.</value>
+  </data>
+  <data name="SuggestKeepReset" xml:space="preserve">
+    <value>If your work can wait, consider keeping your full reset for now.</value>
+  </data>
+  <data name="SuggestNeutral" xml:space="preserve">
+    <value>Arrange usage around your existing work and watch for quota updates.</value>
+  </data>
+  <data name="EvidenceProbable" xml:space="preserve">
+    <value>A comparable refill was observed around the announced time. This is a probable correlation; the cause remains unknown.</value>
+  </data>
+  <data name="EvidenceNotComparable" xml:space="preserve">
+    <value>Local observations cannot be compared reliably. An official notice does not establish this account's reset cause.</value>
+  </data>
+  <data name="EvidenceNoObservation" xml:space="preserve">
+    <value>No comparable refill is linked to this notice. An official announcement does not prove this account's reset cause.</value>
+  </data>
+
+<data name="SuggestCreditGrant" xml:space="preserve"><value>This notice grants a reset credit; it does not automatically refill your quota.</value></data>
+<data name="SuggestMechanism" xml:space="preserve"><value>This describes reset options or purchases, not an automatic quota refill.</value></data>
+<data name="CreditGrantTime" xml:space="preserve"><value>Credit grant time · Local time</value></data>
+<data name="NoticeTime" xml:space="preserve"><value>Notice time · Local time</value></data>
+</root>

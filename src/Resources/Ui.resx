@@ -1,0 +1,415 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="Language.Label" xml:space="preserve">
+    <value>Language / 語言</value>
+  </data>
+  <data name="Language.English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="Language.TraditionalChinese" xml:space="preserve">
+    <value>繁體中文</value>
+  </data>
+  <data name="Overlay.WeeklyRemaining" xml:space="preserve">
+    <value>Weekly remaining</value>
+  </data>
+  <data name="Overlay.UpdatedSeconds" xml:space="preserve">
+    <value>Updated {0}s ago</value>
+  </data>
+  <data name="Overlay.LastUpdateMinutes" xml:space="preserve">
+    <value>Updated {0}m ago</value>
+  </data>
+  <data name="Overlay.Today" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="Overlay.Yesterday" xml:space="preserve">
+    <value>Yesterday</value>
+  </data>
+  <data name="Overlay.TwoDaysAgo" xml:space="preserve">
+    <value>2 days ago</value>
+  </data>
+  <data name="Overlay.Partial" xml:space="preserve">
+    <value>Partial</value>
+  </data>
+  <data name="Overlay.SwitchCompact" xml:space="preserve">
+    <value>Switch to compact view</value>
+  </data>
+  <data name="Overlay.SwitchStandard" xml:space="preserve">
+    <value>Switch to standard view</value>
+  </data>
+  <data name="Overlay.Connecting" xml:space="preserve">
+    <value>Connecting…</value>
+  </data>
+  <data name="Overlay.CodexNotFound" xml:space="preserve">
+    <value>Codex not found</value>
+  </data>
+  <data name="Overlay.NoReading" xml:space="preserve">
+    <value>No reading yet</value>
+  </data>
+  <data name="Overlay.OfflineAge" xml:space="preserve">
+    <value>Offline · {0}m old</value>
+  </data>
+  <data name="Daily.TodayObserved" xml:space="preserve">
+    <value>Observed usage today</value>
+  </data>
+  <data name="Daily.PartialRecord" xml:space="preserve">
+    <value>Partial record</value>
+  </data>
+  <data name="Daily.NoRecord" xml:space="preserve">
+    <value>No records for this day.</value>
+  </data>
+  <data name="Daily.LocalExplanation" xml:space="preserve">
+    <value>Based on usage changes observed on this PC.</value>
+  </data>
+  <data name="Details.Title" xml:space="preserve">
+    <value>Quota Details</value>
+  </data>
+  <data name="Details.MainWeekly" xml:space="preserve">
+    <value>Main plan · Weekly quota</value>
+  </data>
+  <data name="Details.ScheduledReset" xml:space="preserve">
+    <value>Scheduled reset</value>
+  </data>
+  <data name="Details.NoFiveHour" xml:space="preserve">
+    <value>The source does not provide a 5-hour reading.</value>
+  </data>
+  <data name="Details.ResetsAndCredits" xml:space="preserve">
+    <value>Full resets and credits</value>
+  </data>
+  <data name="Details.AvailableResets" xml:space="preserve">
+    <value>Available full resets</value>
+  </data>
+  <data name="Details.CreditBalance" xml:space="preserve">
+    <value>Reported credit balance</value>
+  </data>
+  <data name="Details.Expires" xml:space="preserve">
+    <value>Expires</value>
+  </data>
+  <data name="Details.OtherPools" xml:space="preserve">
+    <value>Other quota pools</value>
+  </data>
+  <data name="Details.Advanced" xml:space="preserve">
+    <value>Advanced details</value>
+  </data>
+  <data name="Settings.Title" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Settings.Appearance" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="Settings.Monitoring" xml:space="preserve">
+    <value>Monitoring</value>
+  </data>
+  <data name="Settings.StartupView" xml:space="preserve">
+    <value>View on startup</value>
+  </data>
+  <data name="Settings.RememberLast" xml:space="preserve">
+    <value>Remember last view</value>
+  </data>
+  <data name="Settings.Standard" xml:space="preserve">
+    <value>Standard</value>
+  </data>
+  <data name="Settings.Compact" xml:space="preserve">
+    <value>Compact</value>
+  </data>
+  <data name="Settings.Opacity" xml:space="preserve">
+    <value>Window opacity</value>
+  </data>
+  <data name="Settings.AlwaysOnTop" xml:space="preserve">
+    <value>Always on top</value>
+  </data>
+  <data name="Settings.PollInterval" xml:space="preserve">
+    <value>Refresh interval (s)</value>
+  </data>
+  <data name="Settings.Retention" xml:space="preserve">
+    <value>History (days)</value>
+  </data>
+  <data name="Settings.StartWithWindows" xml:space="preserve">
+    <value>Start when I sign in to Windows</value>
+  </data>
+  <data name="Settings.StartHidden" xml:space="preserve">
+    <value>Start in the system tray</value>
+  </data>
+  <data name="Settings.CheckConnection" xml:space="preserve">
+    <value>Check connection</value>
+  </data>
+  <data name="Settings.Checking" xml:space="preserve">
+    <value>Checking connection…</value>
+  </data>
+  <data name="Settings.Connected" xml:space="preserve">
+    <value>Connected to Codex</value>
+  </data>
+  <data name="Settings.ChooseCodex" xml:space="preserve">
+    <value>Choose Codex executable…</value>
+  </data>
+  <data name="Settings.AutoDetect" xml:space="preserve">
+    <value>Use automatic detection</value>
+  </data>
+  <data name="Settings.NoSetupNeeded" xml:space="preserve">
+    <value>Connected automatically. No setup needed.</value>
+  </data>
+  <data name="Settings.Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Settings.Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Settings.Saved" xml:space="preserve">
+    <value>Saved</value>
+  </data>
+  <data name="About.Title" xml:space="preserve">
+    <value>About CodexUsageMonitor</value>
+  </data>
+  <data name="About.CopyDiagnostics" xml:space="preserve">
+    <value>Copy diagnostics</value>
+  </data>
+  <data name="About.Copied" xml:space="preserve">
+    <value>Diagnostics copied</value>
+  </data>
+  <data name="About.Unofficial" xml:space="preserve">
+    <value>Unofficial community tool. Not affiliated with OpenAI.</value>
+  </data>
+  <data name="Menu.Show" xml:space="preserve">
+    <value>Show monitor</value>
+  </data>
+  <data name="Menu.Hide" xml:space="preserve">
+    <value>Hide monitor</value>
+  </data>
+  <data name="Menu.Refresh" xml:space="preserve">
+    <value>Refresh now</value>
+  </data>
+  <data name="Menu.Quit" xml:space="preserve">
+    <value>Quit</value>
+  </data>
+  <data name="Overlay.CachedAge" xml:space="preserve">
+    <value>Cached · {0}s old</value>
+  </data>
+  <data name="Overlay.StaleAge" xml:space="preserve">
+    <value>Updated {0}m ago</value>
+  </data>
+  <data name="Overlay.FailedAge" xml:space="preserve">
+    <value>Offline · {0}m old</value>
+  </data>
+  <data name="Overlay.ClockAnomaly" xml:space="preserve">
+    <value>Clock changed</value>
+  </data>
+  <data name="Overlay.ObservedAccessible" xml:space="preserve">
+    <value>{0}: observed usage {1}</value>
+  </data>
+  <data name="Overlay.AlertTip" xml:space="preserve">
+    <value>New Codex reset notice</value>
+  </data>
+  <data name="Overlay.ModeName" xml:space="preserve">
+    <value>Switch view</value>
+  </data>
+  <data name="Overlay.TrayName" xml:space="preserve">
+    <value>Codex usage monitor</value>
+  </data>
+  <data name="Daily.Title" xml:space="preserve">
+    <value>Observed usage · {0}</value>
+  </data>
+  <data name="Daily.Full" xml:space="preserve">
+    <value>Complete observation</value>
+  </data>
+  <data name="Settings.Intro" xml:space="preserve">
+    <value>Make it work for you</value>
+  </data>
+  <data name="Settings.ResetOpacity" xml:space="preserve">
+    <value>Reset to 70%</value>
+  </data>
+  <data name="Settings.AdvancedSource" xml:space="preserve">
+    <value>Advanced source</value>
+  </data>
+  <data name="Settings.Radar" xml:space="preserve">
+    <value>Reset Radar</value>
+  </data>
+  <data name="Settings.RadarEnabled" xml:space="preserve">
+    <value>Check public reset notices</value>
+  </data>
+  <data name="Settings.RadarHint" xml:space="preserve">
+    <value>Limited public sources; notices may be delayed or missed.</value>
+  </data>
+  <data name="Settings.PollSeconds" xml:space="preserve">
+    <value>Seconds</value>
+  </data>
+  <data name="Settings.RetentionDays" xml:space="preserve">
+    <value>Days</value>
+  </data>
+  <data name="Settings.Startup" xml:space="preserve">
+    <value>Windows startup</value>
+  </data>
+  <data name="Settings.Connection" xml:space="preserve">
+    <value>Connection</value>
+  </data>
+  <data name="Settings.CheckLast" xml:space="preserve">
+    <value>Last checked: just now · {0}</value>
+  </data>
+  <data name="Settings.NotChecked" xml:space="preserve">
+    <value>No successful check yet</value>
+  </data>
+  <data name="Settings.CheckFailed" xml:space="preserve">
+    <value>Unable to connect. Retrying automatically.</value>
+  </data>
+  <data name="Settings.DetectAfterSave" xml:space="preserve">
+    <value>Automatic detection will resume after Save.</value>
+  </data>
+  <data name="Settings.Validating" xml:space="preserve">
+    <value>Checking this source…</value>
+  </data>
+  <data name="Settings.SourceValidated" xml:space="preserve">
+    <value>Source verified · {0}</value>
+  </data>
+  <data name="Settings.SourceInvalid" xml:space="preserve">
+    <value>Source check failed. The existing connection is preserved.</value>
+  </data>
+  <data name="Settings.SelfSource" xml:space="preserve">
+    <value>This is the monitor. Choose the official Codex executable.</value>
+  </data>
+  <data name="Settings.PathAccessible" xml:space="preserve">
+    <value>Advanced Codex executable path</value>
+  </data>
+  <data name="Settings.ExeFilter" xml:space="preserve">
+    <value>Codex executable|*.exe</value>
+  </data>
+  <data name="Settings.NoCodexMutation" xml:space="preserve">
+    <value>This does not change your Codex sign-in or settings.</value>
+  </data>
+  <data name="Settings.SaveFailed" xml:space="preserve">
+    <value>Settings could not be saved. Please try again.</value>
+  </data>
+  <data name="Settings.LowOpacity" xml:space="preserve">
+    <value>Lower opacity may reduce readability.</value>
+  </data>
+  <data name="Details.Weekly" xml:space="preserve">
+    <value>Weekly</value>
+  </data>
+  <data name="Details.FiveHour" xml:space="preserve">
+    <value>5 hours</value>
+  </data>
+  <data name="Details.Minutes" xml:space="preserve">
+    <value>{0} minutes</value>
+  </data>
+  <data name="Details.Remaining" xml:space="preserve">
+    <value>Remaining {0}</value>
+  </data>
+  <data name="Details.Used" xml:space="preserve">
+    <value>Used {0}</value>
+  </data>
+  <data name="Details.ResetAt" xml:space="preserve">
+    <value>Scheduled reset: {0}</value>
+  </data>
+  <data name="Details.ResetsBalance" xml:space="preserve">
+    <value>Available full resets: {0}    Reported balance: {1}</value>
+  </data>
+  <data name="Details.Expiry" xml:space="preserve">
+    <value>Expires: {0}</value>
+  </data>
+  <data name="Details.NotProvided" xml:space="preserve">
+    <value>Not provided</value>
+  </data>
+  <data name="Details.FiveReading" xml:space="preserve">
+    <value>5-hour remaining: {0}</value>
+  </data>
+  <data name="Details.Pool" xml:space="preserve">
+    <value>{0} · {1}
+Used {2}   Remaining {3}</value>
+  </data>
+  <data name="Details.AdvancedInfo" xml:space="preserve">
+    <value>Official Codex app-server {0}
+Source assurance: {1}
+Observed UTC: {2}
+{3}</value>
+  </data>
+  <data name="Details.SeparatePools" xml:space="preserve">
+    <value>Pools are measured separately. A refill alone does not establish its cause.</value>
+  </data>
+  <data name="Details.SourceCoverage" xml:space="preserve">
+    <value>Only available public sources are checked. Notices may be delayed or missed.</value>
+  </data>
+  <data name="About.Storage" xml:space="preserve">
+    <value>History stays in this tool’s LocalAppData folder on this PC.</value>
+  </data>
+  <data name="About.Build" xml:space="preserve">
+    <value>Version {0} · Windows x64 · Not signed</value>
+  </data>
+  <data name="About.License" xml:space="preserve">
+    <value>License and copyright holder pending confirmation before publication.</value>
+  </data>
+  <data name="About.DiagnosticsPreview" xml:space="preserve">
+    <value>Safe diagnostics preview</value>
+  </data>
+  <data name="About.DiagnosticsHint" xml:space="preserve">
+    <value>No usage timeline, account ID, notes or personal paths are included.</value>
+  </data>
+  <data name="About.Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="About.CopyFailed" xml:space="preserve">
+    <value>Could not copy. You can select the preview text.</value>
+  </data>
+  <data name="Common.Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Common.Date" xml:space="preserve">
+    <value>Date yyyy-MM-dd</value>
+  </data>
+  <data name="Common.Fatal" xml:space="preserve">
+    <value>The monitor could not start. Its local data folder must be writable. Codex settings were not changed.</value>
+  </data>
+  <data name="Menu.History" xml:space="preserve">
+    <value>Usage History</value>
+  </data>
+  <data name="Menu.Details" xml:space="preserve">
+    <value>Quota Details</value>
+  </data>
+  <data name="Menu.Reset" xml:space="preserve">
+    <value>Reset notices</value>
+  </data>
+  <data name="Menu.Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Menu.About" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="Menu.OfficialUsage" xml:space="preserve">
+    <value>Official Usage page</value>
+  </data>
+  <data name="State.SaveFailed" xml:space="preserve">
+    <value>Live usage is available, but history could not be saved.</value>
+  </data>
+  <data name="State.NotFound" xml:space="preserve">
+    <value>Codex not found. Install and sign in to the official Codex app, then check again.</value>
+  </data>
+  <data name="State.SignIn" xml:space="preserve">
+    <value>Sign in to Codex, then check again.</value>
+  </data>
+  <data name="State.Unsupported" xml:space="preserve">
+    <value>This Codex version does not expose the required quota data.</value>
+  </data>
+  <data name="State.WeeklyMissing" xml:space="preserve">
+    <value>Weekly quota is not available for this account.</value>
+  </data>
+  <data name="State.Offline" xml:space="preserve">
+    <value>Could not connect. Retrying automatically.</value>
+  </data>
+  <data name="State.Error" xml:space="preserve">
+    <value>Unable to read quota. Retrying automatically.</value>
+  </data>
+  <data name="State.CheckSource" xml:space="preserve">
+    <value>The chosen executable is not a supported Codex source.</value>
+  </data>
+  <data name="State.Protocol" xml:space="preserve">
+    <value>The Codex connection ended. Reconnecting automatically.</value>
+  </data>
+<data name="State.Policy" xml:space="preserve"><value>Access to Codex was denied. Retrying without changing security settings.</value></data><data name="State.Account" xml:space="preserve"><value>Sign in to the official Codex app with a supported ChatGPT account. API-key-only accounts are not supported.</value></data><data name="Overlay.SignInRequired" xml:space="preserve"><value>Sign in to Codex</value></data><data name="Overlay.Unsupported" xml:space="preserve"><value>Codex unsupported</value></data><data name="Overlay.AccessDenied" xml:space="preserve"><value>Access denied</value></data><data name="Overlay.Offline" xml:space="preserve"><value>Offline · Retrying</value></data><data name="Overlay.WeeklyUnavailable" xml:space="preserve"><value>Weekly unavailable</value></data><data name="Overlay.UpdateFailed" xml:space="preserve"><value>Update unavailable</value></data><data name="Common.Open" xml:space="preserve"><value>Open</value></data></root>

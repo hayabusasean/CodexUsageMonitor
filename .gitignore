@@ -1,0 +1,54 @@
+# Build output and local tooling
+**/bin/
+**/obj/
+.tools/
+.cache/
+.vs/
+.vscode/
+artifacts/
+dist/
+release/
+public-ready/
+
+# Private mission material and runtime state
+.ai/
+.agents/
+.codex/
+PROGRESS.md
+PAUSE_CHECKPOINT.md
+LATEST_RETURN*.md
+TEST_RESULT*.md
+VISUAL_REVIEW*.md
+CodexUsageMonitor_*FULL*.zip
+CodexUsageMonitor_REVIEW*.zip
+**/auth.json
+**/settings.json
+**/event_notes.json
+**/last_good*.json
+**/reset_radar.json
+**/notification_state.json
+**/history/
+**/exports/
+**/logs/
+*.log
+*.partial
+*.bak
+*.bad
+*.pdb
+*.exe
+*.dll
+*.zip
+*.user
+*.suo
+Thumbs.db
+Desktop.ini
+
+# Reviewed synthetic examples only
+!docs/examples/*.log
+!docs/examples/*.csv
+
+# Crash dumps and credentials
+*.dmp
+*.mdmp
+**/cookies*
+**/credentials*

@@ -1,0 +1,415 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="Language.Label" xml:space="preserve">
+    <value>Language / 語言</value>
+  </data>
+  <data name="Language.English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="Language.TraditionalChinese" xml:space="preserve">
+    <value>繁體中文</value>
+  </data>
+  <data name="Overlay.WeeklyRemaining" xml:space="preserve">
+    <value>每週剩餘</value>
+  </data>
+  <data name="Overlay.UpdatedSeconds" xml:space="preserve">
+    <value>更新於 {0} 秒前</value>
+  </data>
+  <data name="Overlay.LastUpdateMinutes" xml:space="preserve">
+    <value>更新於 {0} 分鐘前</value>
+  </data>
+  <data name="Overlay.Today" xml:space="preserve">
+    <value>今日</value>
+  </data>
+  <data name="Overlay.Yesterday" xml:space="preserve">
+    <value>昨日</value>
+  </data>
+  <data name="Overlay.TwoDaysAgo" xml:space="preserve">
+    <value>前日</value>
+  </data>
+  <data name="Overlay.Partial" xml:space="preserve">
+    <value>部分</value>
+  </data>
+  <data name="Overlay.SwitchCompact" xml:space="preserve">
+    <value>切換為精簡模式</value>
+  </data>
+  <data name="Overlay.SwitchStandard" xml:space="preserve">
+    <value>切換為標準模式</value>
+  </data>
+  <data name="Overlay.Connecting" xml:space="preserve">
+    <value>正在連線…</value>
+  </data>
+  <data name="Overlay.CodexNotFound" xml:space="preserve">
+    <value>找不到 Codex</value>
+  </data>
+  <data name="Overlay.NoReading" xml:space="preserve">
+    <value>尚無資料</value>
+  </data>
+  <data name="Overlay.OfflineAge" xml:space="preserve">
+    <value>離線 · {0} 分鐘前</value>
+  </data>
+  <data name="Daily.TodayObserved" xml:space="preserve">
+    <value>今日已觀察用量</value>
+  </data>
+  <data name="Daily.PartialRecord" xml:space="preserve">
+    <value>部分紀錄</value>
+  </data>
+  <data name="Daily.NoRecord" xml:space="preserve">
+    <value>這一天沒有紀錄。</value>
+  </data>
+  <data name="Daily.LocalExplanation" xml:space="preserve">
+    <value>僅統計本機觀察到的額度變化。</value>
+  </data>
+  <data name="Details.Title" xml:space="preserve">
+    <value>額度詳情</value>
+  </data>
+  <data name="Details.MainWeekly" xml:space="preserve">
+    <value>主方案 · 每週額度</value>
+  </data>
+  <data name="Details.ScheduledReset" xml:space="preserve">
+    <value>預計重置</value>
+  </data>
+  <data name="Details.NoFiveHour" xml:space="preserve">
+    <value>目前來源沒有提供 5 小時額度。</value>
+  </data>
+  <data name="Details.ResetsAndCredits" xml:space="preserve">
+    <value>重置券與點數</value>
+  </data>
+  <data name="Details.AvailableResets" xml:space="preserve">
+    <value>可用完整重置券</value>
+  </data>
+  <data name="Details.CreditBalance" xml:space="preserve">
+    <value>來源回報點數</value>
+  </data>
+  <data name="Details.Expires" xml:space="preserve">
+    <value>有效期</value>
+  </data>
+  <data name="Details.OtherPools" xml:space="preserve">
+    <value>其他額度池</value>
+  </data>
+  <data name="Details.Advanced" xml:space="preserve">
+    <value>進階資料</value>
+  </data>
+  <data name="Settings.Title" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="Settings.Appearance" xml:space="preserve">
+    <value>外觀</value>
+  </data>
+  <data name="Settings.Monitoring" xml:space="preserve">
+    <value>監測</value>
+  </data>
+  <data name="Settings.StartupView" xml:space="preserve">
+    <value>啟動時顯示模式</value>
+  </data>
+  <data name="Settings.RememberLast" xml:space="preserve">
+    <value>記住上次</value>
+  </data>
+  <data name="Settings.Standard" xml:space="preserve">
+    <value>標準</value>
+  </data>
+  <data name="Settings.Compact" xml:space="preserve">
+    <value>精簡</value>
+  </data>
+  <data name="Settings.Opacity" xml:space="preserve">
+    <value>浮窗不透明度</value>
+  </data>
+  <data name="Settings.AlwaysOnTop" xml:space="preserve">
+    <value>浮窗置頂</value>
+  </data>
+  <data name="Settings.PollInterval" xml:space="preserve">
+    <value>更新間隔（秒）</value>
+  </data>
+  <data name="Settings.Retention" xml:space="preserve">
+    <value>保存天數（天）</value>
+  </data>
+  <data name="Settings.StartWithWindows" xml:space="preserve">
+    <value>登入 Windows 時啟動</value>
+  </data>
+  <data name="Settings.StartHidden" xml:space="preserve">
+    <value>啟動時隱藏至系統匣</value>
+  </data>
+  <data name="Settings.CheckConnection" xml:space="preserve">
+    <value>檢查連線</value>
+  </data>
+  <data name="Settings.Checking" xml:space="preserve">
+    <value>正在檢查連線…</value>
+  </data>
+  <data name="Settings.Connected" xml:space="preserve">
+    <value>已連接 Codex</value>
+  </data>
+  <data name="Settings.ChooseCodex" xml:space="preserve">
+    <value>選擇 Codex 程式…</value>
+  </data>
+  <data name="Settings.AutoDetect" xml:space="preserve">
+    <value>改回自動尋找</value>
+  </data>
+  <data name="Settings.NoSetupNeeded" xml:space="preserve">
+    <value>已自動連接，不需要設定程式位置。</value>
+  </data>
+  <data name="Settings.Save" xml:space="preserve">
+    <value>儲存</value>
+  </data>
+  <data name="Settings.Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Settings.Saved" xml:space="preserve">
+    <value>已儲存</value>
+  </data>
+  <data name="About.Title" xml:space="preserve">
+    <value>關於 CodexUsageMonitor</value>
+  </data>
+  <data name="About.CopyDiagnostics" xml:space="preserve">
+    <value>複製診斷摘要</value>
+  </data>
+  <data name="About.Copied" xml:space="preserve">
+    <value>已複製診斷摘要</value>
+  </data>
+  <data name="About.Unofficial" xml:space="preserve">
+    <value>非官方社群工具，與 OpenAI 無隸屬關係。</value>
+  </data>
+  <data name="Menu.Show" xml:space="preserve">
+    <value>顯示浮窗</value>
+  </data>
+  <data name="Menu.Hide" xml:space="preserve">
+    <value>隱藏浮窗</value>
+  </data>
+  <data name="Menu.Refresh" xml:space="preserve">
+    <value>立即更新</value>
+  </data>
+  <data name="Menu.Quit" xml:space="preserve">
+    <value>離開</value>
+  </data>
+  <data name="Overlay.CachedAge" xml:space="preserve">
+    <value>快取 · {0} 秒前</value>
+  </data>
+  <data name="Overlay.StaleAge" xml:space="preserve">
+    <value>更新於 {0} 分鐘前</value>
+  </data>
+  <data name="Overlay.FailedAge" xml:space="preserve">
+    <value>離線 · {0} 分鐘前</value>
+  </data>
+  <data name="Overlay.ClockAnomaly" xml:space="preserve">
+    <value>時鐘已變更</value>
+  </data>
+  <data name="Overlay.ObservedAccessible" xml:space="preserve">
+    <value>{0}：已觀察用量 {1}</value>
+  </data>
+  <data name="Overlay.AlertTip" xml:space="preserve">
+    <value>新的 Codex 重置公告</value>
+  </data>
+  <data name="Overlay.ModeName" xml:space="preserve">
+    <value>切換顯示模式</value>
+  </data>
+  <data name="Overlay.TrayName" xml:space="preserve">
+    <value>Codex 額度監測</value>
+  </data>
+  <data name="Daily.Title" xml:space="preserve">
+    <value>{0}已觀察用量</value>
+  </data>
+  <data name="Daily.Full" xml:space="preserve">
+    <value>完整觀察</value>
+  </data>
+  <data name="Settings.Intro" xml:space="preserve">
+    <value>適合你的工作方式</value>
+  </data>
+  <data name="Settings.ResetOpacity" xml:space="preserve">
+    <value>恢復 70%</value>
+  </data>
+  <data name="Settings.AdvancedSource" xml:space="preserve">
+    <value>進階來源選項</value>
+  </data>
+  <data name="Settings.Radar" xml:space="preserve">
+    <value>重置公告</value>
+  </data>
+  <data name="Settings.RadarEnabled" xml:space="preserve">
+    <value>檢查公開重置公告</value>
+  </data>
+  <data name="Settings.RadarHint" xml:space="preserve">
+    <value>僅檢查有限公開來源；公告可能延遲或漏失。</value>
+  </data>
+  <data name="Settings.PollSeconds" xml:space="preserve">
+    <value>秒</value>
+  </data>
+  <data name="Settings.RetentionDays" xml:space="preserve">
+    <value>天</value>
+  </data>
+  <data name="Settings.Startup" xml:space="preserve">
+    <value>Windows 啟動</value>
+  </data>
+  <data name="Settings.Connection" xml:space="preserve">
+    <value>連線</value>
+  </data>
+  <data name="Settings.CheckLast" xml:space="preserve">
+    <value>最後檢查：剛剛 · {0}</value>
+  </data>
+  <data name="Settings.NotChecked" xml:space="preserve">
+    <value>尚未完成成功檢查</value>
+  </data>
+  <data name="Settings.CheckFailed" xml:space="preserve">
+    <value>暫時無法連線，將自動重試。</value>
+  </data>
+  <data name="Settings.DetectAfterSave" xml:space="preserve">
+    <value>儲存後將恢復自動尋找。</value>
+  </data>
+  <data name="Settings.Validating" xml:space="preserve">
+    <value>正在驗證來源…</value>
+  </data>
+  <data name="Settings.SourceValidated" xml:space="preserve">
+    <value>來源驗證完成 · {0}</value>
+  </data>
+  <data name="Settings.SourceInvalid" xml:space="preserve">
+    <value>來源驗證失敗，保留既有連線。</value>
+  </data>
+  <data name="Settings.SelfSource" xml:space="preserve">
+    <value>這是浮窗程式，請選擇官方 Codex 程式。</value>
+  </data>
+  <data name="Settings.PathAccessible" xml:space="preserve">
+    <value>進階 Codex 程式路徑</value>
+  </data>
+  <data name="Settings.ExeFilter" xml:space="preserve">
+    <value>Codex 執行檔|*.exe</value>
+  </data>
+  <data name="Settings.NoCodexMutation" xml:space="preserve">
+    <value>不會更動 Codex 登入或設定。</value>
+  </data>
+  <data name="Settings.SaveFailed" xml:space="preserve">
+    <value>設定未保存，請稍後再試。</value>
+  </data>
+  <data name="Settings.LowOpacity" xml:space="preserve">
+    <value>較低不透明度可能降低可讀性。</value>
+  </data>
+  <data name="Details.Weekly" xml:space="preserve">
+    <value>每週</value>
+  </data>
+  <data name="Details.FiveHour" xml:space="preserve">
+    <value>5 小時</value>
+  </data>
+  <data name="Details.Minutes" xml:space="preserve">
+    <value>{0} 分鐘</value>
+  </data>
+  <data name="Details.Remaining" xml:space="preserve">
+    <value>剩餘 {0}</value>
+  </data>
+  <data name="Details.Used" xml:space="preserve">
+    <value>已使用 {0}</value>
+  </data>
+  <data name="Details.ResetAt" xml:space="preserve">
+    <value>預計重置：{0}</value>
+  </data>
+  <data name="Details.ResetsBalance" xml:space="preserve">
+    <value>可用完整重置券：{0}　來源回報點數：{1}</value>
+  </data>
+  <data name="Details.Expiry" xml:space="preserve">
+    <value>有效期：{0}</value>
+  </data>
+  <data name="Details.NotProvided" xml:space="preserve">
+    <value>尚未提供</value>
+  </data>
+  <data name="Details.FiveReading" xml:space="preserve">
+    <value>5 小時剩餘：{0}</value>
+  </data>
+  <data name="Details.Pool" xml:space="preserve">
+    <value>{0} · {1}
+已使用 {2}　剩餘 {3}</value>
+  </data>
+  <data name="Details.AdvancedInfo" xml:space="preserve">
+    <value>官方 Codex app-server {0}
+來源範圍：{1}
+資料 UTC：{2}
+{3}</value>
+  </data>
+  <data name="Details.SeparatePools" xml:space="preserve">
+    <value>各額度池分別計量。單憑回升不能判定原因。</value>
+  </data>
+  <data name="Details.SourceCoverage" xml:space="preserve">
+    <value>只檢查可用的公開來源，公告可能延遲或漏失。</value>
+  </data>
+  <data name="About.Storage" xml:space="preserve">
+    <value>歷史保存在本機這個工具自己的 LocalAppData 資料夾。</value>
+  </data>
+  <data name="About.Build" xml:space="preserve">
+    <value>版本 {0} · Windows x64 · 未簽章</value>
+  </data>
+  <data name="About.License" xml:space="preserve">
+    <value>正式發布前尚待確認授權及著作權人。</value>
+  </data>
+  <data name="About.DiagnosticsPreview" xml:space="preserve">
+    <value>安全診斷預覽</value>
+  </data>
+  <data name="About.DiagnosticsHint" xml:space="preserve">
+    <value>不包含用量時間線、帳號 ID、備註或個人路徑。</value>
+  </data>
+  <data name="About.Copy" xml:space="preserve">
+    <value>複製</value>
+  </data>
+  <data name="About.CopyFailed" xml:space="preserve">
+    <value>複製失敗，可選取預覽文字。</value>
+  </data>
+  <data name="Common.Close" xml:space="preserve">
+    <value>關閉</value>
+  </data>
+  <data name="Common.Date" xml:space="preserve">
+    <value>日期 yyyy-MM-dd</value>
+  </data>
+  <data name="Common.Fatal" xml:space="preserve">
+    <value>浮窗無法啟動，請確認本工具資料夾可寫入；Codex 設定未更動。</value>
+  </data>
+  <data name="Menu.History" xml:space="preserve">
+    <value>使用紀錄</value>
+  </data>
+  <data name="Menu.Details" xml:space="preserve">
+    <value>額度詳情</value>
+  </data>
+  <data name="Menu.Reset" xml:space="preserve">
+    <value>重置公告</value>
+  </data>
+  <data name="Menu.Settings" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="Menu.About" xml:space="preserve">
+    <value>關於</value>
+  </data>
+  <data name="Menu.OfficialUsage" xml:space="preserve">
+    <value>官方用量頁</value>
+  </data>
+  <data name="State.SaveFailed" xml:space="preserve">
+    <value>即時額度可用，但歷史未能保存。</value>
+  </data>
+  <data name="State.NotFound" xml:space="preserve">
+    <value>找不到 Codex。請安裝並登入官方 Codex 後，再檢查連線。</value>
+  </data>
+  <data name="State.SignIn" xml:space="preserve">
+    <value>請登入 Codex 後，再檢查連線。</value>
+  </data>
+  <data name="State.Unsupported" xml:space="preserve">
+    <value>這個 Codex 版本未提供所需的額度資料。</value>
+  </data>
+  <data name="State.WeeklyMissing" xml:space="preserve">
+    <value>此帳號目前未提供每週額度。</value>
+  </data>
+  <data name="State.Offline" xml:space="preserve">
+    <value>目前無法連線，正在自動重試。</value>
+  </data>
+  <data name="State.Error" xml:space="preserve">
+    <value>暫時無法讀取額度，將自動重試。</value>
+  </data>
+  <data name="State.CheckSource" xml:space="preserve">
+    <value>所選程式不是支援的 Codex 來源。</value>
+  </data>
+  <data name="State.Protocol" xml:space="preserve">
+    <value>Codex 連線已中斷，將自動重連。</value>
+  </data>
+<data name="State.Policy" xml:space="preserve"><value>Codex 存取遭拒；程式會重試，不變更安全設定。</value></data><data name="State.Account" xml:space="preserve"><value>請使用支援的 ChatGPT 帳號登入官方 Codex；不支援僅有 API Key 的帳號。</value></data><data name="Overlay.SignInRequired" xml:space="preserve"><value>請登入 Codex</value></data><data name="Overlay.Unsupported" xml:space="preserve"><value>Codex 版本不支援</value></data><data name="Overlay.AccessDenied" xml:space="preserve"><value>存取遭拒</value></data><data name="Overlay.Offline" xml:space="preserve"><value>離線 · 正在重試</value></data><data name="Overlay.WeeklyUnavailable" xml:space="preserve"><value>來源未提供每週額度</value></data><data name="Overlay.UpdateFailed" xml:space="preserve"><value>暫時無法更新</value></data><data name="Common.Open" xml:space="preserve"><value>開啟</value></data></root>
