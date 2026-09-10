@@ -12,7 +12,7 @@
 
 ![精簡模式，使用示範資料](docs/screenshots/compact-zh-TW.png)
 
-*本文截圖來自原生 Windows 程式，畫面中的資料已標示為示範資料。*
+*精簡模式截圖使用已標示的示範資料；下方使用紀錄截圖來自使用者實機，呈現真實用量。*
 
 ## 為什麼做這個工具
 
@@ -39,7 +39,9 @@
 - 匯出內嵌分析 Prompt 與結構化證據的詳細 Log；報告語言可與介面語言分開選擇。
 - 在同一個可攜 EXE 中切換**英文／繁體中文**。
 
-![歷史畫面，使用示範資料](docs/screenshots/history-zh-TW.png)
+![使用紀錄畫面，顯示近期額度變化](docs/screenshots/usage-history-zh-TW-real-example.png)
+
+*使用者提供的繁體中文實機截圖，呈現真實使用紀錄。*
 
 ## 開始使用
 

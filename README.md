@@ -12,7 +12,7 @@ This is the first public **pre-release**. It is portable, unsigned and free unde
 
 ![Compact view with example data](docs/screenshots/compact-en.png)
 
-*The screenshots show the native Windows app with labelled example data.*
+*Compact and Standard screenshots use labelled example data; the usage history screenshot below shows real usage on a user's PC.*
 
 ## Why I built it
 
@@ -41,7 +41,9 @@ I'm sharing this for other people who would rather stay focused on their work th
 
 ![Standard view with example data](docs/screenshots/standard-en.png)
 
-![History view with example data](docs/screenshots/history-en.png)
+![Usage history view showing recent quota changes](docs/screenshots/usage-history-zh-TW-real-example.png)
+
+*Real usage history captured on a user's PC, shown in Traditional Chinese.*
 
 ## Get started
 
