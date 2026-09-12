@@ -8,6 +8,9 @@
 
 **[下載 v0.4.0-rc.3 Windows x64 可攜版](https://github.com/hayabusasean/CodexUsageMonitor/releases/download/v0.4.0-rc.3/CodexUsageMonitor-v0.4.0-rc.3-win-x64.zip)** · [版本說明](https://github.com/hayabusasean/CodexUsageMonitor/releases/tag/v0.4.0-rc.3) · [SHA256SUMS.txt](https://github.com/hayabusasean/CodexUsageMonitor/releases/download/v0.4.0-rc.3/SHA256SUMS.txt)
 
+- **目前公開下載版：** v0.4.0-rc.3
+- **Reset Radar 真實環境測試：** rc.4 — 尚未公開發布
+
 這是首次公開的**預發行版**，採 MIT 授權、免費提供。程式可攜、尚未數位簽章，沒有遙測，歷史紀錄留在你的電腦上。
 
 ![精簡模式，使用示範資料](docs/screenshots/compact-zh-TW.png)
@@ -42,6 +45,44 @@
 ![使用紀錄畫面，顯示近期額度變化](docs/screenshots/usage-history-zh-TW-real-example.png)
 
 *使用者提供的繁體中文實機截圖，呈現真實使用紀錄。*
+
+## Reset Radar — 第一次真實 Field Trial
+
+Reset Radar 目前正在進行第一次真實環境觀測。
+
+2026-09-12，工具在實際常駐監測中成功抓到一則可追溯的 Codex 團隊 Reset 暗示，並正確分類為 **WATCH／注意**。當時：
+
+- 尚未有可靠的 Reset 時間
+- 該訊號被閱讀後仍維持 Active WATCH
+- Radar Coverage 為 67%
+- 6 個設定來源中 4 個可正常讀取
+- 官方來源 2 / 4 可讀
+- 團隊訊號來源 2 / 2 可讀
+
+**67% 代表 Radar 來源涵蓋率**，也就是目前設定的資訊來源中，有多少比例可正常讀取與解析。67% 絕對不是「有 67% 機率會 Reset」。
+
+WATCH 黃色提醒表示有可追溯、值得注意的 Reset 訊號，但目前還沒有足夠證據判定「Reset 即將發生」。只有更明確的即將重置、rollout 或可信時間資訊，才會升級成紅色 INCOMING 提醒。
+
+![WATCH 已讀後仍保留有效訊號黃點](docs/screenshots/field-trial/reset-radar-watch-compact-2026-09-12-zh-TW.png)
+
+*WATCH 已讀後，驚嘆號會消失，但右上角黃色狀態點仍保留，直到訊號失效、被更新或升級。*
+
+![實際 Reset Radar 詳細頁](docs/screenshots/field-trial/reset-radar-watch-details-2026-09-12-zh-TW.png)
+
+*實際 Reset Radar 頁：可以查看 Radar Coverage、來源健康、訊號內容、本機額度背景，以及可追溯的原始／轉送來源。*
+
+| 指示 | 意義 |
+| --- | --- |
+| 黃色每週 % | 每週剩餘額度偏低 |
+| 紅色每週 % | 每週剩餘額度極低 |
+| 黃色 ! | 新的 WATCH 訊號 |
+| 黃色圓點 | WATCH 已讀，但訊號仍有效 |
+| 紅色 ! | 新的 INCOMING 訊號 |
+| 紅色圓點 | INCOMING 已讀，但訊號仍有效 |
+| 藍綠色／成功 | 已觀察到額度補充或事件完成 |
+| Radar % | 來源可讀率，不是 Reset 機率 |
+
+詳見[完整 Field Trial 紀錄](docs/field-trial/reset-radar-2026-09-12.md)。目前公開下載仍是 v0.4.0-rc.3；畫面中的 rc.4 是尚未公開發布的私人測試版本。
 
 ## 開始使用
 

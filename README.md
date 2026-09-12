@@ -8,6 +8,9 @@ Keep your weekly Codex quota, recent usage, local history and reset signals in v
 
 **[Download v0.4.0-rc.3 for Windows x64](https://github.com/hayabusasean/CodexUsageMonitor/releases/download/v0.4.0-rc.3/CodexUsageMonitor-v0.4.0-rc.3-win-x64.zip)** · [Release notes](https://github.com/hayabusasean/CodexUsageMonitor/releases/tag/v0.4.0-rc.3) · [SHA256SUMS.txt](https://github.com/hayabusasean/CodexUsageMonitor/releases/download/v0.4.0-rc.3/SHA256SUMS.txt)
 
+- **Latest public download:** v0.4.0-rc.3
+- **Reset Radar live field trial:** rc.4 — not yet released
+
 This is the first public **pre-release**. It is portable, unsigned and free under the MIT License. It has no telemetry and keeps history on your computer.
 
 ![Compact view with example data](docs/screenshots/compact-en.png)
@@ -44,6 +47,44 @@ I'm sharing this for other people who would rather stay focused on their work th
 ![Usage history view showing recent quota changes](docs/screenshots/usage-history-zh-TW-real-example.png)
 
 *Real usage history captured on a user's PC, shown in Traditional Chinese.*
+
+## Reset Radar — Live field trial
+
+Reset Radar is currently undergoing its first live field trial.
+
+On September 12, 2026, the monitor detected a real, traceable Codex team reset hint through its public team-signal sources. The signal was correctly classified as **WATCH**:
+
+- no reliable reset time had been announced
+- the event remained an active WATCH after being read
+- Radar Coverage was 67%
+- 4 of 6 configured sources were readable
+- 2 of 4 official sources were readable
+- both configured team-signal sources were readable
+
+**67% is Radar Coverage:** the percentage of configured information sources currently readable by the monitor. It is **not** a 67% probability of a reset.
+
+A WATCH signal means a traceable, higher-value reset hint exists, but there is not yet enough evidence for an INCOMING reset. A red INCOMING alert is reserved for stronger evidence, such as an explicit upcoming reset, rollout or credible timing information.
+
+![Active WATCH after it has been read](docs/screenshots/field-trial/reset-radar-watch-compact-2026-09-12-zh-TW.png)
+
+*Active WATCH after it has been read: the exclamation mark is removed, while the amber dot remains until the signal expires, is superseded or progresses.*
+
+![Live Reset Radar detail view](docs/screenshots/field-trial/reset-radar-watch-details-2026-09-12-zh-TW.png)
+
+*Live Reset Radar detail view: source coverage, source health, evidence, local quota context and traceable source links.*
+
+| Indicator | Meaning |
+| --- | --- |
+| Amber weekly % | Weekly quota is low |
+| Red weekly % | Weekly quota is critically low |
+| Amber ! | New WATCH signal |
+| Amber dot | WATCH was read but is still active |
+| Red ! | New INCOMING signal |
+| Red dot | INCOMING was read but is still active |
+| Teal / success | Replenishment or completed observation |
+| Radar % | Source readability coverage, not reset probability |
+
+Read the [full field-trial record](docs/field-trial/reset-radar-2026-09-12.md). The current public download remains v0.4.0-rc.3; the rc.4 build shown here is private and has not been released.
 
 ## Get started
 

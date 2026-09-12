@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased — Reset Radar field trial
+
+- Multi-source Reset Radar field trial in progress.
+- Added source coverage visibility.
+- Added official and team-signal source separation.
+- Added WATCH and INCOMING alert levels.
+- Added active-signal vs. unread-state distinction.
+- Added quota-refresh countdown.
+- Improved always-on-top overlay behavior.
+- First live WATCH signal successfully observed.
+
+The rc.4 field-trial build remains private and unreleased. These items are not part of the v0.4.0-rc.3 public release.
+
 ## v0.4.0-rc.3 — First public pre-release
 
 CodexUsageMonitor's first public release is a portable Windows x64 app under the MIT License.
