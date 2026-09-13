@@ -1,3 +1,5 @@
+> Update (2026-09-13): the first local replenishment case is now recorded in the [English story](../stories/first-reset.en.md) / [繁中故事](../stories/first-reset.zh-TW.md). This earlier field-trial record is retained; it is not a 72-hour acceptance result.
+
 # Reset Radar — First Live Field Trial
 
 | Field | Value |

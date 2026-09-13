@@ -1,129 +1,100 @@
 # CodexUsageMonitor
 
-**English** | [繁體中文](README.zh-TW.md)
+**Your weekly Codex quota, quietly on your desktop.**
 
-A tiny Windows companion for people who use Codex a little too much. 😄
+English · [繁體中文](README.zh-TW.md)
 
-Keep your weekly Codex quota, recent usage, local history and reset signals in view without repeatedly opening the Usage page.
+[Download v0.4.0 for Windows x64](https://github.com/hayabusasean/CodexUsageMonitor/releases/tag/v0.4.0) · [Read the reset story](docs/stories/first-reset.en.md) · [Report a bug](https://github.com/hayabusasean/CodexUsageMonitor/issues)
 
-**[Download v0.4.0-rc.3 for Windows x64](https://github.com/hayabusasean/CodexUsageMonitor/releases/download/v0.4.0-rc.3/CodexUsageMonitor-v0.4.0-rc.3-win-x64.zip)** · [Release notes](https://github.com/hayabusasean/CodexUsageMonitor/releases/tag/v0.4.0-rc.3) · [SHA256SUMS.txt](https://github.com/hayabusasean/CodexUsageMonitor/releases/download/v0.4.0-rc.3/SHA256SUMS.txt)
+<p><img src="docs/screenshots/gold/compact-crop.png" width="236" alt="Real compact overlay showing 78% weekly quota remaining, 66 seconds to the next quota check, and 67% radar source readability"></p>
 
-- **Latest public download:** v0.4.0-rc.3
-- **Reset Radar live field trial:** rc.4 — not yet released
+I was opening the Usage page far too often, so I made a small Windows companion. It shows the weekly quota I have left, keeps local history, and watches a few public sources for reset-related news.
 
-This is the first public **pre-release**. It is portable, unsigned and free under the MIT License. It has no telemetry and keeps history on your computer.
+Free and open source. English by default, with a Traditional Chinese switch. This is an unofficial community project, not an OpenAI product.
 
-![Compact view with example data](docs/screenshots/compact-en.png)
+## Start here
 
-*Compact and Standard screenshots use labelled example data; the usage history screenshot below shows real usage on a user's PC.*
+Install and sign in to the official Codex first. Then download **`CodexUsageMonitor-v0.4.0-win-x64.zip`** from the release page, extract the whole folder, and run **`CodexUsageMonitor.exe`**. No installer or API key is required by this tool. GitHub's **Source code** archives are for building the project, not the ready-to-run app.
 
-## Why I built it
+Drag the overlay to move it. Use its small corner control to switch views, or right-click for history, reset announcements and settings. The seconds count down to the **next quota check**, not a promised reset. Data stays in `%LOCALAPPDATA%\CodexUsageMonitor`, separately from the EXE folder.
 
-I use Codex heavily for software and game development. I kept opening the Usage page to ask the same question: “How much weekly quota do I have left?”
+To update, exit the old monitor from its menu before opening the new EXE. Starting another copy does not upgrade the running process; the app protects the existing history writer. Keep your local data folder to retain history and settings.
 
-Eventually I thought: why shouldn't that number just live quietly on my desktop?
+## What the Gold release adds
 
-So I built a small floating monitor. Then one morning, after working my weekly balance down from 100% to roughly 74%, I opened the monitor on another computer and saw 100% again. My first reaction was: “Did I break my own app?”
+The space-themed interface now uses translucent panels and small champagne-gold accents. Significant replenishments get a gold summary **outside the chart**, so you can find the event without covering the data.
 
-The timing aligned closely with a public OpenAI reset announcement. That experience led to local history and a lightweight Reset Radar, so I could look back at what the monitor actually observed.
+History has recent-segment, full-range and event-focused views, with time navigation, a resizable table/chart split, notes, CSV and detailed analysis-log exports. Small changes remain readable, while observation gaps stay visible instead of being filled with invented values.
 
-A local balance change and a public announcement are separate pieces of evidence. Their timing does not prove what caused a particular account's change. The app keeps that distinction visible. History remains local to each computer; it does not sync between them.
+Reset Radar separates unread notices from still-active signals. Relevant old-cycle reminders retire after a matching local replenishment; the original message and its source remain available. The release also fixes repeated History redraws, Details refresh/sizing issues, and confusing launches of different builds.
 
-I'm sharing this for other people who would rather stay focused on their work than keep checking a quota page.
+![Reset Radar showing the observed 7% to 100% replenishment and 4 of 6 readable sources](docs/screenshots/gold/radar.png)
 
-## What it does
+*Real author screenshot from September 13, looking back at the September 12 event. The UI supports English; this screenshot uses Traditional Chinese.*
 
-- Keeps a small always-on-top window in **Standard** or **Compact** mode.
-- Shows weekly remaining quota and how many seconds have passed since the last update.
-- Estimates usage for today, yesterday and two days ago from comparable local observations.
-- Saves local history, with **Latest segment** and **Full range** chart views, monitoring gaps and CSV export.
-- Records observed replenishments and resets without assuming their cause.
-- Provides **Reset Radar Lite** for a limited set of public sources, distinguishing reset announcements, credit grants and general explanations.
-- Exports a detailed analysis Log with an embedded prompt and structured evidence. UI and report languages can be selected independently.
-- Switches between **English and Traditional Chinese** in one portable EXE.
+## The first reset I watched with it
 
-![Standard view with example data](docs/screenshots/standard-en.png)
+The yellow light was on, and I held off on using my remaining reset credit. Later, people in a Codex Facebook group shared more specific news. My quota went down to **7%**, then the monitor showed **100%**. The credit was still there.
 
-![Usage history view showing recent quota changes](docs/screenshots/usage-history-zh-TW-real-example.png)
+That felt pretty good. 😄
 
-*Real usage history captured on a user's PC, shown in Traditional Chinese.*
+The tool did **not** predict the reset time. More specific information came from the community, and the tool did not demonstrate a timely red INCOMING alert for that update. What it did give me was a useful nudge and a record of the change.
 
-## Reset Radar — Live field trial
+[See the original screenshots and the short timeline →](docs/stories/first-reset.en.md)
 
-Reset Radar is currently undergoing its first live field trial.
-
-On September 12, 2026, the monitor detected a real, traceable Codex team reset hint through its public team-signal sources. The signal was correctly classified as **WATCH**:
-
-- no reliable reset time had been announced
-- the event remained an active WATCH after being read
-- Radar Coverage was 67%
-- 4 of 6 configured sources were readable
-- 2 of 4 official sources were readable
-- both configured team-signal sources were readable
-
-**67% is Radar Coverage:** the percentage of configured information sources currently readable by the monitor. It is **not** a 67% probability of a reset.
-
-A WATCH signal means a traceable, higher-value reset hint exists, but there is not yet enough evidence for an INCOMING reset. A red INCOMING alert is reserved for stronger evidence, such as an explicit upcoming reset, rollout or credible timing information.
-
-![Active WATCH after it has been read](docs/screenshots/field-trial/reset-radar-watch-compact-2026-09-12-zh-TW.png)
-
-*Active WATCH after it has been read: the exclamation mark is removed, while the amber dot remains until the signal expires, is superseded or progresses.*
-
-![Live Reset Radar detail view](docs/screenshots/field-trial/reset-radar-watch-details-2026-09-12-zh-TW.png)
-
-*Live Reset Radar detail view: source coverage, source health, evidence, local quota context and traceable source links.*
+## What the lights and numbers mean
 
 | Indicator | Meaning |
 | --- | --- |
-| Amber weekly % | Weekly quota is low |
-| Red weekly % | Weekly quota is critically low |
-| Amber ! | New WATCH signal |
-| Amber dot | WATCH was read but is still active |
-| Red ! | New INCOMING signal |
-| Red dot | INCOMING was read but is still active |
-| Teal / success | Replenishment or completed observation |
-| Radar % | Source readability coverage, not reset probability |
+| Large percentage | Weekly quota remaining; its low-quota colours are separate from the radar. |
+| Small seconds count | Time until the next quota read, or a labelled retry state. |
+| Radar percentage | Readability of the **configured sources**, not the probability of a reset. |
+| Amber `!` / dot | A new / already-read but active WATCH signal. Check the source and community follow-ups. |
+| Red `!` / dot | A new / already-read but active INCOMING signal with more explicit information. Not a guarantee for your account. |
+| Gold event card | A local replenishment was observed. It does not prove its global cause. |
 
-Read the [full field-trial record](docs/field-trial/reset-radar-2026-09-12.md). The current public download remains v0.4.0-rc.3; the rc.4 build shown here is private and has not been released.
+For example, **67%** in these screenshots means **4 of 6 configured sources** were readable. It does not mean 67% of the internet was searched, nor a 67% chance of a reset. Two relays repeating one post are still one underlying claim.
 
-## Get started
+## More of the app
 
-1. Download the Windows x64 portable ZIP linked above.
-2. Extract it to a folder you can write to.
-3. Open **CodexUsageMonitor.exe**.
+<details>
+<summary>Usage history and the gold event summary</summary>
 
-Have a compatible official Codex installation already installed and signed in. You do not need a separate .NET runtime, SDK, PowerShell script or API key to use the portable app. GitHub's automatically generated **Source code** ZIP is for developers, not the runnable app.
+![Gold summary separated from the plotting area](docs/screenshots/gold/gold-event-crop.png)
 
-Choose the UI language in **Settings** or the window's context menu. The analysis Log export window has its own language selection.
+![Real Usage History window](docs/screenshots/gold/history.png)
 
-To update manually, quit the monitor, replace the EXE with the new release and reopen it. History and settings remain in **%LOCALAPPDATA%\CodexUsageMonitor**. If you move the EXE, an enabled startup shortcut is repaired on the next manual launch.
+The full screenshot preserves the author's visible window, including the scrolled lower chart. No values or missing data were edited.
+</details>
 
-## Privacy and safety
+<details>
+<summary>Quota details and settings</summary>
 
-The monitor uses read-only account interfaces exposed by the locally installed official Codex app-server. It does **not** read **auth.json**, browser cookies, project source files or conversations. It does not ask for an API key or store Codex credentials.
+![Quota details with separate pools](docs/screenshots/gold/quota-details.png)
 
-It does not start model turns, consume reset credits, buy credits or send telemetry. The official app-server still manages its own authentication and network activity. Reset Radar makes ordinary HTTPS requests to public sources; it does not bypass access restrictions.
+![Settings in the accepted space theme](docs/screenshots/gold/settings.png)
 
-Local history stays on your computer. Analysis Logs are redacted, but their usage amounts and timestamps can still reveal work patterns. Notes are off by default. Review a Log before sharing it; the smaller **About** diagnostic summary is usually a better starting point for a bug report.
+Screenshots show the author's preferences, not necessarily the defaults.
+</details>
 
-See [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md) for details.
+## Privacy and limits
 
-## Compatibility and limitations
+Quota reads go through a locally installed official Codex app-server. The monitor itself does not ask you for an API key, read browser cookies or directly read `auth.json`. The official Codex process uses its own sign-in. Monitoring does not start model turns, spend reset credits or purchase quota.
 
-- **Tested on Windows 10 and Windows 11 x64.** Windows 10 validation covered Home 22H2 at 150% display scale, including the final EXE, native bilingual UI and real quota integration.
-- **Windows 11 user acceptance testing:** A user downloaded the official public GitHub release win-x64 ZIP for v0.4.0-rc.3, extracted it on a physical Windows 11 x64 PC, and used it normally for one full workday. No issues were reported with quota updates, keeping the monitor running, or general operation. This does not guarantee compatibility with every Windows 10/11 environment.
-- **Not yet tested:** ARM64 and other physical display scales. The verified Codex baseline was 0.153.4; changes to its interfaces may affect compatibility.
-- Daily figures are estimates from observed decreases, not billing totals or a complete account ledger. Time when the monitor is closed can leave gaps.
-- Radar covers a limited set of sources. A source such as the OpenAI Help Center may reject automated requests; a successful HTTP response does not itself mean a relevant announcement was found. A reset observation does not establish account-level causation.
-- The EXE is **unsigned**, so Windows or SmartScreen may show a warning. Follow your computer's security policy. Checksums help compare downloaded files; they are not a security certification or proof of publisher identity.
-- This is a pre-release personal utility, with best-effort support. It does not provide Codex accounts, free compute or reset coupons.
+Local history and exports stay on your machine unless you choose to share them. Public-source checks make normal HTTPS requests to their hosts; those hosts can see ordinary request information. There is no app telemetry, but detailed logs can still contain sensitive account context or usage patterns—review them before sharing.
 
-## Feedback, source and license
+Radar coverage is limited. Sources can block requests, change format or relay news late; a healthy response does not guarantee the latest post is present. Windows x64 is the target. Earlier rc.3 was used on Windows 11 for a full workday; that is not a claim that every Gold build, DPI or multi-monitor setup was retested. The EXE is unsigned, so Windows may show a warning. Verify the publisher/source and release checksum; do not disable your security controls.
 
-[Report a bug](https://github.com/hayabusasean/CodexUsageMonitor/issues/new?template=bug_report.yml) · [Contribute](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
+[Privacy, sources and limitations](docs/privacy-and-limits.en.md) · [Changelog](CHANGELOG.md)
 
-**MIT License — Copyright (c) 2026 hayabusasean.** See [LICENSE](LICENSE).
+## Built with help
 
-The bundled About text predates publication; the repository's LICENSE is authoritative.
+This is my first project shared on GitHub. I described what I wanted, tried the results and asked for changes. Codex handled most of the implementation, fixes, packaging and upload work.
 
-CodexUsageMonitor is an unofficial community project. **Not affiliated with, endorsed by, or sponsored by OpenAI.**
+I use it myself. New features are paused for now; bug reports are welcome, but this is a personal project, not a supported service.
+
+## License
+
+[MIT](LICENSE) · Copyright (c) 2026 hayabusasean. Third-party notices retain their own terms.
+
+Not affiliated with, endorsed by or sponsored by OpenAI.

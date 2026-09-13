@@ -43,12 +43,12 @@ internal static class R004Tests {
    }
   });
   Check("Review tomorrow date anchor",()=>Assert(AnnouncementParser.Time("September 8, 2026: Codex will reset tomorrow around 6 PM PT",now).utc==DateTimeOffset.Parse("2026-09-10T01:00:00Z")));
-  Check("Review phrase edit retains event identity",()=>{string date=now.ToString("MMMM d, yyyy",System.Globalization.CultureInfo.InvariantCulture);
+  Check("Review phrase edit retains event identity",()=>{string date=now.AddDays(-1).ToString("MMMM d, yyyy",System.Globalization.CultureInfo.InvariantCulture);
    var one=AnnouncementParser.Parse("s","https://help.openai.com/en/test","<article><h1>Codex</h1><p>"+date+": Codex global reset for all users will begin.</p></article>",now,out _).Single();
    var two=AnnouncementParser.Parse("s","https://help.openai.com/en/test","<article><h1>Codex</h1><p>"+date+": Codex usage limits reset for all users will begin.</p></article>",now,out _).Single();Assert(one.EventId==two.EventId);
   });
   Check("Review tomorrow explicit date no double shift",()=>Assert(AnnouncementParser.Time("Codex will reset tomorrow, September 9, 2026, at 6 PM PT",now).utc==DateTimeOffset.Parse("2026-09-10T01:00:00Z")));
-  Check("Review same day separate categories",()=>{string date=now.ToString("MMMM d, yyyy",System.Globalization.CultureInfo.InvariantCulture);var items=AnnouncementParser.Parse("s","https://help.openai.com/en/test","<article><h1>Codex</h1><p>"+date+": Codex global reset for all users will begin.</p><p>"+date+": Codex banked usage reset will be provided.</p></article>",now,out _);Assert(items.Count==2);});
+  Check("Review same day separate categories",()=>{string date=now.AddDays(-1).ToString("MMMM d, yyyy",System.Globalization.CultureInfo.InvariantCulture);var items=AnnouncementParser.Parse("s","https://help.openai.com/en/test","<article><h1>Codex</h1><p>"+date+": Codex global reset for all users will begin.</p><p>"+date+": Codex banked usage reset will be provided.</p></article>",now,out _);Assert(items.Count==2);});
   Check("F24 no time never guessed",()=>{var t=AnnouncementParser.Time("Codex global reset tomorrow; time TBD",now);Assert(t.utc==null);});
   Check("F25 tier3 no official alert",()=>{using var radar=new ResetRadar(Path.Combine(root,"tier3"));radar.Apply([ann with{Tier=3,Confidence="LOW"}],now);Assert(radar.Unread==null);AssertSuggestion(ann with{Tier=3},40,1,false,"SuggestUnknown");});
   Check("F30 recovery recent only",()=>{
@@ -90,7 +90,7 @@ internal static class R004Tests {
   foreach(var mode in new[]{"timeout","403","parser","offline","stall"}){
    Check("F26-F29 isolated "+mode,()=>{
     using var service=new MonitorService(Path.Combine(root,"isolation-"+mode));var before=service.MainClock.Value;using var radar=new ResetRadar(Path.Combine(root,"failure-"+mode),new FixtureHandler(mode));
-    using var ct=new CancellationTokenSource(40000);radar.Poll(true,ct.Token).GetAwaiter().GetResult();Assert(radar.FailedSourceCount==2);Assert(service.MainClock.Value==before&&!service.Busy&&radar.Unread==null);
+     using var ct=new CancellationTokenSource(40000);radar.Poll(true,ct.Token).GetAwaiter().GetResult();Assert(radar.FailedSourceCount==ResetRadar.Sources.Length);Assert(service.MainClock.Value==before&&!service.Busy&&radar.Unread==null);
    });
   }
   Check("F39 source cache conditional request",()=>{
@@ -111,7 +111,7 @@ internal static class R004Tests {
    if(mode=="timeout")throw new TaskCanceledException("synthetic timeout");if(mode=="offline")throw new HttpRequestException("synthetic offline");
    if(mode=="403")return Task.FromResult(new HttpResponseMessage(HttpStatusCode.Forbidden));
    if(mode=="304"){if(!r.Headers.IfNoneMatch.Any())throw new InvalidOperationException("Missing ETag");return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotModified));}
-   var response=new HttpResponseMessage(HttpStatusCode.OK){Content=mode=="stall"?new StreamContent(new StallStream()):new StringContent(mode=="parser"?"changed html":"<article><h1>Codex</h1><p>Routine Codex improvements; no announcement.</p></article>",Encoding.UTF8,"text/html")};
+    var response=new HttpResponseMessage(HttpStatusCode.OK){Content=mode=="stall"?new StreamContent(new StallStream()):new StringContent(mode=="parser"?"changed html":Rc4FieldTrialTests.HealthyPayload(r),Encoding.UTF8,"text/plain")};
    response.Headers.ETag=new("\"fixture\"");return Task.FromResult(response);
   }
  }

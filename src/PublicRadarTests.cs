@@ -116,31 +116,29 @@ internal static class PublicRadarTests {
    int active=0,peak=0;
    using var h=new Handler(async(request,ct)=>{
     Assert(request.Headers.Authorization==null&&!request.Headers.Contains("Cookie"));int n=Interlocked.Increment(ref active);InterlockedExtensions.Max(ref peak,n);
-    await Task.Delay(50,ct);Interlocked.Decrement(ref active);return Ok();});
-   using var r=Radar("parallel",h);r.Poll(true,CancellationToken.None).GetAwaiter().GetResult();Assert(peak==2&&r.HttpRequestCount==2&&r.FailedSourceCount==0);
+    await Task.Delay(50,ct);Interlocked.Decrement(ref active);return Ok(request);});
+   using var r=Radar("parallel",h);r.Poll(true,CancellationToken.None).GetAwaiter().GetResult();Assert(peak==ResetRadar.Sources.Length&&r.HttpRequestCount==ResetRadar.Sources.Length&&r.FailedSourceCount==0);
   });
   Check("R08 Safe three redirects and per-hop bound",()=>{
    var counts=new ConcurrentDictionary<string,int>();using var h=new Handler((request,ct)=>{
-    int n=counts.AddOrUpdate(request.RequestUri!.Host,1,(_,old)=>old+1);return Task.FromResult(n<=3?Redirect(new Uri("/hop-"+n,UriKind.Relative)):Ok());});
-   using var r=Radar("redirect-three",h);r.Poll(true,CancellationToken.None).GetAwaiter().GetResult();Assert(r.HttpRequestCount==8&&r.FailedSourceCount==0);
+    int n=counts.AddOrUpdate(request.RequestUri!.Host,1,(_,old)=>old+1);return Task.FromResult(n<=3?Redirect(new Uri("/hop-"+n,UriKind.Relative)):Ok(request));});
+   using var r=Radar("redirect-three",h);r.Poll(true,CancellationToken.None).GetAwaiter().GetResult();Assert(r.HttpRequestCount==ResetRadar.Sources.Length*4&&r.FailedSourceCount==0);
   });
   Check("R08 Fourth redirect blocked",()=>{
    using var r=Radar("redirect-loop",new Handler((_,_)=>Task.FromResult(Redirect(new Uri("/loop",UriKind.Relative)))));
-   r.Poll(true,CancellationToken.None).GetAwaiter().GetResult();Assert(r.HttpRequestCount==8&&r.Snapshot().Sources.All(x=>x.Error=="REDIRECT_LIMIT"));
+   r.Poll(true,CancellationToken.None).GetAwaiter().GetResult();Assert(r.HttpRequestCount==ResetRadar.Sources.Length*4&&r.Snapshot().Sources.All(x=>x.Error=="REDIRECT_LIMIT"));
   });
   Check("R08 Unsafe redirect never sent",()=>{
    using var r=Radar("unsafe-redirect",new Handler((_,_)=>Task.FromResult(Redirect(new Uri("https://127.0.0.1/private")))));
-   r.Poll(true,CancellationToken.None).GetAwaiter().GetResult();Assert(r.HttpRequestCount==2&&r.Snapshot().Sources.All(x=>x.Error=="REDIRECT_NOT_ALLOWED"));
+   r.Poll(true,CancellationToken.None).GetAwaiter().GetResult();Assert(r.HttpRequestCount==ResetRadar.Sources.Length&&r.Snapshot().Sources.All(x=>x.Error=="REDIRECT_NOT_ALLOWED"));
   });
   Check("R08 Retry-After respected including manual force",()=>{
    using var r=Radar("retry-after",new Handler((_,_)=>{var x=new HttpResponseMessage(HttpStatusCode.TooManyRequests);x.Headers.RetryAfter=new RetryConditionHeaderValue(TimeSpan.FromHours(2));return Task.FromResult(x);}));
    r.Poll(true,CancellationToken.None).GetAwaiter().GetResult();Assert(r.Snapshot().Sources.All(x=>x.HttpStatus==429&&x.NextCheck>now.AddMinutes(100)));
-   r.Poll(true,CancellationToken.None).GetAwaiter().GetResult();Assert(r.HttpRequestCount==2);
+   r.Poll(true,CancellationToken.None).GetAwaiter().GetResult();Assert(r.HttpRequestCount==ResetRadar.Sources.Length);
   });
   Check("R08 Decompressed body limit accepts four MiB and rejects extra byte",()=>{
-   const string html="<article><h1>Codex</h1><p>Routine improvements only.</p></article>";
-   var fit=Encoding.UTF8.GetBytes(html+new string(' ',ResetRadar.MaxResponseBytes-html.Length));
-   using(var r=Radar("size-fit",new Handler((_,_)=>Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK){Content=new StreamContent(new BodyStream(fit))})))){r.Poll(true,CancellationToken.None).GetAwaiter().GetResult();Assert(r.Snapshot().Sources.All(x=>x.ResponseBytes==ResetRadar.MaxResponseBytes&&x.Status=="OK"));}
+   using(var r=Radar("size-fit",new Handler((request,_)=>Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK){Content=new StreamContent(new BodyStream(PaddedPayload(request,ResetRadar.MaxResponseBytes)))})))){r.Poll(true,CancellationToken.None).GetAwaiter().GetResult();Assert(r.Snapshot().Sources.All(x=>x.ResponseBytes==ResetRadar.MaxResponseBytes&&x.Status=="HEALTHY"));}
    using(var r=Radar("size-over",new Handler((_,_)=>Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK){Content=new StreamContent(new BodyStream(new byte[ResetRadar.MaxResponseBytes+1]))})))){r.Poll(true,CancellationToken.None).GetAwaiter().GetResult();Assert(r.Snapshot().Sources.All(x=>x.Error=="RESPONSE_TOO_LARGE"));}
   });
   Check("R08 Whole body timeout twenty seconds",()=>{
@@ -150,14 +148,14 @@ internal static class PublicRadarTests {
   });
   Check("R08 Disable prevents HTTP and cancels owned active pass",()=>{
    var entered=new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-   using var r=Radar("disabled",new Handler(async(_,ct)=>{entered.TrySetResult();await Task.Delay(Timeout.Infinite,ct);return Ok();}));
+   using var r=Radar("disabled",new Handler(async(request,ct)=>{entered.TrySetResult();await Task.Delay(Timeout.Infinite,ct);return Ok(request);}));
    r.SetEnabled(false);r.Poll(true,CancellationToken.None).GetAwaiter().GetResult();Assert(r.HttpRequestCount==0);
    r.SetEnabled(true);var pass=r.Poll(true,CancellationToken.None);Assert(entered.Task.Wait(2000));r.SetEnabled(false);
    Assert(pass.Wait(2000)&&!r.Enabled&&r.Snapshot().Sources.Count==0);
   });
   Check("R08 Cache ETag 304 does not invent announcement",()=>{
    string dir=Path.Combine(root,"cache");
-   using(var r=new ResetRadar(dir,new Handler((_,_)=>{var response=Ok();response.Headers.ETag=new EntityTagHeaderValue("\"fixture\"");return Task.FromResult(response);})))r.Poll(true,CancellationToken.None).GetAwaiter().GetResult();
+   using(var r=new ResetRadar(dir,new Handler((request,_)=>{var response=Ok(request);response.Headers.ETag=new EntityTagHeaderValue("\"fixture\"");return Task.FromResult(response);})))r.Poll(true,CancellationToken.None).GetAwaiter().GetResult();
    using var next=new ResetRadar(dir,new Handler((request,_)=>{Assert(request.Headers.IfNoneMatch.Any());return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotModified));}));
    next.Poll(true,CancellationToken.None).GetAwaiter().GetResult();Assert(next.Snapshot().Sources.All(x=>x.Status=="UNCHANGED")&&next.Unread==null);
   });
@@ -165,7 +163,7 @@ internal static class PublicRadarTests {
    using var service=new MonitorService(Path.Combine(root,"quota-isolation"));var value=service.MainClock.Value;
    foreach(string mode in new[]{"403","offline","parser"}){
     using var r=Radar(mode,new Handler((_,_)=>mode switch{"403"=>Task.FromResult(new HttpResponseMessage(HttpStatusCode.Forbidden)),"offline"=>throw new HttpRequestException("synthetic offline"),_=>Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK){Content=new StringContent("unexpected structure")})}));
-    r.Poll(true,CancellationToken.None).GetAwaiter().GetResult();Assert(r.FailedSourceCount==2&&service.MainClock.Value==value&&!service.Busy);
+    r.Poll(true,CancellationToken.None).GetAwaiter().GetResult();Assert(r.FailedSourceCount==ResetRadar.Sources.Length&&service.MainClock.Value==value&&!service.Busy);
    }
   });
   Check("R10 Human case never promoted to producer or cause",()=>{
@@ -177,7 +175,9 @@ internal static class PublicRadarTests {
   AtomicJson.Save(Path.Combine(root,"public-radar-tests.json"),new{classification="SYNTHETIC_PRODUCTION_CODE",exe_sha256=ReportExporter.ExeHash(),utc=now,results=result});
   return result;
  }
- static HttpResponseMessage Ok()=>new(HttpStatusCode.OK){Content=new StringContent("<article><h1>Codex</h1><p>Routine improvements only.</p></article>",Encoding.UTF8,"text/html")};
+ static string Payload(HttpRequestMessage request)=>Rc4FieldTrialTests.HealthyPayload(request);
+ static byte[] PaddedPayload(HttpRequestMessage request,int length){var body=Encoding.UTF8.GetBytes(Payload(request));if(body.Length>length)throw new InvalidOperationException("fixture exceeds limit");var output=new byte[length];Buffer.BlockCopy(body,0,output,0,body.Length);for(int i=body.Length;i<output.Length;i++)output[i]=(byte)' ';return output;}
+ static HttpResponseMessage Ok(HttpRequestMessage request)=>new(HttpStatusCode.OK){Content=new StringContent(Payload(request),Encoding.UTF8,"text/plain")};
  static HttpResponseMessage Redirect(Uri target){var r=new HttpResponseMessage(HttpStatusCode.Found);r.Headers.Location=target;return r;}
  sealed class Handler(Func<HttpRequestMessage,CancellationToken,Task<HttpResponseMessage>> call):HttpMessageHandler{
   protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,CancellationToken ct)=>call(request,ct);

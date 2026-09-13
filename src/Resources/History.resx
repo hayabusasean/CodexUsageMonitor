@@ -254,4 +254,64 @@ Steps show observations, not exact event times.</value>
   <data name="SegmentBoundary" xml:space="preserve">
     <value>New segment</value>
   </data>
+  <data name="EventFocus" xml:space="preserve">
+    <value>Event focus</value>
+  </data>
+  <data name="ResetViewport" xml:space="preserve">
+    <value>Reset viewport</value>
+  </data>
+  <data name="NoEventForFocus" xml:space="preserve">
+    <value>Select a quota-change row to open Event Focus.</value>
+  </data>
+  <data name="EventFocusEmpty" xml:space="preserve">
+    <value>Select a quota-change event to inspect its evidence.</value>
+  </data>
+  <data name="EventFocusTitle" xml:space="preserve">
+    <value>Event Focus</value>
+  </data>
+  <data name="EventFocusAccessible" xml:space="preserve">
+    <value>Event Focus: {0}% to {1}%, change {2} percentage points, cause {3}.</value>
+  </data>
+  <data name="EventCauseUnknown" xml:space="preserve">
+    <value>Quota replenishment · cause unknown</value>
+  </data>
+  <data name="EventSummary" xml:space="preserve">
+    <value>{0}%  →  {1}%</value>
+  </data>
+  <data name="EventDelta" xml:space="preserve">
+    <value>{0} percentage points</value>
+  </data>
+  <data name="BeforeObservation" xml:space="preserve">
+    <value>Before  {0}% · {1}</value>
+  </data>
+  <data name="AfterObservation" xml:space="preserve">
+    <value>After  {0}% · {1}</value>
+  </data>
+  <data name="EventObservationInterval" xml:space="preserve">
+    <value>Observed between {0} and {1}; the exact change time is not known.</value>
+  </data>
+  <data name="EventGapInterval" xml:space="preserve">
+    <value>Monitoring gap: the change occurred somewhere between {0} and {1}; disconnected points do not imply an exact jump time.</value>
+  </data>
+  <data name="EventRadarContext" xml:space="preserve">
+    <value>Supporting Radar context: {0} · {1}% coverage · {2} · {3} · signal {4} · coverage {5}</value>
+  </data>
+  <data name="EventRadarNone" xml:space="preserve">
+    <value>Supporting Radar context: no nearby signal evidence recorded.</value>
+  </data>
+  <data name="EventResetAt" xml:space="preserve">
+    <value>reset_at observed: {0}  →  {1}</value>
+  </data>
+  <data name="EventBankedReset" xml:space="preserve">
+    <value>Banked Reset observed: {0}  →  {1}</value>
+  </data>
+  <data name="EventEvidenceBoundary" xml:space="preserve">
+    <value>Evidence boundary: Radar context supports attention only; it does not establish the cause of this local quota change.</value>
+  </data>
+  <data name="SourceNotProvided" xml:space="preserve">
+    <value>Source did not provide</value>
+  </data>
+  <data name="PanZoomHint" xml:space="preserve">
+    <value>Drag to pan · mouse wheel to zoom</value>
+  </data>
 </root>

@@ -205,13 +205,13 @@ internal static class RadarFixNativeHarness {
   check("I embedded prompt and explicit synthetic report "+language,text.StartsWith(ReportExporter.Prompt(language),StringComparison.Ordinal)&&header.GetProperty("report_language").GetString()==language&&header.GetProperty("synthetic_test_data").GetBoolean(),null,"SYNTHETIC_FORMAL_EXPORT");
   var integrity=data.Single(x=>x.GetProperty("section").GetString()=="15_INTEGRITY").GetProperty("data");
   var counts=integrity.GetProperty("section_record_counts");var hashes=integrity.GetProperty("section_data_sha256");
-  bool valid=counts.EnumerateObject().Count()==22;
+  bool valid=counts.EnumerateObject().Count()==29;
   foreach(var section in counts.EnumerateObject()){
    var rows=File.ReadLines(file).Where(line=>{if(!line.StartsWith("{",StringComparison.Ordinal))return false;using var d=JsonDocument.Parse(line);var x=d.RootElement;return x.TryGetProperty("section",out var s)&&s.GetString()==section.Name&&x.GetProperty("record_type").GetString()=="DATA";}).ToArray();
    valid&=rows.Length==section.Value.GetInt32();
    if(section.Name!="15_INTEGRITY")valid&=Hash(Encoding.UTF8.GetBytes(string.Concat(rows.Select(x=>x+"\n"))))==hashes.GetProperty(section.Name).GetString();
   }
-  check("I all 22 machine section counts and hashes "+language,valid,null,"SYNTHETIC_FORMAL_EXPORT");
+  check("I all 29 machine section counts and hashes "+language,valid,null,"SYNTHETIC_FORMAL_EXPORT");
   var announcements=data.Where(x=>x.GetProperty("section").GetString()=="17_ANNOUNCEMENT_EVENTS").Select(x=>x.GetProperty("data").GetProperty("announcement")).ToArray();
   check("I analysis retains parsed effects and article provenance "+language,announcements.Any(x=>x.GetProperty("Effect").GetString()=="BANKED_CREDIT_GRANT")&&announcements.Any(x=>x.GetProperty("Effect").GetString()=="AUTOMATIC_QUOTA_RESET")&&announcements.All(x=>x.GetProperty("OriginalId").GetString()!="")&&data.Any(x=>x.GetProperty("section").GetString()=="19_RESET_CORRELATION")&&data.Any(x=>x.GetProperty("section").GetString()=="21_READ_STATE"),null,"SYNTHETIC_FORMAL_EXPORT");
  }

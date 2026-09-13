@@ -210,6 +210,21 @@
   <data name="Overlay.AlertTip" xml:space="preserve">
     <value>New Codex reset notice</value>
   </data>
+  <data name="Overlay.AlertWatchTip" xml:space="preserve">
+    <value>New Reset Watch</value>
+  </data>
+  <data name="Overlay.AlertWatchReadTip" xml:space="preserve">
+    <value>Reset Watch — already viewed, signal still active</value>
+  </data>
+  <data name="Overlay.AlertIncomingTip" xml:space="preserve">
+    <value>New Reset Incoming</value>
+  </data>
+  <data name="Overlay.AlertIncomingReadTip" xml:space="preserve">
+    <value>Reset Incoming — already viewed, still active</value>
+  </data>
+  <data name="Overlay.AlertCompletedTip" xml:space="preserve">
+    <value>Reset Radar completed notice — open details</value>
+  </data>
   <data name="Overlay.ModeName" xml:space="preserve">
     <value>Switch view</value>
   </data>
@@ -344,7 +359,7 @@ Observed UTC: {2}
     <value>Version {0} · Windows x64 · Not signed</value>
   </data>
   <data name="About.License" xml:space="preserve">
-    <value>License and copyright holder pending confirmation before publication.</value>
+    <value>MIT License — Copyright (c) 2026 hayabusasean.</value>
   </data>
   <data name="About.DiagnosticsPreview" xml:space="preserve">
     <value>Safe diagnostics preview</value>
@@ -412,4 +427,12 @@ Observed UTC: {2}
   <data name="State.Protocol" xml:space="preserve">
     <value>The Codex connection ended. Reconnecting automatically.</value>
   </data>
-<data name="State.Policy" xml:space="preserve"><value>Access to Codex was denied. Retrying without changing security settings.</value></data><data name="State.Account" xml:space="preserve"><value>Sign in to the official Codex app with a supported ChatGPT account. API-key-only accounts are not supported.</value></data><data name="Overlay.SignInRequired" xml:space="preserve"><value>Sign in to Codex</value></data><data name="Overlay.Unsupported" xml:space="preserve"><value>Codex unsupported</value></data><data name="Overlay.AccessDenied" xml:space="preserve"><value>Access denied</value></data><data name="Overlay.Offline" xml:space="preserve"><value>Offline · Retrying</value></data><data name="Overlay.WeeklyUnavailable" xml:space="preserve"><value>Weekly unavailable</value></data><data name="Overlay.UpdateFailed" xml:space="preserve"><value>Update unavailable</value></data><data name="Common.Open" xml:space="preserve"><value>Open</value></data></root>
+<data name="State.Policy" xml:space="preserve"><value>Access to Codex was denied. Retrying without changing security settings.</value></data><data name="State.Account" xml:space="preserve"><value>Sign in to the official Codex app with a supported ChatGPT account. API-key-only accounts are not supported.</value></data><data name="Overlay.SignInRequired" xml:space="preserve"><value>Sign in to Codex</value></data><data name="Overlay.Unsupported" xml:space="preserve"><value>Codex unsupported</value></data><data name="Overlay.AccessDenied" xml:space="preserve"><value>Access denied</value></data><data name="Overlay.Offline" xml:space="preserve"><value>Offline · Retrying</value></data><data name="Overlay.WeeklyUnavailable" xml:space="preserve"><value>Weekly unavailable</value></data><data name="Overlay.UpdateFailed" xml:space="preserve"><value>Update unavailable</value></data><data name="Common.Open" xml:space="preserve"><value>Open</value></data><data name="Overlay.CountdownNormal" xml:space="preserve"><value>Next quota refresh in {0} seconds</value></data><data name="Overlay.CountdownRetry" xml:space="preserve"><value>Update failed. Retrying in {0} seconds.</value></data><data name="Overlay.CountdownNow" xml:space="preserve"><value>Refreshing quota now</value></data><data name="Overlay.CountdownUnscheduled" xml:space="preserve"><value>Quota refresh is not scheduled yet.</value></data><data name="Overlay.CountdownPaused" xml:space="preserve"><value>Quota monitoring is paused.</value></data><data name="Overlay.CountdownPausedShort" xml:space="preserve"><value>Pause</value></data><data name="Overlay.CountdownOff" xml:space="preserve"><value>Quota source is unavailable.</value></data><data name="Overlay.CountdownOffShort" xml:space="preserve"><value>Off</value></data>
+
+
+
+
+
+
+
+</root>

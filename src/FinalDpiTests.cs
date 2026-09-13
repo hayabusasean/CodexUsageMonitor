@@ -39,12 +39,13 @@ internal static class FinalDpiTests {
     foreach(string lang in new[]{"en-US","zh-TW"}){
      L.SetLanguage(lang);
      foreach(var pair in notices){
-      using var card=new ResetInfoForm(service,pair.Value);card.Show();card.Text="DEMO · SYNTHETIC — "+card.Text;await Task.Delay(100);card.Refresh();card.Update();
-      string expected=ResetRadar.SuggestionKey(pair.Value,43,2,false,DateTimeOffset.UtcNow,"pro");
-      Check("F04 bilingual card "+pair.Key+" "+lang,card.AllControls().OfType<Label>().Any(x=>x.Text==L.T("Radar."+expected))&&(pair.Key!="future"||expected!="SuggestCompleted"),new{phase=pair.Value.Phase,suggestion_key=expected,language=lang,dpi=UiDpi.Capture(card)});
+      var applied=service.Radar.Snapshot().Events.Single(x=>x.OriginalId==pair.Value.OriginalId);
+      using var card=new ResetInfoForm(service,applied);card.Show();card.Text="DEMO · SYNTHETIC — "+card.Text;await Task.Delay(100);card.Refresh();card.Update();
+      string expected=ResetRadar.SuggestionKey(applied,43,2,false,DateTimeOffset.UtcNow,"pro");
+      Check("F04 bilingual card "+pair.Key+" "+lang,card.AllControls().OfType<Label>().Any(x=>x.Text==L.T("Radar."+expected))&&(pair.Key!="future"||expected!="SuggestCompleted"),new{phase=applied.Phase,signal_level=applied.SignalLevel,suggestion_key=expected,language=lang,dpi=UiDpi.Capture(card)});
       using var bmp=new Bitmap(card.Width,card.Height);using(var graphics=Graphics.FromImage(bmp)){var dc=graphics.GetHdc();try{Check("Native PrintWindow "+pair.Key+" "+lang,PrintWindow(card.Handle,dc,2));}finally{graphics.ReleaseHdc(dc);}}
       string file=Path.Combine(root,"card-"+pair.Key+"-"+lang+".png");bmp.Save(file,System.Drawing.Imaging.ImageFormat.Png);
-      AtomicJson.Save(Path.ChangeExtension(file,"json"),new{classification="ACTUAL_NATIVE_PRINTWINDOW_NON_INPUT_DESKTOP",desktop=desktop.ToString(),switched_to_input_desktop=false,synthetic=true,exe_sha256=ReportExporter.ExeHash(),dpi=UiDpi.Capture(card),png_sha256=Hash(File.ReadAllBytes(file)),phase=pair.Value.Phase,suggestion_key=expected,ui_language=lang});card.Close();
+      AtomicJson.Save(Path.ChangeExtension(file,"json"),new{classification="ACTUAL_NATIVE_PRINTWINDOW_NON_INPUT_DESKTOP",desktop=desktop.ToString(),switched_to_input_desktop=false,synthetic=true,exe_sha256=ReportExporter.ExeHash(),dpi=UiDpi.Capture(card),png_sha256=Hash(File.ReadAllBytes(file)),phase=applied.Phase,signal_level=applied.SignalLevel,suggestion_key=expected,ui_language=lang});card.Close();
      }
      using var export=new ExportForm(service,range);export.ReportLanguage=lang;export.Show();await Task.Delay(100);
      var actual=UiDpi.Capture(export);Check("F05 native window reports144 "+lang,actual.Value==144,new{actual,winforms_device_dpi=export.DeviceDpi});
@@ -62,10 +63,10 @@ internal static class FinalDpiTests {
  }
  static void VerifyIntegrity(string file,string lang,Action<string,bool,object?> check){
   var lines=File.ReadAllLines(file);var rows=lines.Where(x=>x.StartsWith("{")).Select(x=>JsonSerializer.Deserialize<JsonElement>(x)).ToList();var integrity=rows.Single(x=>x.GetProperty("record_type").GetString()=="DATA"&&x.GetProperty("section").GetString()=="15_INTEGRITY").GetProperty("data");bool valid=true;
-  var counts=integrity.GetProperty("section_record_counts");valid&=counts.EnumerateObject().Count()==22;
+  var counts=integrity.GetProperty("section_record_counts");valid&=counts.EnumerateObject().Count()==29;
   foreach(var section in counts.EnumerateObject()){
    var data=lines.Where(line=>{if(!line.StartsWith("{"))return false;var x=JsonSerializer.Deserialize<JsonElement>(line);return x.GetProperty("record_type").GetString()=="DATA"&&x.GetProperty("section").GetString()==section.Name;}).ToArray();valid&=data.Length==section.Value.GetInt32();if(section.Name!="15_INTEGRITY")valid&=Hash(Encoding.UTF8.GetBytes(string.Concat(data.Select(x=>x+"\n"))))==integrity.GetProperty("section_data_sha256").GetProperty(section.Name).GetString();
   }
-  check("Analysis Log22section integrity and bilingual fixed prompt "+lang,valid&&File.ReadAllText(file).StartsWith(ReportExporter.Prompt(lang)),null);
+  check("Analysis Log29section integrity and bilingual fixed prompt "+lang,valid&&File.ReadAllText(file).StartsWith(ReportExporter.Prompt(lang)),null);
  }
 }

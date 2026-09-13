@@ -21,7 +21,7 @@ internal static class PublicReportTests {
   var filter=new HistoryFilter(start.AddSeconds(90),start.AddHours(16));
   AtomicJson.Save(Path.Combine(output,"report-fixture-inputs.json"),new{classification="SYNTHETIC",filter,rows});
   string syntheticRoot=Path.Combine(output,"synthetic-report-data");
-  var sourceFixture=new SourceStatus("SYNTHETIC-URL-PRIVACY","https://SOURCE_USER:SOURCE_PASSWORD@help.openai.com/en/articles/fixture?token=SOURCE_QUERY_CANARY#SOURCE_FRAGMENT_CANARY",
+  var sourceFixture=new SourceStatus("openai-help-resets","https://SOURCE_USER:SOURCE_PASSWORD@help.openai.com/en/articles/fixture?token=SOURCE_QUERY_CANARY#SOURCE_FRAGMENT_CANARY",
    FinalUrl:"https://FINAL_USER:FINAL_PASSWORD@learn.chatgpt.com/docs/changelog?signature=FINAL_QUERY_CANARY#FINAL_FRAGMENT_CANARY");
   AtomicJson.Save(Path.Combine(output,"source-url-privacy-fixture.json"),new{classification="SYNTHETIC",source=sourceFixture});
   AtomicJson.Save(Path.Combine(syntheticRoot,"reset_radar.json"),new RadarState{Sources=[sourceFixture]});
@@ -82,7 +82,7 @@ internal static class PublicReportTests {
   });
   Check("E05 source and final redirect URLs redact credentials query and fragment in production logs",()=>{
    foreach(string file in new[]{en,zh}){
-    var source=Data(file,"18_ANNOUNCEMENT_SOURCE_STATUS").Single(x=>x.GetProperty("Id").GetString()=="SYNTHETIC-URL-PRIVACY");
+    var source=Data(file,"18_ANNOUNCEMENT_SOURCE_STATUS").Single(x=>x.GetProperty("Id").GetString()=="openai-help-resets");
     Assert(source.GetProperty("Url").GetString()=="https://help.openai.com/en/articles/fixture","source URL was not sanitised");
     Assert(source.GetProperty("FinalUrl").GetString()=="https://learn.chatgpt.com/docs/changelog","final URL was not sanitised");
     string text=File.ReadAllText(file);
@@ -106,9 +106,9 @@ internal static class PublicReportTests {
  static List<JsonElement> Records(string path)=>File.ReadLines(path).Where(x=>x.StartsWith("{",StringComparison.Ordinal)).Select(x=>JsonSerializer.Deserialize<JsonElement>(x)).ToList();
  static List<JsonElement> Data(string path,string section)=>Records(path).Where(x=>x.TryGetProperty("section",out var s)&&s.GetString()==section&&x.GetProperty("record_type").GetString()=="DATA").Select(x=>x.GetProperty("data")).ToList();
  static string Hash(string text)=>Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(text))).ToLowerInvariant();
- static void VerifyIntegrity(string path){
+ internal static void VerifyIntegrity(string path){
   var integrity=Data(path,"15_INTEGRITY").Single();var counts=integrity.GetProperty("section_record_counts");var hashes=integrity.GetProperty("section_data_sha256");
-  if(counts.EnumerateObject().Count()!=22)throw new InvalidOperationException("expected 22 stable sections");
+  if(counts.EnumerateObject().Count()!=34||!counts.TryGetProperty("LOCAL_QUOTA_CYCLE_EVENTS",out _)||!counts.TryGetProperty("RADAR_ATTENTION_DISPOSITIONS",out _))throw new InvalidOperationException("expected 34 sections including local cycle events and scoped attention dispositions");
   var lines=File.ReadLines(path).Where(x=>x.StartsWith("{",StringComparison.Ordinal)).ToList();
   foreach(var count in counts.EnumerateObject()){
    var selected=lines.Where(line=>{using var d=JsonDocument.Parse(line);var x=d.RootElement;return x.TryGetProperty("section",out var s)&&s.GetString()==count.Name&&x.GetProperty("record_type").GetString()=="DATA";}).ToList();
@@ -117,3 +117,4 @@ internal static class PublicReportTests {
   }
  }
 }
+

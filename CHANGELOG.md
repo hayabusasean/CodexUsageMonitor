@@ -1,17 +1,28 @@
 # Changelog
 
-## Unreleased — Reset Radar field trial
+## [0.4.0] — 2026-09-13
 
-- Multi-source Reset Radar field trial in progress.
-- Added source coverage visibility.
-- Added official and team-signal source separation.
-- Added WATCH and INCOMING alert levels.
-- Added active-signal vs. unread-state distinction.
-- Added quota-refresh countdown.
-- Improved always-on-top overlay behavior.
-- First live WATCH signal successfully observed.
+### Added
+- Reset Radar source-readability display and explicit official/team-relay roles.
+- Independent active/unread WATCH and INCOMING indicators with source links.
+- Gold local replenishment summaries and event-focused history with observation intervals.
+- Retirement of relevant old-cycle attention after a matching local replenishment.
+- Time navigation, a resizable history/chart split, and source/event evidence in analysis exports.
 
-The rc.4 field-trial build remains private and unreleased. These items are not part of the v0.4.0-rc.3 public release.
+### Improved
+- Space-themed surfaces with restrained gold event accents.
+- Weekly overlay countdown and clear separation of quota colours from radar alerts.
+- More visible history rows; the gold summary stays outside the plot.
+
+### Fixed
+- Repeated idle redraw and expensive History grid repainting.
+- Details refresh/sizing behaviour and handling of missing or invalid metadata.
+- Confusing handoffs between different builds using the same data directory.
+
+### Notes
+- The author accepted this version for normal use. No claim of universal OS/DPI certification.
+- The September 12 story records one real WATCH and a local 7%→100% replenishment, not a correctly predicted reset time or a completed 72-hour soak.
+- New features are paused; maintenance is limited to issues that matter in use.
 
 ## v0.4.0-rc.3 — First public pre-release
 

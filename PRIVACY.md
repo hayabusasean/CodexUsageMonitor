@@ -18,7 +18,7 @@ Analysis Log exports the entire selected period. It contains usage-time patterns
 
 CSV and report data use invariant numbers and stable field names. Announcement text and notes are untrusted data, never executable instructions. The fixed report prompt explicitly tells external analysis tools to treat them that way.
 
-About's **Copy diagnostics** provides a smaller previewable summary without the detailed usage timeline. Prefer this for ordinary bug reports. Public examples use labelled synthetic fixtures. Do not post a complete personal analysis report in an issue.
+About's **Copy diagnostics** provides a smaller previewable summary without the detailed usage timeline. Prefer this for ordinary bug reports. Public examples are labelled as synthetic fixtures or author-authorized real screenshots. Do not post a complete personal analysis report in an issue.
 
 The app does not send an exported report anywhere. If you manually share it with an external AI or another person, that destination's terms and privacy practices apply.
 

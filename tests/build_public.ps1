@@ -90,19 +90,19 @@ try {
  foreach ($name in $notices) { Copy-Item -LiteralPath (Join-Path $licenseRoot $name) -Destination (Join-Path $portableLicenses $name) }
  foreach ($name in @('THIRD_PARTY_NOTICES.md','LICENSE')) { Copy-Item -LiteralPath (Join-Path $projectRoot $name) -Destination (Join-Path $portableLicenses $name) }
  $readme = @(
-  "CodexUsageMonitor $releaseVersion - local Windows x64 candidate",'',
+  "CodexUsageMonitor $releaseVersion - Windows x64 portable build",'',
   'Open CodexUsageMonitor.exe. Compatible, signed-in official Codex is required.',
   'No separate .NET installation is needed. Native runtime files may extract to temporary storage.',
   'Language: Settings > Language / 語言 > English / 繁體中文.',
   'Data stays in %LOCALAPPDATA%\CodexUsageMonitor; copying the EXE does not sync history.',
   'Exit before replacing the app to update; retain LocalAppData.',
   'Unofficial community tool, not affiliated with or endorsed by OpenAI.',
-  'Unsigned candidate. Checksums check integrity, not publisher trust.',
+  'Unsigned executable. Checksums check integrity, not publisher trust.',
   'License: MIT. Copyright (c) 2026 hayabusasean. Repository: https://github.com/hayabusasean/CodexUsageMonitor',
   'Third-party notices are in licenses/.','',
   '繁中：解壓後開啟 EXE；需相容且已登入的官方 Codex。',
   '可在設定或右鍵選單切換語言。資料保留在本機，不作跨電腦同步。',
-  '完整繁中說明位於原始碼準備目錄的 README.zh-TW.md。'
+  '完整繁中說明位於專案的 README.zh-TW.md。'
  ) -join [Environment]::NewLine
  [IO.File]::WriteAllText((Join-Path $portableRoot 'README.txt'),$readme,(New-Object Text.UTF8Encoding($false)))
  Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -119,5 +119,5 @@ try {
   fixture_result_files=@($resultFiles | ForEach-Object { $_.Name }); real_account='NOT_RUN'; native_visual_acceptance='NOT_RUN'
   cloud_ci='NOT_RUN_UNLESS_ATTACHED_TO_AN_ACTUAL_WORKFLOW_RUN'
  } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $runRoot 'build-result.json') -Encoding UTF8
- Write-Output "Candidate built: $zipPath"
+ Write-Output "Portable built: $zipPath"
 } finally { Pop-Location }

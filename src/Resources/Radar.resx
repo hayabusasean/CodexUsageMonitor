@@ -105,9 +105,237 @@
   <data name="EvidenceNoObservation" xml:space="preserve">
     <value>No comparable refill is linked to this notice. An official announcement does not prove this account's reset cause.</value>
   </data>
-
-<data name="SuggestCreditGrant" xml:space="preserve"><value>This notice grants a reset credit; it does not automatically refill your quota.</value></data>
-<data name="SuggestMechanism" xml:space="preserve"><value>This describes reset options or purchases, not an automatic quota refill.</value></data>
-<data name="CreditGrantTime" xml:space="preserve"><value>Credit grant time · Local time</value></data>
-<data name="NoticeTime" xml:space="preserve"><value>Notice time · Local time</value></data>
+  <data name="SuggestCreditGrant" xml:space="preserve">
+    <value>This notice grants a reset credit; it does not automatically refill your quota.</value>
+  </data>
+  <data name="SuggestMechanism" xml:space="preserve">
+    <value>This describes reset options or purchases, not an automatic quota refill.</value>
+  </data>
+  <data name="CreditGrantTime" xml:space="preserve">
+    <value>Credit grant time · Local time</value>
+  </data>
+  <data name="NoticeTime" xml:space="preserve">
+    <value>Notice time · Local time</value>
+  </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>Reset Radar</value>
+  </data>
+  <data name="CheckNow" xml:space="preserve">
+    <value>Check now</value>
+  </data>
+  <data name="Checking" xml:space="preserve">
+    <value>Checking…</value>
+  </data>
+  <data name="ShowDetails" xml:space="preserve">
+    <value>Show source details</value>
+  </data>
+  <data name="HideDetails" xml:space="preserve">
+    <value>Hide source details</value>
+  </data>
+  <data name="ShowHow" xml:space="preserve">
+    <value>How does Radar decide?</value>
+  </data>
+  <data name="HideHow" xml:space="preserve">
+    <value>Hide decision guide</value>
+  </data>
+  <data name="StatusWatch" xml:space="preserve">
+    <value>WATCH</value>
+  </data>
+  <data name="StatusIncoming" xml:space="preserve">
+    <value>INCOMING</value>
+  </data>
+  <data name="StatusCompleted" xml:space="preserve">
+    <value>COMPLETED</value>
+  </data>
+  <data name="StatusNotice" xml:space="preserve">
+    <value>RESET NOTICE UPDATE</value>
+  </data>
+  <data name="StatusNone" xml:space="preserve">
+    <value>No active reset signal</value>
+  </data>
+  <data name="StatusWatchSummary" xml:space="preserve">
+    <value>A noteworthy, traceable reset signal is available. Reliable timing and scope have not been confirmed.</value>
+  </data>
+  <data name="StatusIncomingSummary" xml:space="preserve">
+    <value>A higher-confidence public signal reports expected reset timing or rollout. Consider it in quota decisions; an account reset is not guaranteed.</value>
+  </data>
+  <data name="StatusCompletedSummary" xml:space="preserve">
+    <value>A source reports completion. Local quota evidence is assessed separately.</value>
+  </data>
+  <data name="StatusNoticeSummary" xml:space="preserve">
+    <value>A previously announced reset was cancelled or materially revised.</value>
+  </data>
+  <data name="StatusNoneSummary" xml:space="preserve">
+    <value>No current public evidence meets the WATCH or INCOMING rules.</value>
+  </data>
+  <data name="HealthSummary" xml:space="preserve">
+    <value>Last check {0} · Coverage {1} · {2}/{3} sources healthy</value>
+  </data>
+  <data name="CoverageLevelGOOD" xml:space="preserve">
+    <value>GOOD</value>
+  </data>
+  <data name="CoverageLevelPARTIAL" xml:space="preserve">
+    <value>PARTIAL</value>
+  </data>
+  <data name="CoverageLevelLIMITED" xml:space="preserve">
+    <value>LIMITED</value>
+  </data>
+  <data name="CoverageLevelOFF" xml:space="preserve">
+    <value>OFF</value>
+  </data>
+  <data name="SignalsHeading" xml:space="preserve">
+    <value>Current signals</value>
+  </data>
+  <data name="SourcesHeading" xml:space="preserve">
+    <value>Monitoring sources</value>
+  </data>
+  <data name="BadgeWatch" xml:space="preserve">
+    <value>WATCH</value>
+  </data>
+  <data name="BadgeIncoming" xml:space="preserve">
+    <value>INCOMING</value>
+  </data>
+  <data name="BadgeCompleted" xml:space="preserve">
+    <value>COMPLETED</value>
+  </data>
+  <data name="BadgeObserved" xml:space="preserve">
+    <value>LOCALLY OBSERVED</value>
+  </data>
+  <data name="BadgeNotice" xml:space="preserve">
+    <value>NOTICE</value>
+  </data>
+  <data name="EventWatchTitle" xml:space="preserve">
+    <value>Noteworthy reset signal</value>
+  </data>
+  <data name="EventIncomingTitle" xml:space="preserve">
+    <value>Reset timing or rollout reported</value>
+  </data>
+  <data name="EventObservedTitle" xml:space="preserve">
+    <value>Local quota refill observed</value>
+  </data>
+  <data name="EventCompletedTitle" xml:space="preserve">
+    <value>Reset reported as completed</value>
+  </data>
+  <data name="EventNoticeTitle" xml:space="preserve">
+    <value>Reset-related notice</value>
+  </data>
+  <data name="Published" xml:space="preserve">
+    <value>Published {0}</value>
+  </data>
+  <data name="ExpectedReset" xml:space="preserve">
+    <value>Expected reset · Local time</value>
+  </data>
+  <data name="SourceValue" xml:space="preserve">
+    <value>Source: {0}</value>
+  </data>
+  <data name="OpenOriginal" xml:space="preserve">
+    <value>Open original post</value>
+  </data>
+  <data name="OpenRelay" xml:space="preserve">
+    <value>Open relay page</value>
+  </data>
+  <data name="NeverChecked" xml:space="preserve">
+    <value>never</value>
+  </data>
+  <data name="JustNow" xml:space="preserve">
+    <value>just now</value>
+  </data>
+  <data name="MinutesAgo" xml:space="preserve">
+    <value>{0} min ago</value>
+  </data>
+  <data name="HoursAgo" xml:space="preserve">
+    <value>{0} hr ago</value>
+  </data>
+  <data name="DaysAgo" xml:space="preserve">
+    <value>{0} d ago</value>
+  </data>
+  <data name="HealthHealthy" xml:space="preserve">
+    <value>healthy</value>
+  </data>
+  <data name="HealthUnchanged" xml:space="preserve">
+    <value>healthy · unchanged</value>
+  </data>
+  <data name="HealthDegraded" xml:space="preserve">
+    <value>temporarily unavailable</value>
+  </data>
+  <data name="HealthBlocked" xml:space="preserve">
+    <value>blocked</value>
+  </data>
+  <data name="HealthNotChecked" xml:space="preserve">
+    <value>not checked</value>
+  </data>
+  <data name="HealthStale" xml:space="preserve">
+    <value>stale</value>
+  </data>
+  <data name="SourceOfficial" xml:space="preserve">
+    <value>Official OpenAI</value>
+  </data>
+  <data name="SourceStatus" xml:space="preserve">
+    <value>OpenAI Status · supporting context only</value>
+  </data>
+  <data name="SourceRelay" xml:space="preserve">
+    <value>Team signal relay</value>
+  </data>
+  <data name="SourceThirdParty" xml:space="preserve">
+    <value>Third party</value>
+  </data>
+  <data name="SourceDetail" xml:space="preserve">
+    <value>{0}
+   Health: {1} · Last success: {2} · Last attempt: {3}
+   HTTP: {4} · Next check: {5} · Candidates: {6}</value>
+  </data>
+  <data name="HowText" xml:space="preserve">
+    <value>WATCH requires a traceable team signal but may lack a dependable time. INCOMING requires explicit automatic-reset language, rollout evidence, or a usable reset time. OpenAI Status incidents are supporting context only. Banked reset credits are never treated as automatic quota refills. A local refill is recorded separately; correlation never proves cause.</value>
+  </data>
+  <data name="SignalStatus" xml:space="preserve">
+    <value>Signal status: {0}</value>
+  </data>
+  <data name="SignalActiveWatch" xml:space="preserve">
+    <value>Active Watch</value>
+  </data>
+  <data name="SignalActiveIncoming" xml:space="preserve">
+    <value>Active Incoming</value>
+  </data>
+  <data name="SignalInactive" xml:space="preserve">
+    <value>No active signal</value>
+  </data>
+  <data name="ReadStatus" xml:space="preserve">
+    <value>Read status: {0}</value>
+  </data>
+  <data name="ReadRead" xml:space="preserve">
+    <value>Read</value>
+  </data>
+  <data name="ReadUnread" xml:space="preserve">
+    <value>Unread</value>
+  </data>
+  <data name="SuggestWatch" xml:space="preserve">
+    <value>A noteworthy reset signal has been detected. Reliable timing has not been confirmed.
+• Consider keeping your full reset available
+• Watch the original source and community discussions for updates
+• There is no need to spend quota just because of this signal</value>
+  </data>
+  <data name="CoverageTitle" xml:space="preserve">
+    <value>Radar Coverage</value>
+  </data>
+  <data name="CoverageScanning" xml:space="preserve">
+    <value>Scanning sources…</value>
+  </data>
+  <data name="CoverageRingDisabled" xml:space="preserve">
+    <value>Radar disabled</value>
+  </data>
+  <data name="CoverageReadable" xml:space="preserve">
+    <value>{0} / {1} sources readable</value>
+  </data>
+  <data name="CoverageOfficial" xml:space="preserve">
+    <value>Official</value>
+  </data>
+  <data name="CoverageTeam" xml:space="preserve">
+    <value>Team signals</value>
+  </data>
+  <data name="CoverageCommunity" xml:space="preserve">
+    <value>Community</value>
+  </data>
+  <data name="CoverageUpdated" xml:space="preserve">
+    <value>Last checked: {0}</value>
+  </data>
 </root>

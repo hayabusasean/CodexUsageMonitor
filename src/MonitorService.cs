@@ -5,6 +5,8 @@ internal sealed class MonitorService : IDisposable
 {
     public Settings Settings{get;} public HistoryStore History{get;}public string Root=>History.Root;
     public ResetRadar Radar{get;}
+    public LocalQuotaCycleStore LocalCycles{get;}
+    internal void RebuildLocalCycles(){try{var now=DateTimeOffset.UtcNow;if(!LocalCycles.Rebuild(History.Query<UsageSample>(new(now.AddHours(-96),now)),Radar.Snapshot(),now))log.Write("local-cycle",LocalCycles.Diagnostic);}catch{log.Write("local-cycle","REBUILD_FAILED");}}
     public MainQuotaClock MainClock{get;}=new();
     public long Monotonic=>mono.ElapsedMilliseconds;
     public DailyResult? Daily{get;private set;}
@@ -13,13 +15,14 @@ internal sealed class MonitorService : IDisposable
     public void RebuildDaily(){try{var now=DateTimeOffset.UtcNow;Daily=DailyUsageCalculator.Calculate(History.Query<UsageSample>(new(now.AddDays(-4),now)),TimeZoneInfo.Local,DailyUsageCalculator.Boundary(DateOnly.FromDateTime(DateTime.Today.AddDays(-2)),TimeZoneInfo.Local),now);}catch{}}
     public Snapshot? Current{get;private set;} public string Status{get;private set;}="正在取得額度";public bool Verified{get;private set;}
     public bool Busy{get;private set;}public int Failures{get;private set;}public DateTimeOffset? NextRetry{get;private set;}
+    public bool MonitoringStarted=>loop!=null&&!stop.IsCancellationRequested;
     public string LastErrorCode{get;private set;}="";public string VerifiedPath{get;private set;}="";
     public int ChildId=>client?.ChildId??0;public event Action? Changed;public event Action<List<string>>? Alert;
     readonly SemaphoreSlim pollGate=new(1,1);readonly object identityGate=new();readonly Diagnostic log;readonly Stopwatch mono=Stopwatch.StartNew();readonly CancellationTokenSource stop=new();readonly SemaphoreSlim signal=new(0,1);
     AppServerClient? client;AlertState alertState;Task? loop;long lastManual=-100000,lastPoll=-100000;bool gap=true,forceReconnect;
     public MonitorService(string root)
     {
-        History=new(root);Radar=new(root);Settings=Settings.Load(Path.Combine(root,"settings.json"));Settings.Validate();
+        History=new(root);Radar=new(root);LocalCycles=new(root);Radar.LocalCycles=LocalCycles;Radar.VerifiedLocalScopes=()=>{var snapshot=Current;return snapshot?.Windows.Where(w=>w.LimitId=="codex"&&w.Duration==10080).Select(w=>LocalQuotaCycle.Scope(new UsageSample{account_context_key=snapshot.AccountKey,plan_type=w.Plan,limit_id=w.LimitId,window_duration_mins=w.Duration,source_slot=w.Slot})).ToList()??[];};Settings=Settings.Load(Path.Combine(root,"settings.json"));Settings.Validate();
         log=new(root);alertState=AtomicJson.Load(Path.Combine(root,"notification_state.json"),()=>new AlertState());
         Current=AtomicJson.Load<Snapshot?>(Path.Combine(root,"last_good.json"),()=>null);
         MainClock.Cache(Current);
@@ -37,11 +40,11 @@ internal sealed class MonitorService : IDisposable
     public bool SaveSettings(){Settings.Validate();try{AtomicJson.Save(Path.Combine(Root,"settings.json"),Settings);return true;}catch{Status="SETTINGS_SAVE_FAILED";Changed?.Invoke();return false;}}
     async Task Run()
     {
-        History.Recover();RebuildDaily();SaveSettings();
+        History.Recover();RebuildDaily();RebuildLocalCycles();SaveSettings();
         while(!stop.IsCancellationRequested){
             try{await PollOnce(stop.Token);}catch(OperationCanceledException){break;}
-            var seconds=Failures==0?Settings.Interval:Backoff(Failures);
-            NextRetry=DateTimeOffset.UtcNow.AddSeconds(seconds);Changed?.Invoke();
+            var schedule=NextPollSchedule(DateTimeOffset.UtcNow,Failures,Settings.Interval);var seconds=schedule.seconds;
+            NextRetry=schedule.next;Changed?.Invoke();
             try{
                 await signal.WaitAsync(TimeSpan.FromSeconds(seconds),stop.Token);
                 // all triggers are coalesced; no more than one chain, with minimum 10 s spacing
@@ -50,6 +53,7 @@ internal sealed class MonitorService : IDisposable
             }catch(OperationCanceledException){break;}
         }
     }
+    internal static (int seconds,DateTimeOffset next) NextPollSchedule(DateTimeOffset now,int failures,int normalInterval){int seconds=failures==0?normalInterval:Backoff(failures);return(seconds,now.AddSeconds(seconds));}
     public static int Backoff(int failures)=>(int)Math.Min(900,90*Math.Pow(2,Math.Min(4,Math.Max(0,failures-1))));
     public async Task PollOnce(CancellationToken ct)
     {
@@ -90,7 +94,7 @@ internal sealed class MonitorService : IDisposable
             var messages=alertState.Observe(rows);
             bool persisted=false;try{AtomicJson.Save(Path.Combine(Root,"notification_state.json"),alertState);persisted=true;}catch{Status="提醒狀態未保存";}
             if(Settings.Alerts&&persisted&&messages.Count>0)Alert?.Invoke(messages);
-            RebuildDaily();try{Radar.Correlate(History.Query<UsageSample>(new(DateTimeOffset.UtcNow.AddHours(-48),DateTimeOffset.UtcNow)));}catch{}log.Write("poll","OK");Changed?.Invoke();
+            RebuildDaily();RebuildLocalCycles();try{Radar.Correlate(History.Query<UsageSample>(new(DateTimeOffset.UtcNow.AddHours(-96),DateTimeOffset.UtcNow)));}catch{}log.Write("poll","OK");Changed?.Invoke();
             if(DateTimeOffset.UtcNow-usageChecked>TimeSpan.FromMinutes(15)||usageIdentity!=identity.key){
                 usageChecked=DateTimeOffset.UtcNow;usageIdentity=identity.key;
                 ServiceTokenActivity=new{status="NOT_SUPPORTED",time_zone="UNKNOWN"};

@@ -98,7 +98,7 @@ internal sealed class AppServerClient : IDisposable
         Version=await CodexLocator.ValidateVersion(path,cwd,ct);
         child=OwnedProcess.Start(path,["app-server"],cwd);
         _=Task.Run(ReadLoop);_=Task.Run(DrainError);
-        await Request("initialize",new {clientInfo=new{name="codex_usage_monitor",title="Codex Usage Monitor",version="1.0.0"}},ct);
+        await Request("initialize",new {clientInfo=new{name="codex_usage_monitor",title="Codex Usage Monitor",version=L.Version}},ct);
         await Send(new{method="initialized",@params=new{}},ct);
     }
     internal async Task ConnectControlled(string exe,string[] args,string cwd,CancellationToken ct)

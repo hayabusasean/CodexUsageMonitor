@@ -1,127 +1,102 @@
 # CodexUsageMonitor
 
-[English](README.md) | **繁體中文**
+**每週 Codex 額度，放在桌面上看就好。**
 
-給 Codex 用得有點多的人，一個小小的 Windows 桌面夥伴。😄
+[English](README.md) · 繁體中文
 
-讓每週剩餘額度、近期用量、本機歷史與重置訊息留在眼前，不必一直打開 Usage 頁面。
+[下載 Windows x64 版 v0.4.0](https://github.com/hayabusasean/CodexUsageMonitor/releases/tag/v0.4.0) · [看第一次重置的故事](docs/stories/first-reset.zh-TW.md) · [回報問題](https://github.com/hayabusasean/CodexUsageMonitor/issues)
 
-**[下載 v0.4.0-rc.3 Windows x64 可攜版](https://github.com/hayabusasean/CodexUsageMonitor/releases/download/v0.4.0-rc.3/CodexUsageMonitor-v0.4.0-rc.3-win-x64.zip)** · [版本說明](https://github.com/hayabusasean/CodexUsageMonitor/releases/tag/v0.4.0-rc.3) · [SHA256SUMS.txt](https://github.com/hayabusasean/CodexUsageMonitor/releases/download/v0.4.0-rc.3/SHA256SUMS.txt)
+<p><img src="docs/screenshots/gold/compact-crop.png" width="236" alt="實際小浮窗：每週剩餘78%、下次讀取倒數66秒、雷達來源可讀率67%"></p>
 
-- **目前公開下載版：** v0.4.0-rc.3
-- **Reset Radar 真實環境測試：** rc.4 — 尚未公開發布
+最近 Codex 用得有點兇，一直點開 Usage 看剩多少很煩，乾脆做了這個 Windows 小工具。把額度掛在桌面、留下本機使用紀錄，也順便看幾個公開來源有沒有重置消息。
 
-這是首次公開的**預發行版**，採 MIT 授權、免費提供。程式可攜、尚未數位簽章，沒有遙測，歷史紀錄留在你的電腦上。
+免費、開源。介面預設英文，可以切換繁體中文。這是個人做的非官方工具，與 OpenAI 無關。
 
-![精簡模式，使用示範資料](docs/screenshots/compact-zh-TW.png)
+## 怎麼開始
 
-*精簡模式截圖使用已標示的示範資料；下方使用紀錄截圖來自使用者實機，呈現真實用量。*
+先安裝並登入官方 Codex。接著到下載頁選 **`CodexUsageMonitor-v0.4.0-win-x64.zip`**，整包解壓縮，打開 **`CodexUsageMonitor.exe`**。不用 Installer，也不用把 API Key 交給這個工具。GitHub 自動列出的 **Source code** 是原始碼，不是一般使用者的執行包。
 
-## 為什麼做這個工具
+拖曳浮窗就能移動；角落的小按鈕可切換顯示模式，右鍵可開使用紀錄、重置公告與設定。秒數代表**下次讀取額度還要多久**，不是重置保證倒數。資料存於 `%LOCALAPPDATA%\CodexUsageMonitor`，不放 EXE 旁邊。
 
-我經常用 Codex 開發軟體和遊戲，卻也經常打開 Usage 頁面，問同一個問題：「這週到底還剩多少額度？」
+更新時先從舊工具的選單離開，再開新 EXE。重複開第二份不會自動替換正在跑的版本，因為程式會保護同一份歷史只由一個程序寫入。保留本機資料目錄，設定與歷史就能接續。
 
-後來我想，這個數字為什麼不能安靜地待在桌面上就好？
+## 這次 Gold 版
 
-於是做了這個小浮窗。某天早上，我前一天已經把每週剩餘額度從 100% 用到大約 74%，換到另一台電腦開啟監測器，卻又看見 100%。第一個反應是：「我是不是把自己的程式寫壞了？」
+保留星球、紫藍玻璃面板，重要資訊加一點香檳金。額度補滿的事件現在有**金色摘要，而且放在曲線外面**，不用自己在圖裡找，也不會為了顯眼把資料蓋住。
 
-後來發現，時間和 OpenAI 公開的重置公告很接近。這段經驗讓我加入本機歷史和輕量的 Reset Radar，方便回頭看監測器當時真正觀察到了什麼。
+歷史可以看最近區段、完整範圍或事件聚焦，支援時間軸操作、調整表格與圖表高度、備註，以及 CSV／詳細分析 Log 匯出。100% 降到 99% 看得出來；有缺測的地方就留缺口，不補造資料。
 
-本機額度變化和公開公告是兩份不同的證據。時間接近，不代表已經證明某個帳號的額度為什麼改變；程式會保留這個區別。歷史也只留在各自的電腦，不會跨電腦同步。
+重置雷達把「還沒讀」與「訊號仍有效」分開。對應本機週期已補滿後，舊提醒會退場，原始消息仍留著。這次也修正了使用紀錄重複重繪、詳情頁刷新／尺寸，以及開新版本卻喚回舊程式的混淆。
 
-現在把它分享出來，希望同樣常用 Codex 的人，可以少看幾次額度頁，多留一點注意力給手上的工作。
+![重置雷達：7%回到100%的金色證據卡，6個來源中4個可讀](docs/screenshots/gold/radar.png)
 
-## 可以做什麼
+*9月13日實際使用畫面，回看9月12日的補額事件。不是概念圖，也不是當時就有這張新版介面。*
 
-- 以**標準／精簡模式**顯示小型置頂浮窗。
-- 顯示每週剩餘額度，以及距離上次更新經過幾秒。
-- 根據可比較的本機觀測，估計今天、昨天、前天的用量。
-- 保留本機歷史，提供**最近區段／完整範圍**圖表、監測空窗提示及 CSV 匯出。
-- 記錄觀察到的補充或重置，不直接推定原因。
-- 用 **Reset Radar Lite** 查看有限公開來源，區分重置公告、重置券發放與一般機制說明。
-- 匯出內嵌分析 Prompt 與結構化證據的詳細 Log；報告語言可與介面語言分開選擇。
-- 在同一個可攜 EXE 中切換**英文／繁體中文**。
+## 第一次守著它等到重置
 
-![使用紀錄畫面，顯示近期額度變化](docs/screenshots/usage-history-zh-TW-real-example.png)
+黃燈亮著，我先忍住，沒有用掉剩下的那張重置券。後來在 FB Codex 討論區看到大家分享更具體的消息，就繼續留意。
 
-*使用者提供的繁體中文實機截圖，呈現真實使用紀錄。*
+額度一路剩到 **7%**，再看，變成 **100%**。券也還在。
 
-## Reset Radar — 第一次真實 Field Trial
+老實說，那一下真的很爽。😂
 
-Reset Radar 目前正在進行第一次真實環境觀測。
+不過這次不是 Tool 猜中了重置時間。更具體的消息來自社群，Tool 也沒有證明自己及時抓到了那則後續的紅燈公告。它負責提醒我值得留意，再把前後額度留下來。對我來說，這就已經很實用了。
 
-2026-09-12，工具在實際常駐監測中成功抓到一則可追溯的 Codex 團隊 Reset 暗示，並正確分類為 **WATCH／注意**。當時：
+[當天原始照片與時間紀錄 →](docs/stories/first-reset.zh-TW.md)
 
-- 尚未有可靠的 Reset 時間
-- 該訊號被閱讀後仍維持 Active WATCH
-- Radar Coverage 為 67%
-- 6 個設定來源中 4 個可正常讀取
-- 官方來源 2 / 4 可讀
-- 團隊訊號來源 2 / 2 可讀
+## 小燈和數字在說什麼
 
-**67% 代表 Radar 來源涵蓋率**，也就是目前設定的資訊來源中，有多少比例可正常讀取與解析。67% 絕對不是「有 67% 機率會 Reset」。
-
-WATCH 黃色提醒表示有可追溯、值得注意的 Reset 訊號，但目前還沒有足夠證據判定「Reset 即將發生」。只有更明確的即將重置、rollout 或可信時間資訊，才會升級成紅色 INCOMING 提醒。
-
-![WATCH 已讀後仍保留有效訊號黃點](docs/screenshots/field-trial/reset-radar-watch-compact-2026-09-12-zh-TW.png)
-
-*WATCH 已讀後，驚嘆號會消失，但右上角黃色狀態點仍保留，直到訊號失效、被更新或升級。*
-
-![實際 Reset Radar 詳細頁](docs/screenshots/field-trial/reset-radar-watch-details-2026-09-12-zh-TW.png)
-
-*實際 Reset Radar 頁：可以查看 Radar Coverage、來源健康、訊號內容、本機額度背景，以及可追溯的原始／轉送來源。*
-
-| 指示 | 意義 |
+| 顯示 | 意義 |
 | --- | --- |
-| 黃色每週 % | 每週剩餘額度偏低 |
-| 紅色每週 % | 每週剩餘額度極低 |
-| 黃色 ! | 新的 WATCH 訊號 |
-| 黃色圓點 | WATCH 已讀，但訊號仍有效 |
-| 紅色 ! | 新的 INCOMING 訊號 |
-| 紅色圓點 | INCOMING 已讀，但訊號仍有效 |
-| 藍綠色／成功 | 已觀察到額度補充或事件完成 |
-| Radar % | 來源可讀率，不是 Reset 機率 |
+| 大百分比 | 每週剩餘；數字變黃／紅是低額度提醒，與雷達分開。 |
+| 小秒數 | 下一次額度讀取倒數；失敗重試會另有狀態。 |
+| 雷達百分比 | **設定來源的可讀取比例**，不是重置機率。 |
+| 黃色 `!`／小點 | 新的／已讀但有效的注意訊號，可去看原始来源與社群後續。 |
+| 紅色 `!`／小點 | 新的／已讀但有效的較明確即將重置消息，仍不保證你的帳號會何時重置。 |
+| 金色事件卡 | 本機已觀察到補額，不等於證明全域原因。 |
 
-詳見[完整 Field Trial 紀錄](docs/field-trial/reset-radar-2026-09-12.md)。目前公開下載仍是 v0.4.0-rc.3；畫面中的 rc.4 是尚未公開發布的私人測試版本。
+這些圖中的 **67%** 只是 **6個設定來源中4個可讀**。不是掃完67%的網路，也不是有67%機率重置。同一篇貼文被兩站轉送，不等於兩份獨立確認。
 
-## 開始使用
+## 其他畫面
 
-1. 下載上方的 Windows x64 可攜 ZIP。
-2. 解壓到你有寫入權限的資料夾。
-3. 開啟 **CodexUsageMonitor.exe**。
+<details>
+<summary>使用紀錄與金色事件</summary>
 
-電腦上需已有相容的官方 Codex，並完成登入。使用可攜版不必另外安裝 .NET Runtime、SDK，也不需要執行 PowerShell 腳本或提供 API Key。GitHub 自動產生的 **Source code** ZIP 是原始碼，不是可直接執行的程式包。
+![金色事件摘要，7%到100%，增加93個百分點](docs/screenshots/gold/gold-event-crop.png)
 
-介面語言可在**設定**或浮窗右鍵選單切換；分析 Log 匯出視窗另有獨立的語言選項。
+![實際使用紀錄頁](docs/screenshots/gold/history.png)
 
-手動更新時，先結束監測器、替換 EXE，再重新開啟。歷史和設定仍保存在 **%LOCALAPPDATA%\CodexUsageMonitor**。若搬動 EXE，已啟用的開機啟動捷徑會在下次手動開啟時修復。
+保留作者當時的視窗與捲動位置；數字、時間、曲線缺口未修改。
+</details>
 
-## 隱私與安全
+<details>
+<summary>額度詳情與設定</summary>
 
-監測器透過本機官方 Codex app-server 提供的唯讀帳號介面取得額度。它**不會讀取 auth.json、瀏覽器 Cookie、專案原始碼或對話內容**，不要求 API Key，也不儲存 Codex 憑證。
+![額度詳情，各池分開顯示](docs/screenshots/gold/quota-details.png)
 
-它不會啟動模型回合、使用重置券、購買額度或傳送遙測。官方 app-server 仍自行處理登入與網路行為。Reset Radar 只向公開來源發出一般 HTTPS 請求，不繞過存取限制。
+![星際玻璃設定頁](docs/screenshots/gold/settings.png)
 
-歷史留在本機。分析 Log 雖然會去識別，額度數值與時間仍可能透露工作習慣；備註預設關閉。分享前請先檢查內容，回報問題通常可以先用**關於**中的較精簡診斷摘要。
+截圖裡的個人設定不代表程式預設值。
+</details>
 
-詳見 [PRIVACY.md](PRIVACY.md) 與 [SECURITY.md](SECURITY.md)。
+## 隱私與限制
 
-## 相容性與限制
+額度透過本機官方 Codex app-server 讀取。監控工具本身不要求 API Key、不讀瀏覽器 Cookie，也不直接讀 `auth.json`；官方 Codex 則使用自己的登入。監看不啟動模型回合、不使用重置券，也不購買額度。
 
-- **已在 Windows 10 與 Windows 11 x64 實測。**Windows 10 驗證環境為 Home 22H2、150% 顯示縮放，包含最終 EXE、原生雙語介面及真實額度串接。
-- **Windows 11 使用者驗收：**使用者從正式公開 GitHub Release 下載 v0.4.0-rc.3 win-x64 ZIP，在 Windows 11 x64 實機解壓並正常使用一整個工作日；額度更新、常駐使用與一般操作未發現問題。這不代表保證相容所有 Windows 10/11 環境。
-- **尚未實測：**ARM64 及其他實體顯示縮放環境的表現。已驗證的 Codex 基準版本為 0.153.4；其介面後續變更可能影響相容性。
-- 每日數字是根據觀察到的額度下降所做的估計，不是帳單或完整帳號用量帳本；程式關閉期間可能留下紀錄空窗。
-- Radar 只涵蓋有限來源。OpenAI Help Center 等來源可能拒絕自動請求；HTTP 成功也不等於找到相關公告。觀察到重置，不代表已證明帳號變化的原因。
-- EXE **尚未數位簽章**，Windows 或 SmartScreen 可能顯示警告，請遵循電腦的安全政策。雜湊可協助比對下載檔案，不是安全認證，也不是發布者身分證明。
-- 這是個人維護的預發行工具，以能力所及提供支援。它不提供 Codex 帳號、免費算力或重置券。
+歷史與匯出留在本機，除非你自己分享。公開消息的來源網站仍會看到一般 HTTPS 連線資訊。工具沒有使用者遙測，但詳細 Log 可能包含帳號背景或使用模式，請先檢查再分享。
 
-## 回饋、原始碼與授權
+雷達只看有限來源，可能遇到擋爬、改版、轉送延遲或漏訊息。「可讀」不保證站上已出現最新貼文。程式以 Windows x64 為目標；先前 rc.3 曾在 Windows 11 正常使用一整天，不代表新版 Gold 已重測所有 Win11、DPI 或多螢幕環境。EXE 尚未簽章，Windows 可能顯示警告；請核對來源與 checksum，不要關閉安全防護。
 
-[回報問題](https://github.com/hayabusasean/CodexUsageMonitor/issues/new?template=bug_report.yml) · [參與貢獻](CONTRIBUTING.md) · [更新紀錄](CHANGELOG.md)
+[隱私、監測來源與限制](docs/privacy-and-limits.zh-TW.md) · [版本紀錄](CHANGELOG.md)
 
-**MIT 授權 — Copyright (c) 2026 hayabusasean。** 完整條文見 [LICENSE](LICENSE)。
+## 開發這件事
 
-隨附程式的「關於」文字早於公開發布；授權以本儲存庫的 LICENSE 為準。
+這是我第一次在 GitHub 分享作品。我負責說想要什麼、實際用、再要求修改；開發、修正、整理、打包和上傳，大部分都由 Codex 協助完成。
 
-CodexUsageMonitor 是非官方社群專案，**與 OpenAI 沒有隸屬、背書或贊助關係。**
+我自己也每天用。新功能先停一陣子，有問題歡迎回報，但這是個人作品，不是保證即時支援的服務。
+
+## 授權
+
+[MIT](LICENSE) · Copyright (c) 2026 hayabusasean。第三方聲明依其原有條款。
+
+本專案不隸屬 OpenAI，也未受其背書或贊助。

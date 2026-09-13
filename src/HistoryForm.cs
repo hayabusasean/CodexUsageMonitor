@@ -3,29 +3,37 @@ namespace CodexUsageMonitor;
 
 internal sealed class HistoryForm:ProductForm {
  readonly MonitorService service;
- readonly DataGridView grid=new();
- readonly Label title=Theme.Label("",42,18),status=Theme.Label("",36,9,Theme.Muted),detail=Theme.Label("",94,9,Theme.Muted);
+ readonly R2Grid grid=new();
+ readonly Label title=Theme.Label("",48,22),status=Theme.Label("",36,9,Theme.Muted),detail=Theme.Label("",94,9,Theme.Muted);
  readonly Label dateError=Theme.Label("",28,9,Theme.Warning),exportHint=Theme.Label("",30,9,Theme.Muted);
  readonly DateField from=new(),to=new();
  readonly CheckBox all=Theme.Check("");
  readonly DarkChoice pool=new(){Width=150},window=new(){Width=126},quality=new(){Width=156},eventFilter=new(){Width=186};
- readonly TrendView trend=new(){Dock=DockStyle.Top,Height=320,Tag=320};
+ readonly TrendView trend=new(){Dock=DockStyle.Top,Height=200,Tag=200};
+ readonly EventFocusView eventView=new(){Visible=false};
+ readonly GoldActionButton goldAction=new(){Visible=false};
+ readonly FlowLayoutPanel goldActions=Theme.Row();
+ readonly GoldEventRail goldRail;
+ Control? recordsSection,historyDivider;
+ readonly Label loadingShell=Theme.Label("",34,10,Theme.Muted);
  readonly Panel advanced=new(){Dock=DockStyle.Top,Height=44,Tag=44,Visible=false};
- readonly Button previous,next,latest,full;
+ readonly Button previous,next,latest,full,eventFocus,resetViewport;
  readonly Dictionary<Control,string> bindings=[];
  readonly List<Control> exportControls=[];
  readonly Dictionary<string,UsageSample?> previousById=[];
- List<UsageSample> rows=[],visibleRows=[];List<UsageEvent> events=[];
+ List<UsageSample> rows=[],visibleRows=[],chartFocusRows=[];List<UsageEvent> events=[],chartFocusEvents=[];
  HistoryFilter? activeFilter;CancellationTokenSource? query;int page,request,sortColumn,timeZoneRevision;bool sortAscending,busy,relabeling;
  string statusKey="History.Loading";object[] statusArgs=[];Action? relayoutToolbars;
  const int PageSize=200;
- public HistoryForm(MonitorService s,DateTime? date=null):base(L.T("History.Title"),1000,810){
+ string? pendingFocusSample;
+ public HistoryForm(MonitorService s,DateTime? date=null,string? focusSampleId=null):base(L.T("History.Title"),1120,920){
+  pendingFocusSample=focusSampleId;goldRail=new GoldEventRail(trend){Visible=false};
   service=s;timeZoneRevision=L.TimeZoneRevision;MinimumSize=new(760,560);from.Value=date??DateTime.Today.AddDays(-6);to.Value=date??DateTime.Today;
   pool.Items.Add("codex");foreach(var id in s.Current?.Windows.Select(w=>w.LimitId).Distinct().Where(x=>x!="codex").OrderBy(x=>x.Contains("bengalfox")?1:0).ToList()??[])pool.Items.Add(id);pool.SelectedIndex=0;
   window.Items.AddRange(["","",""]);window.SelectedIndex=0;quality.Items.AddRange(["","","",""]);quality.SelectedIndex=0;eventFilter.Items.AddRange(["","","",""]);eventFilter.SelectedIndex=0;
   foreach(var c in new Control[]{pool,window,quality,eventFilter})Theme.Style(c);
   var advancedRow=Theme.Row(pool,window,quality,eventFilter,all);advanced.Controls.Add(advancedRow);
-  advanced.SizeChanged+=(_,_)=>{bool wrap=advanced.Width<885*DeviceDpi/96f;advancedRow.WrapContents=wrap;advancedRow.Height=advanced.Height=(int)((wrap?88:44)*DeviceDpi/96f);};
+  advanced.SizeChanged+=(_,_)=>relayoutToolbars?.Invoke();
   pool.SelectedIndexChanged+=async(_,_)=>{if(!relabeling){page=0;await LoadPage();}};
   window.SelectedIndexChanged+=async(_,_)=>{if(!relabeling){page=0;await LoadPage();}};
   quality.SelectedIndexChanged+=(_,_)=>{if(!relabeling){page=0;SelectVisible();}};
@@ -35,27 +43,33 @@ internal sealed class HistoryForm:ProductForm {
   foreach(var (key,days,width) in new[]{("Today",0,72),("Yesterday",1,96),("SevenDays",6,76),("ThirtyDays",29,84)}){
    var quick=Button(key,async(_,_)=>{from.Value=DateTime.Today.AddDays(-days);to.Value=days==1?DateTime.Today.AddDays(-1):DateTime.Today;page=0;await LoadPage();},width);dateRow.Controls.Add(quick);
   }
-  var apply=Button("Apply",async(_,_)=>{page=0;await LoadPage();},76);
+  var apply=Button("Apply",async(_,_)=>{page=0;await LoadPage();},96);
   var more=Button("Advanced",(_,_)=>{advanced.Visible=!advanced.Visible;detail.Visible=advanced.Visible;},104);
   var separator=new Label{Text="–",AccessibleName="–",Width=14,Height=30,TextAlign=ContentAlignment.MiddleCenter};
   dateRow.Controls.AddRange([from,separator,to,apply,more]);
-  dateRow.SizeChanged+=(_,_)=>{bool wrap=dateRow.Width<940*DeviceDpi/96f;dateRow.WrapContents=wrap;dateRow.Height=(int)((wrap?88:44)*DeviceDpi/96f);};
+  dateRow.SizeChanged+=(_,_)=>relayoutToolbars?.Invoke();
   dateError.Visible=false;from.TextChanged+=(_,_)=>dateError.Visible=false;to.TextChanged+=(_,_)=>dateError.Visible=false;
   ConfigureGrid();
   grid.SelectionChanged+=(_,_)=>UpdateDetail();
+  grid.CellDoubleClick+=(_,e)=>{if(e.RowIndex>=0)OpenSelectedEventFocus();};
   grid.ColumnHeaderMouseClick+=(_,e)=>{if(e.ColumnIndex<0)return;sortAscending=sortColumn==e.ColumnIndex?!sortAscending:true;sortColumn=e.ColumnIndex;RenderGrid();};
   detail.Visible=false;
   latest=Button("LatestSegment",(_,_)=>SetChartMode(true),156);
   full=Button("FullRange",(_,_)=>SetChartMode(false),126);
-  var chartTitle=Theme.Label("",36,12);chartTitle.Dock=DockStyle.None;chartTitle.Width=265;bindings[chartTitle]="History.ChartTitle";
-  var chartBar=Theme.Row(chartTitle,latest,full);chartBar.Name="HistoryChartViews";
-  chartBar.SizeChanged+=(_,_)=>{bool wrap=chartBar.Width<590*DeviceDpi/96f;chartBar.WrapContents=wrap;chartBar.Height=(int)((wrap?88:44)*DeviceDpi/96f);};
+  eventFocus=Button("EventFocus",(_,_)=>OpenSelectedEventFocus(),132);
+  resetViewport=Button("ResetViewport",(_,_)=>trend.ResetViewport(),142);
+  var chartTitle=Theme.Label("",36,12);chartTitle.Dock=DockStyle.None;chartTitle.Width=214;bindings[chartTitle]="History.ChartTitle";
+  var chartBar=Theme.Row(chartTitle,latest,full,eventFocus,resetViewport);chartBar.Name="HistoryChartViews";
+  chartBar.SizeChanged+=(_,_)=>relayoutToolbars?.Invoke();
+  bool fittingToolbars=false;
   relayoutToolbars=()=>{
+   if(fittingToolbars)return;fittingToolbars=true;try{
    float scale=DeviceDpi/96f;
    void Fit(FlowLayoutPanel row,int breakpoint){
-    bool wrap=row.Width<breakpoint*scale;row.WrapContents=wrap;row.Height=(int)((wrap?88:44)*scale);
+    bool wrap=row.Width<breakpoint*scale;int height=(int)((wrap?88:44)*scale);if(row.WrapContents!=wrap)row.WrapContents=wrap;if(row.Height!=height)row.Height=height;
    }
-   Fit(dateRow,940);Fit(advancedRow,885);advanced.Height=advancedRow.Height;Fit(chartBar,590);
+   Fit(dateRow,940);Fit(advancedRow,885);if(advanced.Height!=advancedRow.Height)advanced.Height=advancedRow.Height;Fit(chartBar,898);
+   }finally{fittingToolbars=false;}
   };
   trend.Latest=s.Settings.ChartView!="FULL";
   previous=Button("PreviousPage",(_,_)=>{page=Math.Max(0,page-1);RenderGrid();},104);
@@ -64,30 +78,45 @@ internal sealed class HistoryForm:ProductForm {
   var exportCsv=Button("ExportCSV",async(_,_)=>await ExportCsv(),122);
   var note=Button("AddNote",(_,_)=>Note(),110);
   Footer.Controls.AddRange([exportLog,exportCsv,note,next,previous]);exportControls.AddRange([exportLog,exportCsv,note]);foreach(var c in exportControls)c.Enabled=false;
-  Stack(title,dateRow,dateError,advanced,grid,chartBar,trend,detail,status,exportHint);
+  ((QuietButton)more).Role=ButtonRole.Ghost;((QuietButton)resetViewport).Role=ButtonRole.Ghost;
+  ((QuietButton)previous).Role=ButtonRole.Ghost;((QuietButton)next).Role=ButtonRole.Ghost;
+  ((QuietButton)apply).Primary=true;
+  var divider=new HistoryDivider(grid,trend);
+  historyDivider=divider;recordsSection=Theme.Section(R2.Caption("▤  Usage records","▤  觀測紀錄",26),loadingShell,grid);
+  goldAction.Dock=DockStyle.None;goldActions.Controls.Add(goldAction);goldActions.Height=64;goldActions.Tag=64;goldActions.Visible=false;
+  Stack(title,R2.Caption("Every observation leaves a trace. Explore your quota, with evidence.","每次觀測都有跡可循。從歷史與證據，看清額度變化。"),Theme.Section(dateRow,dateError,advanced),recordsSection,divider,Theme.Section(chartBar,goldRail,trend,eventView,goldActions),detail,status,exportHint);
+  trend.TabStop=true;trend.GoldEventSelected+=id=>{var item=trend.GoldEvents.FirstOrDefault(x=>x.id==id);if(item!=null)OpenEventFocusForSample(item.after_sample_id);};
+  goldAction.Click+=(_,_)=>{var item=eventView.Visible?eventView.Evidence?.LocalCycle:trend.GoldEvents.FirstOrDefault(x=>x.after_sample_id==(grid.CurrentRow?.Tag as UsageSample)?.sample_id&&x.Full)??trend.GoldEvents.LastOrDefault(x=>x.Full);if(item!=null)OpenEventFocusForSample(item.after_sample_id);};
+  grid.KeyDown+=(_,e)=>{if(e.KeyCode==Keys.Enter){OpenSelectedEventFocus();e.Handled=true;}};
+  KeyDown+=(_,e)=>{if(e.KeyCode==Keys.Escape&&eventView.Visible){SetChartMode(false);e.Handled=true;e.SuppressKeyPress=true;}};
   L.Watch(this,Localize);
-  Load+=async(_,_)=>await LoadPage();
+  ActiveControl=from;Load+=async(_,_)=>await LoadPage();
   FormClosed+=(_,_)=>{query?.Cancel();query?.Dispose();query=null;};
  }
  Button Button(string key,EventHandler click,int width,bool primary=false){
   var b=Theme.Button(L.T("History."+key),click,primary);b.Width=width;bindings[b]="History."+key;return b;
  }
  void ConfigureGrid(){
-  grid.Dock=DockStyle.Top;grid.Height=184;grid.Tag=184;grid.ReadOnly=true;grid.AllowUserToAddRows=grid.AllowUserToDeleteRows=false;
+  grid.Dock=DockStyle.Top;grid.Height=259;grid.Tag=259;grid.ReadOnly=true;grid.AllowUserToAddRows=grid.AllowUserToDeleteRows=false;
   grid.RowHeadersVisible=false;grid.MultiSelect=false;grid.SelectionMode=DataGridViewSelectionMode.FullRowSelect;
   grid.AutoSizeColumnsMode=DataGridViewAutoSizeColumnsMode.Fill;grid.BorderStyle=BorderStyle.None;grid.BackgroundColor=Theme.Surface;grid.GridColor=Theme.Border;
-  grid.EnableHeadersVisualStyles=false;grid.ColumnHeadersDefaultCellStyle=new(){BackColor=Theme.Secondary,ForeColor=Theme.Muted,Font=Theme.Font(9),Padding=new(10,0,10,0)};
-  grid.DefaultCellStyle=new(){BackColor=Theme.Surface,ForeColor=Theme.Text,SelectionBackColor=Theme.Hex("#24483F"),SelectionForeColor=Theme.Text,Font=Theme.Font(9.5f),Padding=new(10,0,10,0)};
-  grid.AlternatingRowsDefaultCellStyle.BackColor=Theme.Surface;grid.RowTemplate.Height=32;grid.CellBorderStyle=DataGridViewCellBorderStyle.SingleHorizontal;
+  grid.EnableHeadersVisualStyles=false;grid.ColumnHeadersDefaultCellStyle=new(){BackColor=Theme.Surface2,ForeColor=Theme.Muted,Font=Theme.Font(9,true),Padding=new(10,0,10,0)};
+  grid.DefaultCellStyle=new(){BackColor=Theme.Surface1,ForeColor=Theme.Text,SelectionBackColor=Theme.Selection,SelectionForeColor=Theme.Text,Font=Theme.Font(9.5f),Padding=new(10,0,10,0)};
+  grid.AlternatingRowsDefaultCellStyle.BackColor=Theme.Surface1;grid.RowTemplate.Height=25;grid.CellBorderStyle=DataGridViewCellBorderStyle.None;
   grid.ColumnHeadersBorderStyle=DataGridViewHeaderBorderStyle.None;grid.ColumnHeadersHeight=34;
-  grid.ColumnHeadersDefaultCellStyle.SelectionBackColor=Theme.Secondary;grid.ColumnHeadersDefaultCellStyle.SelectionForeColor=Theme.Muted;
+  grid.ColumnHeadersDefaultCellStyle.SelectionBackColor=Theme.Surface2;grid.ColumnHeadersDefaultCellStyle.SelectionForeColor=Theme.Muted;
   foreach(var (key,weight) in new[]{("Time",23),("Used",12),("Remaining",13),("Change",24),("Status",28)})
    grid.Columns.Add(new DataGridViewTextBoxColumn{Name=key,HeaderText=L.T("History."+key),FillWeight=weight,SortMode=DataGridViewColumnSortMode.Programmatic});
   foreach(int i in new[]{1,2}){grid.Columns[i].DefaultCellStyle.Alignment=DataGridViewContentAlignment.MiddleRight;grid.Columns[i].HeaderCell.Style.Alignment=DataGridViewContentAlignment.MiddleRight;}
+  int hoverRow=-1;
+  grid.CellMouseEnter+=(_,e)=>{int old=hoverRow;hoverRow=e.RowIndex;if(old>=0&&old<grid.Rows.Count)grid.InvalidateRow(old);if(hoverRow>=0&&hoverRow<grid.Rows.Count)grid.InvalidateRow(hoverRow);};
+  grid.MouseLeave+=(_,_)=>{int old=hoverRow;hoverRow=-1;if(old>=0&&old<grid.Rows.Count)grid.InvalidateRow(old);};
+  grid.CellFormatting+=(_,e)=>{if(e.RowIndex>=0&&e.CellStyle!=null)e.CellStyle.BackColor=e.RowIndex==hoverRow?Theme.Surface3:Theme.Surface1;};
+  grid.RowPostPaint+=(_,e)=>{if((e.State&DataGridViewElementStates.Selected)!=0){using var stripe=new SolidBrush(Theme.Accent);e.Graphics.FillRectangle(stripe,e.RowBounds.Left,e.RowBounds.Top,3*DeviceDpi/96f,e.RowBounds.Height);}};
   grid.HandleCreated+=(_,_)=>NativeDark.Scrollbars(grid.Handle);
   // Match the cell text rectangle: no extra GDI glyph-overhang padding or hidden sort-glyph width.
   grid.CellPainting+=(_,e)=>{
-   if(e.RowIndex!=-1||e.ColumnIndex<0||e.Graphics==null)return;e.PaintBackground(e.ClipBounds,false);
+   if(R2.Is(grid)||e.RowIndex!=-1||e.ColumnIndex<0||e.Graphics==null)return;e.PaintBackground(e.ClipBounds,false);
    int pad=(int)Math.Round(10*DeviceDpi/96f);var rect=e.CellBounds;rect.Inflate(-pad,0);
    TextRenderer.DrawText(e.Graphics,grid.Columns[e.ColumnIndex].HeaderText,grid.ColumnHeadersDefaultCellStyle.Font,rect,Theme.Muted,
     TextFormatFlags.VerticalCenter|TextFormatFlags.SingleLine|TextFormatFlags.NoPrefix|TextFormatFlags.NoPadding|(e.ColumnIndex is 1 or 2?TextFormatFlags.Right:TextFormatFlags.Left));
@@ -97,8 +126,8 @@ internal sealed class HistoryForm:ProductForm {
  protected override void OnLoad(EventArgs e){
   base.OnLoad(e);float k=DeviceDpi/96f;int padding=(int)Math.Round(10*k);
   grid.DefaultCellStyle.Padding=grid.ColumnHeadersDefaultCellStyle.Padding=new(padding,0,padding,0);
-  grid.ColumnHeadersHeight=(int)(34*k);grid.RowTemplate.Height=(int)(32*k);
-  foreach(DataGridViewRow row in grid.Rows)row.Height=(int)(32*k);
+  grid.ColumnHeadersHeight=(int)(34*k);grid.RowTemplate.Height=(int)(25*k);
+  foreach(DataGridViewRow row in grid.Rows)row.Height=(int)(25*k);
   // ProductForm restores logical Tag heights during initial DPI setup; apply responsive rows last.
   relayoutToolbars?.Invoke();
  }
@@ -126,13 +155,16 @@ internal sealed class HistoryForm:ProductForm {
  static void SetItems(DarkChoice choice,string[] keys){for(int i=0;i<keys.Length;i++)choice.Items[i]=L.T("History."+keys[i]);choice.Invalidate();}
  void SetStatus(string key,params object[] args){statusKey="History."+key;statusArgs=args;status.Text=L.T(statusKey,args);}
  void UpdateModeButtons(){
-  if(latest is QuietButton a){a.Primary=trend.Latest;a.Invalidate();}
-  if(full is QuietButton b){b.Primary=!trend.Latest;b.Invalidate();}
+  if(latest is QuietButton a){a.Selected=trend.Latest&&!eventView.Visible;a.Invalidate();}
+  if(full is QuietButton b){b.Selected=!trend.Latest&&!eventView.Visible;b.Invalidate();}
+  if(eventFocus is QuietButton c){c.Selected=eventView.Visible;c.Invalidate();}
+  resetViewport.Enabled=!trend.Latest&&!eventView.Visible;
   latest.AccessibleDescription=L.T(trend.Latest?"History.SelectedView":"History.SelectView");
-  full.AccessibleDescription=L.T(!trend.Latest?"History.SelectedView":"History.SelectView");
+  full.AccessibleDescription=L.T(!trend.Latest&&!eventView.Visible?"History.SelectedView":"History.SelectView");
+  eventFocus.AccessibleDescription=L.T(eventView.Visible?"History.SelectedView":"History.SelectView");
  }
  internal void SetChartMode(bool useLatest){
-  trend.Latest=useLatest;service.Settings.ChartView=useLatest?"LATEST":"FULL";service.SaveSettings();UpdateModeButtons();
+  eventView.Visible=false;trend.Visible=true;goldRail.Visible=trend.GoldEvents.Any(x=>x.Full);goldActions.Visible=false;if(recordsSection!=null)recordsSection.Visible=true;if(historyDivider!=null)historyDivider.Visible=true;trend.Latest=useLatest;service.Settings.ChartView=useLatest?"LATEST":"FULL";service.SaveSettings();UpdateModeButtons();
  }
  internal static bool TryDateRange(string begin,string end,TimeZoneInfo zone,out DateTimeOffset first,out DateTimeOffset last,out string error){
   first=last=default;error="";
@@ -151,6 +183,7 @@ internal sealed class HistoryForm:ProductForm {
  HistoryFilter Filter()=>activeFilter??new(DailyUsageCalculator.Boundary(DateOnly.FromDateTime(DateTime.Today),TimeZoneInfo.Local),DateTimeOffset.UtcNow,"codex",10080);
  internal HistoryFilter ExportRange=>Filter();
  internal IReadOnlyList<UsageSample> ChartRows=>trend.DisplayRows;
+ internal TrendView TrendForTest=>trend;internal EventFocusEvidence? FocusEvidence=>eventView.Evidence;internal bool IsEventFocusVisible=>eventView.Visible;
  internal int DisplayRecordCount=>visibleRows.Count;
  internal int CurrentPage=>page;
  internal int QueryGeneration=>request;
@@ -158,20 +191,23 @@ internal sealed class HistoryForm:ProductForm {
   if(!ReadFilter(out var f))return;
   query?.Cancel();query?.Dispose();query=new();var token=query.Token;int generation=++request;
   busy=true;previous.Enabled=next.Enabled=false;foreach(var c in exportControls)c.Enabled=false;SetStatus("Loading");
+  loadingShell.Text=L.T("History.Loading");loadingShell.Visible=true;
   try{
    // One bounded store snapshot per date/pool query. Page, language and chart switches use the snapshot.
    var data=await Task.Run(()=>{
     List<UsageSample> Read(HistoryFilter filter){var result=new List<UsageSample>();foreach(var row in service.History.Query<UsageSample>(filter)){token.ThrowIfCancellationRequested();result.Add(row);}token.ThrowIfCancellationRequested();result.Sort((a,b)=>a.observed_at_utc.CompareTo(b.observed_at_utc));return result;}
     var sampleRows=Read(f);var chartRows=f.Pool=="codex"&&f.Duration==10080?sampleRows:Read(f with{Pool="codex",Duration=10080});
     var eventRows=new List<UsageEvent>();foreach(var row in service.History.Query<UsageEvent>(f)){token.ThrowIfCancellationRequested();eventRows.Add(row);}
-    return(samples:sampleRows,chart:chartRows,events:eventRows);
+    var chartEvents=eventRows;if(f.Pool!="codex"||f.Duration!=10080){chartEvents=[];foreach(var row in service.History.Query<UsageEvent>(f with{Pool="codex",Duration=10080})){token.ThrowIfCancellationRequested();chartEvents.Add(row);}}
+    return(samples:sampleRows,chart:chartRows,events:eventRows,chartEvents);
    },token);
    if(IsDisposed||generation!=request)return;
-   rows=data.samples;events=data.events;activeFilter=f;previousById.Clear();UsageSample? previousSample=null;
+   eventView.Visible=false;eventView.Evidence=null;trend.Visible=true;if(recordsSection!=null)recordsSection.Visible=true;if(historyDivider!=null)historyDivider.Visible=true;
+   rows=data.samples;events=data.events;chartFocusRows=data.chart;chartFocusEvents=data.chartEvents;activeFilter=f;previousById.Clear();UsageSample? previousSample=null;
    foreach(var row in rows){previousById[row.sample_id]=previousSample;previousSample=row;}
-   trend.Rows=data.chart;busy=false;foreach(var c in exportControls)c.Enabled=true;SelectVisible();
+   trend.GoldEvents=LocalQuotaCycle.Derive(data.chart,DateTimeOffset.UtcNow);grid.GoldSampleIds=trend.GoldEvents.Where(x=>x.Full).Select(x=>x.after_sample_id).ToHashSet();trend.Rows=data.chart;goldRail.Visible=trend.GoldEvents.Any(x=>x.Full);goldActions.Visible=goldAction.Visible=false;loadingShell.Visible=false;busy=false;foreach(var c in exportControls)c.Enabled=true;SelectVisible();UpdateModeButtons();if(pendingFocusSample is {} id){pendingFocusSample=null;OpenEventFocusForSample(id);}
   }catch(OperationCanceledException){}
-  catch{if(!IsDisposed&&generation==request){busy=false;SetStatus("ReadFailed");previous.Enabled=next.Enabled=false;}}
+  catch{if(!IsDisposed&&generation==request){busy=false;SetStatus("ReadFailed");loadingShell.Text=L.T("History.ReadFailed");loadingShell.Visible=true;previous.Enabled=next.Enabled=false;}}
  }
  void SelectVisible(){
   if(busy)return;
@@ -209,7 +245,8 @@ internal sealed class HistoryForm:ProductForm {
   grid.SuspendLayout();grid.Rows.Clear();
   foreach(var c in sorted.Skip(page*PageSize).Take(PageSize)){
    var p=previousById.GetValueOrDefault(c.sample_id);
-   var idx=grid.Rows.Add(TrendView.Local(c.observed_at_utc,"yyyy-MM-dd HH:mm:ss"),Percent(c.used_percent_raw),Percent(c.remaining_percent),Change(p,c),RowStatus(p,c));
+   var cycle=trend.GoldEvents.FirstOrDefault(x=>x.after_sample_id==c.sample_id&&x.Full);
+   var idx=grid.Rows.Add(TrendView.Local(c.observed_at_utc,"yyyy-MM-dd HH:mm:ss"),Percent(c.used_percent_raw),Percent(c.remaining_percent),cycle!=null?L.T("History.RemainingChange","+"+TrendView.Number(cycle.delta_pp??0)):Change(p,c),RowStatus(p,c));
    var row=grid.Rows[idx];row.Tag=c;row.Cells[3].ToolTipText=L.T("History.ChangeTooltip");row.Cells[4].ToolTipText=RowStatus(p,c);
    if(c.sample_id==selected)grid.CurrentCell=row.Cells[0];
   }
@@ -218,12 +255,19 @@ internal sealed class HistoryForm:ProductForm {
   if(!busy)SetStatus(service.History.SaveError==null?"PageStatus":"PageStatusUnsaved",visibleRows.Count==0?0:page+1,Math.Max(1,(visibleRows.Count+PageSize-1)/PageSize),visibleRows.Count);
  }
  void UpdateDetail(){
-  if(grid.CurrentRow?.Tag is not UsageSample c){detail.Text=L.T("History.SelectDetail");return;}
+  if(grid.CurrentRow?.Tag is UsageSample selected)trend.SelectGoldSample(selected.sample_id);
+  if(grid.CurrentRow?.Tag is not UsageSample c){detail.Text=L.T("History.SelectDetail");eventFocus.Enabled=false;return;}
   var p=previousById.GetValueOrDefault(c.sample_id);
   string qualityText=L.T(c.data_quality=="VALID"?"History.ValidData":"History.SourceIssue");
   string assurance=L.T(c.context_assurance=="STABLE_SCOPE"?"History.ScopeVerified":"History.ScopeLimited");
   detail.Text=L.T("History.DetailText",TrendView.Local(c.observed_at_utc,"yyyy-MM-dd HH:mm:ss zzz"),c.limit_id,c.window_duration_mins?.ToString(CultureInfo.InvariantCulture)??"—",RowStatus(p,c),assurance,qualityText);
+  eventFocus.Enabled=FindEvent(c.sample_id)!=null;if(eventView.Visible)ShowEventFocus(FindEvent(c.sample_id));
  }
+
+ UsageEvent? FindEvent(string sampleId)=>EventFocusEvidence.FocusEvents(events.Concat(chartFocusEvents).Where(x=>x.current_sample_id==sampleId)).FirstOrDefault();
+ void OpenSelectedEventFocus(){if(grid.CurrentRow?.Tag is not UsageSample sample||FindEvent(sample.sample_id) is not {} found){SetStatus("NoEventForFocus");return;}ShowEventFocus(found);}
+ void ShowEventFocus(UsageEvent? entry){eventView.Evidence=entry==null?null:EventFocusEvidence.Build(entry,chartFocusRows.Any(x=>x.sample_id==entry.current_sample_id)?chartFocusRows:rows,service.Radar.Snapshot(),DateTimeOffset.UtcNow);eventFocus.Enabled=entry!=null;eventView.Visible=true;trend.Visible=false;goldRail.Visible=false;if(recordsSection!=null)recordsSection.Visible=false;if(historyDivider!=null)historyDivider.Visible=false;UpdateModeButtons();if(IsHandleCreated)BeginInvoke((Action)(()=>{if(!IsDisposed&&eventView.Visible){Body.PerformLayout();var point=Body.PointToClient(eventView.PointToScreen(Point.Empty));Body.AutoScrollPosition=new Point(0,-Body.AutoScrollPosition.Y+point.Y-10);}}));}
+ internal bool OpenEventFocusForSample(string sampleId){var found=FindEvent(sampleId);if(found==null)return false;ShowEventFocus(found);return true;}
  public async Task ExportCsv(){
   var filter=Filter();SetStatus("ExportingCsv");
   try{LastExport=await Task.Run(()=>ReportExporter.ExportCsv(service,filter));if(!IsDisposed)SetStatus("CsvDone",Path.GetFileName(LastExport));}
@@ -244,3 +288,4 @@ internal sealed class HistoryForm:ProductForm {
  public string? LastExport{get;private set;}
  internal record EventNote(string Text,string EventType,DateTimeOffset From,DateTimeOffset To);
 }
+

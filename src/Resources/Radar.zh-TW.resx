@@ -107,9 +107,237 @@
     <value>尚無可比較的本機回升與此公告連結。
 官方公告不能證明本帳號的重置原因。</value>
   </data>
-
-<data name="SuggestCreditGrant" xml:space="preserve"><value>這是重置券發放公告，不代表額度會自動補滿。</value></data>
-<data name="SuggestMechanism" xml:space="preserve"><value>這是重置方式或購買說明，不代表額度會自動補滿。</value></data>
-<data name="CreditGrantTime" xml:space="preserve"><value>發券時間 · 本機時間</value></data>
-<data name="NoticeTime" xml:space="preserve"><value>公告時間 · 本機時間</value></data>
+  <data name="SuggestCreditGrant" xml:space="preserve">
+    <value>這是重置券發放公告，不代表額度會自動補滿。</value>
+  </data>
+  <data name="SuggestMechanism" xml:space="preserve">
+    <value>這是重置方式或購買說明，不代表額度會自動補滿。</value>
+  </data>
+  <data name="CreditGrantTime" xml:space="preserve">
+    <value>發券時間 · 本機時間</value>
+  </data>
+  <data name="NoticeTime" xml:space="preserve">
+    <value>公告時間 · 本機時間</value>
+  </data>
+  <data name="PageTitle" xml:space="preserve">
+    <value>Reset Radar</value>
+  </data>
+  <data name="CheckNow" xml:space="preserve">
+    <value>立即檢查</value>
+  </data>
+  <data name="Checking" xml:space="preserve">
+    <value>檢查中…</value>
+  </data>
+  <data name="ShowDetails" xml:space="preserve">
+    <value>顯示來源詳情</value>
+  </data>
+  <data name="HideDetails" xml:space="preserve">
+    <value>隱藏來源詳情</value>
+  </data>
+  <data name="ShowHow" xml:space="preserve">
+    <value>Radar 如何判斷？</value>
+  </data>
+  <data name="HideHow" xml:space="preserve">
+    <value>隱藏判斷說明</value>
+  </data>
+  <data name="StatusWatch" xml:space="preserve">
+    <value>注意</value>
+  </data>
+  <data name="StatusIncoming" xml:space="preserve">
+    <value>即將重置</value>
+  </data>
+  <data name="StatusCompleted" xml:space="preserve">
+    <value>已完成</value>
+  </data>
+  <data name="StatusNotice" xml:space="preserve">
+    <value>重置公告更新</value>
+  </data>
+  <data name="StatusNone" xml:space="preserve">
+    <value>目前沒有重置訊號</value>
+  </data>
+  <data name="StatusWatchSummary" xml:space="preserve">
+    <value>偵測到可追溯、值得注意的 Reset 訊號；時間與適用範圍仍未充分確認。</value>
+  </data>
+  <data name="StatusIncomingSummary" xml:space="preserve">
+    <value>較高可信的公開訊號提供預期 Reset 時間或 rollout 資訊，現在值得納入額度決策；不保證個別帳號一定重置。</value>
+  </data>
+  <data name="StatusCompletedSummary" xml:space="preserve">
+    <value>來源記載重置已完成；本機額度證據會分開判斷。</value>
+  </data>
+  <data name="StatusNoticeSummary" xml:space="preserve">
+    <value>先前公告的重置已取消或有重大修訂。</value>
+  </data>
+  <data name="StatusNoneSummary" xml:space="preserve">
+    <value>目前沒有公開證據符合「注意」或「即將重置」規則。</value>
+  </data>
+  <data name="HealthSummary" xml:space="preserve">
+    <value>上次檢查 {0} · 涵蓋度 {1} · {2}/{3} 個來源正常</value>
+  </data>
+  <data name="CoverageLevelGOOD" xml:space="preserve">
+    <value>良好</value>
+  </data>
+  <data name="CoverageLevelPARTIAL" xml:space="preserve">
+    <value>部分</value>
+  </data>
+  <data name="CoverageLevelLIMITED" xml:space="preserve">
+    <value>有限</value>
+  </data>
+  <data name="CoverageLevelOFF" xml:space="preserve">
+    <value>已關閉</value>
+  </data>
+  <data name="SignalsHeading" xml:space="preserve">
+    <value>目前訊號</value>
+  </data>
+  <data name="SourcesHeading" xml:space="preserve">
+    <value>監測來源</value>
+  </data>
+  <data name="BadgeWatch" xml:space="preserve">
+    <value>注意</value>
+  </data>
+  <data name="BadgeIncoming" xml:space="preserve">
+    <value>即將重置</value>
+  </data>
+  <data name="BadgeCompleted" xml:space="preserve">
+    <value>已完成</value>
+  </data>
+  <data name="BadgeObserved" xml:space="preserve">
+    <value>本機已觀察</value>
+  </data>
+  <data name="BadgeNotice" xml:space="preserve">
+    <value>公告</value>
+  </data>
+  <data name="EventWatchTitle" xml:space="preserve">
+    <value>值得注意的 Reset 訊號</value>
+  </data>
+  <data name="EventIncomingTitle" xml:space="preserve">
+    <value>來源提供 Reset 時間或 rollout 訊號</value>
+  </data>
+  <data name="EventObservedTitle" xml:space="preserve">
+    <value>本機觀察到額度回升</value>
+  </data>
+  <data name="EventCompletedTitle" xml:space="preserve">
+    <value>來源記載重置已完成</value>
+  </data>
+  <data name="EventNoticeTitle" xml:space="preserve">
+    <value>重置相關公告</value>
+  </data>
+  <data name="Published" xml:space="preserve">
+    <value>發布時間 {0}</value>
+  </data>
+  <data name="ExpectedReset" xml:space="preserve">
+    <value>預計重置 · 本機時間</value>
+  </data>
+  <data name="SourceValue" xml:space="preserve">
+    <value>來源：{0}</value>
+  </data>
+  <data name="OpenOriginal" xml:space="preserve">
+    <value>開啟原始貼文</value>
+  </data>
+  <data name="OpenRelay" xml:space="preserve">
+    <value>開啟轉載頁面</value>
+  </data>
+  <data name="NeverChecked" xml:space="preserve">
+    <value>從未檢查</value>
+  </data>
+  <data name="JustNow" xml:space="preserve">
+    <value>剛剛</value>
+  </data>
+  <data name="MinutesAgo" xml:space="preserve">
+    <value>{0} 分鐘前</value>
+  </data>
+  <data name="HoursAgo" xml:space="preserve">
+    <value>{0} 小時前</value>
+  </data>
+  <data name="DaysAgo" xml:space="preserve">
+    <value>{0} 天前</value>
+  </data>
+  <data name="HealthHealthy" xml:space="preserve">
+    <value>正常</value>
+  </data>
+  <data name="HealthUnchanged" xml:space="preserve">
+    <value>正常 · 無變更</value>
+  </data>
+  <data name="HealthDegraded" xml:space="preserve">
+    <value>暫時無法使用</value>
+  </data>
+  <data name="HealthBlocked" xml:space="preserve">
+    <value>遭阻擋</value>
+  </data>
+  <data name="HealthNotChecked" xml:space="preserve">
+    <value>尚未檢查</value>
+  </data>
+  <data name="HealthStale" xml:space="preserve">
+    <value>資料過舊</value>
+  </data>
+  <data name="SourceOfficial" xml:space="preserve">
+    <value>OpenAI 官方</value>
+  </data>
+  <data name="SourceStatus" xml:space="preserve">
+    <value>OpenAI Status · 僅作輔助背景</value>
+  </data>
+  <data name="SourceRelay" xml:space="preserve">
+    <value>團隊訊號轉載</value>
+  </data>
+  <data name="SourceThirdParty" xml:space="preserve">
+    <value>第三方來源</value>
+  </data>
+  <data name="SourceDetail" xml:space="preserve">
+    <value>{0}
+   健康狀態：{1} · 上次成功：{2} · 上次嘗試：{3}
+   HTTP：{4} · 下次檢查：{5} · 候選數：{6}</value>
+  </data>
+  <data name="HowText" xml:space="preserve">
+    <value>「注意」需要可追溯的團隊訊號，但可能還沒有可靠時間。「即將重置」需要明確的自動重置文字、推出證據或可用的重置時間。OpenAI Status 事件只作輔助背景。重置券絕不視為額度自動補滿。本機回升會分開記錄；時間相關不代表因果。</value>
+  </data>
+  <data name="SignalStatus" xml:space="preserve">
+    <value>訊號狀態：{0}</value>
+  </data>
+  <data name="SignalActiveWatch" xml:space="preserve">
+    <value>重置觀察中</value>
+  </data>
+  <data name="SignalActiveIncoming" xml:space="preserve">
+    <value>重置即將發生</value>
+  </data>
+  <data name="SignalInactive" xml:space="preserve">
+    <value>目前無有效訊號</value>
+  </data>
+  <data name="ReadStatus" xml:space="preserve">
+    <value>閱讀狀態：{0}</value>
+  </data>
+  <data name="ReadRead" xml:space="preserve">
+    <value>已讀</value>
+  </data>
+  <data name="ReadUnread" xml:space="preserve">
+    <value>未讀</value>
+  </data>
+  <data name="SuggestWatch" xml:space="preserve">
+    <value>偵測到值得注意的 Reset 訊號。目前沒有可靠的 Reset 時間。
+• 可先保留完整 Reset 券
+• 可留意原始來源與社群後續討論
+• 不需因目前訊號刻意消耗額度</value>
+  </data>
+  <data name="CoverageTitle" xml:space="preserve">
+    <value>Radar 來源涵蓋率</value>
+  </data>
+  <data name="CoverageScanning" xml:space="preserve">
+    <value>正在掃描來源…</value>
+  </data>
+  <data name="CoverageRingDisabled" xml:space="preserve">
+    <value>Radar 已停用</value>
+  </data>
+  <data name="CoverageReadable" xml:space="preserve">
+    <value>{0} / {1} 個來源可讀</value>
+  </data>
+  <data name="CoverageOfficial" xml:space="preserve">
+    <value>官方來源</value>
+  </data>
+  <data name="CoverageTeam" xml:space="preserve">
+    <value>團隊訊號</value>
+  </data>
+  <data name="CoverageCommunity" xml:space="preserve">
+    <value>社群來源</value>
+  </data>
+  <data name="CoverageUpdated" xml:space="preserve">
+    <value>最近檢查：{0}</value>
+  </data>
 </root>

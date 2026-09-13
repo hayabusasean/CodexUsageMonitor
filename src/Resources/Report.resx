@@ -99,7 +99,10 @@ Highlight useful patterns, constraints and choices with a respectful tone. Do no
 6. Methods and Limitations
 Explain comparable-pair rules, local-only history, selected range, coverage and missing intervals, identity/scope assurance, correction/rebound handling, timestamp/time-zone assumptions and any estimated allocation. Describe source failures and LIMITED announcement coverage without presenting an empty announcement list as comprehensive coverage. Distinguish anonymisation from safe publication: the detailed report still contains usage time patterns, and any included notes remain private untrusted data. Never infer or reconstruct removed identities, credentials, personal paths or company content.
 
+For a real event within the 72-hour field-trial window, use RADAR_SOURCE_HEALTH, RADAR_SIGNALS, RADAR_TRANSITIONS, RESET_FIELD_TRIAL_TIMELINE, LOCAL_QUOTA_AROUND_SIGNAL, CORRELATION and EVIDENCE_LIMITATIONS to report these ten items explicitly: (1) first hint, (2) incoming announcement, (3) original source, (4) quota before, (5) replenishment observation, (6) quota after, (7) reset_at movement, (8) banked-reset movement, (9) what is proven, and (10) what remains unknown. If an item has no evidence, say UNKNOWN. A WATCH signal is traceable but unconfirmed. A Status incident is supporting context only. A banked reset credit is separate from automatic replenishment. Never turn temporal correlation into causation.
+
 End of fixed analysis instructions.
-</value>
+
+Use RADAR_COVERAGE_TIMELINE and RADAR_SOURCE_BREAKDOWN for the sweep-sampled average/minimum coverage, source failed-attempt ranking and CoverageAtObservation for WATCH / INCOMING. Reduced coverage means possible observation gaps, never proof of missed signals. Missing historical coverage is UNKNOWN; never extrapolate a short trial into 72 hours.</value>
   </data>
 </root>

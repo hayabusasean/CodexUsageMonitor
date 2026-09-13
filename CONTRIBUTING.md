@@ -26,7 +26,7 @@ The script prefers an existing project-local **.tools/dotnet10/dotnet.exe**, the
 
 Use **-ValidateOnly** to check prerequisites and resources without building. The SDK baseline is **10.0.400**, recorded in **global.json**.
 
-The public fixture entry point is **--public-test --test-root <isolated-folder>**. Focused groups are **--public-history-test**, **--public-radar-test** and **--public-report-test**. Use isolated data roots and clearly labelled fixtures; never put Codex credentials in CI.
+The public fixture entry point is **--public-test --test-root <isolated-folder>**. History cases are included in **--public-test**. Focused groups are **--public-radar-test** and **--public-report-test**. Use isolated data roots and clearly labelled fixtures; never put Codex credentials in CI.
 
 Fixture results do not replace native UI review or real account integration. UI and resource changes need checks from the published single EXE in both languages, including a path containing Chinese characters and spaces. Keep satellite resource DLLs absent when checking the portable app.
 

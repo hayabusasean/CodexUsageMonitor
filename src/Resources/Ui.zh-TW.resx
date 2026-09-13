@@ -210,6 +210,21 @@
   <data name="Overlay.AlertTip" xml:space="preserve">
     <value>新的 Codex 重置公告</value>
   </data>
+  <data name="Overlay.AlertWatchTip" xml:space="preserve">
+    <value>新的重置觀察訊號</value>
+  </data>
+  <data name="Overlay.AlertWatchReadTip" xml:space="preserve">
+    <value>重置觀察 — 已查看，訊號仍有效</value>
+  </data>
+  <data name="Overlay.AlertIncomingTip" xml:space="preserve">
+    <value>新的重置即將發生訊號</value>
+  </data>
+  <data name="Overlay.AlertIncomingReadTip" xml:space="preserve">
+    <value>重置即將發生 — 已查看，訊號仍有效</value>
+  </data>
+  <data name="Overlay.AlertCompletedTip" xml:space="preserve">
+    <value>Reset Radar 已完成公告 — 開啟詳情</value>
+  </data>
   <data name="Overlay.ModeName" xml:space="preserve">
     <value>切換顯示模式</value>
   </data>
@@ -344,7 +359,7 @@
     <value>版本 {0} · Windows x64 · 未簽章</value>
   </data>
   <data name="About.License" xml:space="preserve">
-    <value>正式發布前尚待確認授權及著作權人。</value>
+    <value>MIT License — Copyright (c) 2026 hayabusasean.</value>
   </data>
   <data name="About.DiagnosticsPreview" xml:space="preserve">
     <value>安全診斷預覽</value>
@@ -412,4 +427,12 @@
   <data name="State.Protocol" xml:space="preserve">
     <value>Codex 連線已中斷，將自動重連。</value>
   </data>
-<data name="State.Policy" xml:space="preserve"><value>Codex 存取遭拒；程式會重試，不變更安全設定。</value></data><data name="State.Account" xml:space="preserve"><value>請使用支援的 ChatGPT 帳號登入官方 Codex；不支援僅有 API Key 的帳號。</value></data><data name="Overlay.SignInRequired" xml:space="preserve"><value>請登入 Codex</value></data><data name="Overlay.Unsupported" xml:space="preserve"><value>Codex 版本不支援</value></data><data name="Overlay.AccessDenied" xml:space="preserve"><value>存取遭拒</value></data><data name="Overlay.Offline" xml:space="preserve"><value>離線 · 正在重試</value></data><data name="Overlay.WeeklyUnavailable" xml:space="preserve"><value>來源未提供每週額度</value></data><data name="Overlay.UpdateFailed" xml:space="preserve"><value>暫時無法更新</value></data><data name="Common.Open" xml:space="preserve"><value>開啟</value></data></root>
+<data name="State.Policy" xml:space="preserve"><value>Codex 存取遭拒；程式會重試，不變更安全設定。</value></data><data name="State.Account" xml:space="preserve"><value>請使用支援的 ChatGPT 帳號登入官方 Codex；不支援僅有 API Key 的帳號。</value></data><data name="Overlay.SignInRequired" xml:space="preserve"><value>請登入 Codex</value></data><data name="Overlay.Unsupported" xml:space="preserve"><value>Codex 版本不支援</value></data><data name="Overlay.AccessDenied" xml:space="preserve"><value>存取遭拒</value></data><data name="Overlay.Offline" xml:space="preserve"><value>離線 · 正在重試</value></data><data name="Overlay.WeeklyUnavailable" xml:space="preserve"><value>來源未提供每週額度</value></data><data name="Overlay.UpdateFailed" xml:space="preserve"><value>暫時無法更新</value></data><data name="Common.Open" xml:space="preserve"><value>開啟</value></data><data name="Overlay.CountdownNormal" xml:space="preserve"><value>距離下一次額度更新還有 {0} 秒</value></data><data name="Overlay.CountdownRetry" xml:space="preserve"><value>更新失敗，{0} 秒後重試。</value></data><data name="Overlay.CountdownNow" xml:space="preserve"><value>正在更新額度</value></data><data name="Overlay.CountdownUnscheduled" xml:space="preserve"><value>尚未建立額度更新排程。</value></data><data name="Overlay.CountdownPaused" xml:space="preserve"><value>額度監測已暫停。</value></data><data name="Overlay.CountdownPausedShort" xml:space="preserve"><value>暫停</value></data><data name="Overlay.CountdownOff" xml:space="preserve"><value>目前無法連線至額度來源。</value></data><data name="Overlay.CountdownOffShort" xml:space="preserve"><value>離線</value></data>
+
+
+
+
+
+
+
+</root>

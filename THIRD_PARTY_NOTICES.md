@@ -1,6 +1,6 @@
 # Third-party notices
 
-The candidate uses .NET 10 and Windows Forms, published as a self-contained Windows x64 executable. The initial local SDK is 10.0.400 with runtime patch 10.0.11. Exact versions are recorded with each build; the SDK is a developer tool and is not distributed in the portable app.
+The application uses .NET 10 and Windows Forms, published as a self-contained Windows x64 executable. The initial local SDK is 10.0.400 with runtime patch 10.0.11. Exact versions are recorded with each build; the SDK is a developer tool and is not distributed in the portable app.
 
 | Component | Notice |
 | --- | --- |
@@ -17,7 +17,7 @@ Preserve the verbatim files in the portable package's licenses/ directory:
 - WINDOWSDESKTOP-LICENSE.txt
 - MICROSOFT-THIRD-PARTY-NOTICES.txt
 
-These notices came from the existing local runtime/tool distribution. The proposed project MIT licence does not replace any third-party terms. The exact files remain the authoritative notices for the included components.
+These notices came from the existing local runtime/tool distribution. The project MIT licence does not replace any third-party terms. The exact files remain the authoritative notices for the included components.
 
 No external icon package or redistributed font is introduced. Code-drawn product controls do not imply OpenAI affiliation. OpenAI and Codex names identify the compatible external product.
 
@@ -28,3 +28,5 @@ Official actions are pinned to verified release commits:
 - [actions/upload-artifact v4.6.2](https://github.com/actions/upload-artifact/commit/ea165f8d65b6e75b540449e92b4886f43607fa02)
 
 Their repository licences govern their use. Listing them does not claim a workflow run or public publication.
+
+The four decorative backgrounds were generated for this project with image generation; UI controls, charts and screenshot data are rendered by the application. No fonts are redistributed.

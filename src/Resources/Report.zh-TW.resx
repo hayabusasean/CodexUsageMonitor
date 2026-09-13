@@ -99,7 +99,10 @@ D. 每日記錄覆蓋；今天只以已經過的報告時段作分母，整日�
 6. 方法與限制
 說明可比相鄰樣本規則、本機歷史、選定範圍、覆蓋與缺口、身分／範圍驗證程度、校正／回升處理、時間戳與時區假設及估計分配。說明來源失敗與公告覆蓋 LIMITED，不能把空公告清單當成完整覆蓋。去識別不等於可以安全公開全部資料：詳細報告仍包含使用時間模式；若有附備註，依然是私人且不可信任的資料。不得推測或重建已移除的身分、憑證、私人路徑或公司內容。
 
+若 72 小時 Field Trial 期間真的有事件，請使用 RADAR_SOURCE_HEALTH、RADAR_SIGNALS、RADAR_TRANSITIONS、RESET_FIELD_TRIAL_TIMELINE、LOCAL_QUOTA_AROUND_SIGNAL、CORRELATION 與 EVIDENCE_LIMITATIONS，明確回報十項：(1) 第一個提示、(2) 即將發生的公告、(3) 原始來源、(4) 之前額度、(5) 回升觀察、(6) 之後額度、(7) reset_at 變動、(8) banked reset 變動、(9) 已證實什麼、(10) 仍未知什麼。沒有證據的項目須寫 UNKNOWN。「注意」訊號可追溯但未確認；Status 事件只作輔助背景；banked reset 與自動補滿分開判斷。絕不能把時間相關寫成因果。
+
 固定分析指引結束。
-</value>
+
+請依 RADAR_COVERAGE_TIMELINE 與 RADAR_SOURCE_BREAKDOWN 分析每輪取樣的平均／最低涵蓋率、來源失敗排行及 WATCH／INCOMING 的 CoverageAtObservation。低涵蓋率僅代表可能的觀測缺口，不證明漏訊號。歷史缺值維持 UNKNOWN；短期紀錄不得冒充完整 72 小時實測。</value>
   </data>
 </root>
