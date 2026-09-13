@@ -4,7 +4,7 @@
 
 [English](README.md) · 繁體中文
 
-[下載 Windows x64 版 v0.4.0](https://github.com/hayabusasean/CodexUsageMonitor/releases/tag/v0.4.0) · [看第一次重置的故事](docs/stories/first-reset.zh-TW.md) · [回報問題](https://github.com/hayabusasean/CodexUsageMonitor/issues)
+[下載 Windows x64 版 v0.4.1](https://github.com/hayabusasean/CodexUsageMonitor/releases/tag/v0.4.1) · [看第一次重置的故事](docs/stories/first-reset.zh-TW.md) · [回報問題](https://github.com/hayabusasean/CodexUsageMonitor/issues)
 
 <p><img src="docs/screenshots/gold/compact-crop.png" width="236" alt="實際小浮窗：每週剩餘78%、下次讀取倒數66秒、雷達來源可讀率67%"></p>
 
@@ -14,7 +14,7 @@
 
 ## 怎麼開始
 
-先安裝並登入官方 Codex。接著到下載頁選 **`CodexUsageMonitor-v0.4.0-win-x64.zip`**，整包解壓縮，打開 **`CodexUsageMonitor.exe`**。不用 Installer，也不用把 API Key 交給這個工具。GitHub 自動列出的 **Source code** 是原始碼，不是一般使用者的執行包。
+先安裝並登入官方 Codex。接著到下載頁選 **`CodexUsageMonitor-v0.4.1-win-x64.zip`**，整包解壓縮，打開 **`CodexUsageMonitor.exe`**。不用 Installer，也不用把 API Key 交給這個工具。GitHub 自動列出的 **Source code** 是原始碼，不是一般使用者的執行包。
 
 拖曳浮窗就能移動；角落的小按鈕可切換顯示模式，右鍵可開使用紀錄、重置公告與設定。秒數代表**下次讀取額度還要多久**，不是重置保證倒數。資料存於 `%LOCALAPPDATA%\CodexUsageMonitor`，不放 EXE 旁邊。
 

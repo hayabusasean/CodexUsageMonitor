@@ -6,6 +6,54 @@ namespace CodexUsageMonitor;
 
 // Synthetic fixture checks of the actual exporter. No account connection, model turn or network request.
 internal static class PublicReportTests {
+ // Gold report schema, independently fixed in tests: removing or substituting a section must fail.
+ internal static readonly string[] ExpectedSectionNames=[
+  "00_REPORT_HEADER",
+  "01_CEO_SUMMARY",
+  "02_ENVIRONMENT",
+  "03_SOURCE_INVENTORY",
+  "04_SAMPLES",
+  "05_OBSERVATION_INTERVALS",
+  "06_DAILY_USAGE",
+  "07_HOURLY_USAGE",
+  "08_EVENTS",
+  "09_GAPS_AND_QUALITY",
+  "10_RESET_AND_CREDITS",
+  "11_SERVICE_TOKEN_ACTIVITY",
+  "12_DIAGNOSTICS",
+  "13_PERFORMANCE",
+  "14_DATA_DICTIONARY",
+  "15_INTEGRITY",
+  "16_ANNOUNCEMENT_SUMMARY",
+  "17_ANNOUNCEMENT_EVENTS",
+  "18_ANNOUNCEMENT_SOURCE_STATUS",
+  "19_RESET_CORRELATION",
+  "20_RESET_CLASSIFICATION",
+  "21_READ_STATE",
+  "CORRELATION",
+  "EVENT_FOCUS",
+  "EVIDENCE_LIMITATIONS",
+  "LOCAL_QUOTA_AROUND_SIGNAL",
+  "LOCAL_QUOTA_CYCLE_EVENTS",
+  "RADAR_ATTENTION_DISPOSITIONS",
+  "RADAR_COVERAGE_TIMELINE",
+  "RADAR_SIGNALS",
+  "RADAR_SOURCE_BREAKDOWN",
+  "RADAR_SOURCE_HEALTH",
+  "RADAR_TRANSITIONS",
+  "RESET_FIELD_TRIAL_TIMELINE"];
+ internal static bool HasExpectedSectionContract(string file){
+  var rows=File.ReadLines(file).Where(x=>x.StartsWith("{",StringComparison.Ordinal)).Select(x=>JsonSerializer.Deserialize<JsonElement>(x)).ToArray();
+  var integrity=rows.Single(x=>x.GetProperty("record_type").GetString()=="DATA"&&x.GetProperty("section").GetString()=="15_INTEGRITY").GetProperty("data");
+  bool Exact(IEnumerable<string> actual,IEnumerable<string> expected)=>actual.Order(StringComparer.Ordinal).SequenceEqual(expected.Order(StringComparer.Ordinal));
+  return Exact(integrity.GetProperty("section_record_counts").EnumerateObject().Select(x=>x.Name),ExpectedSectionNames)
+   &&Exact(integrity.GetProperty("section_data_sha256").EnumerateObject().Select(x=>x.Name),ExpectedSectionNames)
+   &&integrity.GetProperty("section_data_sha256").GetProperty("15_INTEGRITY").GetString()=="EXCLUDED_BY_DEFINITION"
+   &&integrity.GetProperty("integrity_self_hash").GetString()=="EXCLUDED_BY_DEFINITION"
+   &&Exact(rows.Where(x=>x.GetProperty("record_type").GetString()=="SECTION_START").Select(x=>x.GetProperty("section").GetString()!),ExpectedSectionNames)
+   &&Exact(rows.Where(x=>x.GetProperty("record_type").GetString()=="SECTION_END").Select(x=>x.GetProperty("section").GetString()!),ExpectedSectionNames);
+ }
+
  sealed record CsvFixture(decimal? amount,string text,string empty);
  public static void Run(string[] args){
   int at=Array.IndexOf(args,"--test-root");string output=Path.GetFullPath(args[at+1]);Directory.CreateDirectory(output);
@@ -64,7 +112,7 @@ internal static class PublicReportTests {
     Assert(Csv.Records<UsageSample>(path).Count()==600,"CSV truncated by page");Assert(Csv.Records<UsageSample>(path).Any(x=>x.remaining_percent==99.9m),"decimal corrupted");
    }finally{CultureInfo.CurrentCulture=original;}
   });
-  Check("E04 all filtered samples context and 22 section counts hashes",()=>{
+  Check("E04 all filtered samples context and report section counts hashes",()=>{
    foreach(string file in new[]{en,zh}){
     var samples=Data(file,"04_SAMPLES");Assert(samples.Count(x=>!x.GetProperty("context_only").GetBoolean())==600,"paged/focused export");Assert(samples.Count(x=>x.GetProperty("context_only").GetBoolean())==1,"missing boundary context");
     VerifyIntegrity(file);
@@ -107,6 +155,7 @@ internal static class PublicReportTests {
  static List<JsonElement> Data(string path,string section)=>Records(path).Where(x=>x.TryGetProperty("section",out var s)&&s.GetString()==section&&x.GetProperty("record_type").GetString()=="DATA").Select(x=>x.GetProperty("data")).ToList();
  static string Hash(string text)=>Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(text))).ToLowerInvariant();
  internal static void VerifyIntegrity(string path){
+  if(!HasExpectedSectionContract(path))throw new InvalidOperationException("Gold report section contract changed");
   var integrity=Data(path,"15_INTEGRITY").Single();var counts=integrity.GetProperty("section_record_counts");var hashes=integrity.GetProperty("section_data_sha256");
   if(counts.EnumerateObject().Count()!=34||!counts.TryGetProperty("LOCAL_QUOTA_CYCLE_EVENTS",out _)||!counts.TryGetProperty("RADAR_ATTENTION_DISPOSITIONS",out _))throw new InvalidOperationException("expected 34 sections including local cycle events and scoped attention dispositions");
   var lines=File.ReadLines(path).Where(x=>x.StartsWith("{",StringComparison.Ordinal)).ToList();

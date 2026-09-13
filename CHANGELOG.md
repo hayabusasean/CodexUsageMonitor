@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.1] — 2026-09-13
+
+- Corrected an outdated CI test that still expected 29 report sections. The accepted Gold report already contains 34; tests now require the exact section names, framing and checksum keys.
+- No UI, quota semantics, report output or monitoring behavior changes.
+- v0.4.0 remains available as the first Gold release. This maintenance release is the recommended download.
+
 ## [0.4.0] — 2026-09-13
 
 ### Added

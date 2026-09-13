@@ -63,10 +63,10 @@ internal static class FinalDpiTests {
  }
  static void VerifyIntegrity(string file,string lang,Action<string,bool,object?> check){
   var lines=File.ReadAllLines(file);var rows=lines.Where(x=>x.StartsWith("{")).Select(x=>JsonSerializer.Deserialize<JsonElement>(x)).ToList();var integrity=rows.Single(x=>x.GetProperty("record_type").GetString()=="DATA"&&x.GetProperty("section").GetString()=="15_INTEGRITY").GetProperty("data");bool valid=true;
-  var counts=integrity.GetProperty("section_record_counts");valid&=counts.EnumerateObject().Count()==29;
+  var counts=integrity.GetProperty("section_record_counts");valid&=PublicReportTests.HasExpectedSectionContract(file);
   foreach(var section in counts.EnumerateObject()){
    var data=lines.Where(line=>{if(!line.StartsWith("{"))return false;var x=JsonSerializer.Deserialize<JsonElement>(line);return x.GetProperty("record_type").GetString()=="DATA"&&x.GetProperty("section").GetString()==section.Name;}).ToArray();valid&=data.Length==section.Value.GetInt32();if(section.Name!="15_INTEGRITY")valid&=Hash(Encoding.UTF8.GetBytes(string.Concat(data.Select(x=>x+"\n"))))==integrity.GetProperty("section_data_sha256").GetProperty(section.Name).GetString();
   }
-  check("Analysis Log29section integrity and bilingual fixed prompt "+lang,valid&&File.ReadAllText(file).StartsWith(ReportExporter.Prompt(lang)),null);
+  check("Analysis Log Gold section integrity and bilingual fixed prompt "+lang,valid&&File.ReadAllText(file).StartsWith(ReportExporter.Prompt(lang)),null);
  }
 }

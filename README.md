@@ -4,7 +4,7 @@
 
 English · [繁體中文](README.zh-TW.md)
 
-[Download v0.4.0 for Windows x64](https://github.com/hayabusasean/CodexUsageMonitor/releases/tag/v0.4.0) · [Read the reset story](docs/stories/first-reset.en.md) · [Report a bug](https://github.com/hayabusasean/CodexUsageMonitor/issues)
+[Download v0.4.1 for Windows x64](https://github.com/hayabusasean/CodexUsageMonitor/releases/tag/v0.4.1) · [Read the reset story](docs/stories/first-reset.en.md) · [Report a bug](https://github.com/hayabusasean/CodexUsageMonitor/issues)
 
 <p><img src="docs/screenshots/gold/compact-crop.png" width="236" alt="Real compact overlay showing 78% weekly quota remaining, 66 seconds to the next quota check, and 67% radar source readability"></p>
 
@@ -14,7 +14,7 @@ Free and open source. English by default, with a Traditional Chinese switch. Thi
 
 ## Start here
 
-Install and sign in to the official Codex first. Then download **`CodexUsageMonitor-v0.4.0-win-x64.zip`** from the release page, extract the whole folder, and run **`CodexUsageMonitor.exe`**. No installer or API key is required by this tool. GitHub's **Source code** archives are for building the project, not the ready-to-run app.
+Install and sign in to the official Codex first. Then download **`CodexUsageMonitor-v0.4.1-win-x64.zip`** from the release page, extract the whole folder, and run **`CodexUsageMonitor.exe`**. No installer or API key is required by this tool. GitHub's **Source code** archives are for building the project, not the ready-to-run app.
 
 Drag the overlay to move it. Use its small corner control to switch views, or right-click for history, reset announcements and settings. The seconds count down to the **next quota check**, not a promised reset. Data stays in `%LOCALAPPDATA%\CodexUsageMonitor`, separately from the EXE folder.
 

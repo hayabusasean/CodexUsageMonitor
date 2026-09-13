@@ -159,7 +159,7 @@ internal static class RadarFixTests {
     var header=Data(file,"00_REPORT_HEADER").Single();Assert(header.GetProperty("synthetic_test_data").GetBoolean()&&header.GetProperty("report_language").GetString()==language,"synthetic/language report metadata missing");
     var announcements=Data(file,"17_ANNOUNCEMENT_EVENTS").Select(x=>x.GetProperty("announcement")).ToList();Assert(announcements.Count==2&&announcements.Any(x=>x.GetProperty("Effect").GetString()=="BANKED_CREDIT_GRANT")&&announcements.Any(x=>x.GetProperty("Effect").GetString()=="AUTOMATIC_QUOTA_RESET"),"report lost separate event effects");
     Assert(announcements.All(x=>!string.IsNullOrWhiteSpace(x.GetProperty("OriginalId").GetString())&&!string.IsNullOrWhiteSpace(x.GetProperty("PublicationBasis").GetString())),"report lost source identity/publication provenance");
-    Assert(Data(file,"19_RESET_CORRELATION").Single().GetProperty("Cause").GetString()=="UNKNOWN","report promoted cause");Assert(Data(file,"21_READ_STATE").Count==2&&Data(file,"04_SAMPLES").Count==2,"report omitted read/observation records");VerifyIntegrity(file);files.Add(new{language,file=Path.GetFileName(file),sha256=Hash(File.ReadAllBytes(file)),section_count=29,events=announcements.Count,classification="SYNTHETIC"});
+    Assert(Data(file,"19_RESET_CORRELATION").Single().GetProperty("Cause").GetString()=="UNKNOWN","report promoted cause");Assert(Data(file,"21_READ_STATE").Count==2&&Data(file,"04_SAMPLES").Count==2,"report omitted read/observation records");VerifyIntegrity(file);files.Add(new{language,file=Path.GetFileName(file),sha256=Hash(File.ReadAllBytes(file)),section_count=PublicReportTests.ExpectedSectionNames.Length,events=announcements.Count,classification="SYNTHETIC"});
    }
    p.Stages.Add(new{stage="PRODUCTION_EXPORT",files,state});
   });
@@ -208,7 +208,7 @@ internal static class RadarFixTests {
  }
  static List<JsonElement> Data(string file,string section)=>File.ReadLines(file).Where(x=>x.StartsWith("{",StringComparison.Ordinal)).Select(x=>JsonSerializer.Deserialize<JsonElement>(x)).Where(x=>x.TryGetProperty("section",out var s)&&s.GetString()==section&&x.GetProperty("record_type").GetString()=="DATA").Select(x=>x.GetProperty("data")).ToList();
  static void VerifyIntegrity(string file){
-  var integrity=Data(file,"15_INTEGRITY").Single();var counts=integrity.GetProperty("section_record_counts");var hashes=integrity.GetProperty("section_data_sha256");Assert(counts.EnumerateObject().Count()==29,"stable report section count changed");
+  var integrity=Data(file,"15_INTEGRITY").Single();var counts=integrity.GetProperty("section_record_counts");var hashes=integrity.GetProperty("section_data_sha256");Assert(PublicReportTests.HasExpectedSectionContract(file),"Gold report section contract changed");
   foreach(var item in counts.EnumerateObject()){
    var lines=File.ReadLines(file).Where(x=>x.StartsWith("{",StringComparison.Ordinal)).Where(line=>{var r=JsonSerializer.Deserialize<JsonElement>(line);return r.TryGetProperty("section",out var s)&&s.GetString()==item.Name&&r.GetProperty("record_type").GetString()=="DATA";}).ToArray();Assert(lines.Length==item.Value.GetInt32(),"report count mismatch "+item.Name);
    if(item.Name!="15_INTEGRITY")Assert(Hash(string.Concat(lines.Select(x=>x+"\n")))==hashes.GetProperty(item.Name).GetString(),"report checksum mismatch "+item.Name);

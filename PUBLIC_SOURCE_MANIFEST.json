@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "kind": "PUBLIC_SOURCE_RELEASE",
-  "version": "0.4.0",
-  "informational_version": "0.4.0+gold",
+  "version": "0.4.1",
+  "informational_version": "0.4.1+gold",
   "repository": "https://github.com/hayabusasean/CodexUsageMonitor",
-  "tag": "v0.4.0",
+  "tag": "v0.4.1",
   "project_license": "MIT",
   "copyright": "Copyright (c) 2026 hayabusasean",
-  "exe_sha256": "102b1e330d7ba8484c1cfea7e38dfad4699b8900fe154d38501ea911c07f645a",
+  "exe_sha256": "258d58290470f9bfc357162c8869312de8eda33812d40a09e0fe040f95b050b8",
   "entry_count": 124,
   "files": [
     {
@@ -37,8 +37,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 3649,
-      "sha256": "1b22d0a8e134015bb6ccd5c8b15c21462847eac46297d896218d2b11a26a83b6"
+      "bytes": 4051,
+      "sha256": "f4b62b5d73c2a20a81e2792a53cda685fa695e7e1639a5727b6b2d4783e8aa5f"
     },
     {
       "path": "CONTRIBUTING.md",
@@ -207,18 +207,18 @@
     },
     {
       "path": "README.md",
-      "bytes": 6882,
-      "sha256": "dc6ff6610ea589ea54c45858cf46a693a688533e102c88b57b590fac49b31c93"
+      "bytes": 6982,
+      "sha256": "8c9074bd8c60f92ae98bd19219f3bad721f66a78148a781c30c54672929f3c75"
     },
     {
       "path": "README.zh-TW.md",
-      "bytes": 6242,
-      "sha256": "547725c098f276ff8ca12b90c5e2267efe4d7af5a3e3de6ebf7b83e5f728de22"
+      "bytes": 6344,
+      "sha256": "c040b4db6b4e56fe9081a9ce5a03701f5354094293c00315c133bff3d81b2f52"
     },
     {
       "path": "README_BUILD.md",
       "bytes": 1357,
-      "sha256": "59311635cad2e0757344dd79dfc5ff05f1be6b4c6ca47629432ee93c3ae76ac4"
+      "sha256": "9795c682590f3055de87af4fa64994e06b2fad1dd84fbb68a5a58b24bd54429a"
     },
     {
       "path": "SECURITY.md",
@@ -258,7 +258,7 @@
     {
       "path": "src/CodexUsageMonitor.csproj",
       "bytes": 1536,
-      "sha256": "5118d03397b822b51962418a3a214dec951567c8a361e248de1629dac9eea9d9"
+      "sha256": "3af7a0b45db2286512d8f9eed07ab51058311411c006d015107abde69189b90f"
     },
     {
       "path": "src/DailyUsageCalculator.cs",
@@ -277,8 +277,8 @@
     },
     {
       "path": "src/FinalDpiTests.cs",
-      "bytes": 8212,
-      "sha256": "bf045271cca375aaf4e0254afe04a98bf3d225d3cbe88724d44f6175b7e82af5"
+      "bytes": 8239,
+      "sha256": "50cb2f0138e9fa59db415529a65f1a5f3bdcf1c95b936e22e446d07b14931b13"
     },
     {
       "path": "src/FinalPhaseTests.cs",
@@ -328,7 +328,7 @@
     {
       "path": "src/L.cs",
       "bytes": 3455,
-      "sha256": "90b7f4c79ad12270b183f8d0a5bf863cef3ea803aa2da8d5befb19cdb4ccdec1"
+      "sha256": "feef976f98f354209666844410d337aaf7544524166668ea14c0b834a1679d8a"
     },
     {
       "path": "src/LocalQuotaCycle.cs",
@@ -387,8 +387,8 @@
     },
     {
       "path": "src/PublicReportTests.cs",
-      "bytes": 12123,
-      "sha256": "73871a688acaeb9fea1cd234d053923709c46ec3a2a7af0e780a702884e1080b"
+      "bytes": 14565,
+      "sha256": "d50dd53b174dc55a13bd572c765a91c4eef613c0180cb31728069a7fd4bd1075"
     },
     {
       "path": "src/PublicTests.cs",
@@ -417,13 +417,13 @@
     },
     {
       "path": "src/RadarFixNativeHarness.cs",
-      "bytes": 21644,
-      "sha256": "1fe6b42182567d7c1a4c57d96688b3c8f0e260e8fadeac45cf19d71bd566353b"
+      "bytes": 21661,
+      "sha256": "c5899f1e017f0b57ad5bf4a0e8d33d42075ca6daca31e6d186a798f3935a1a51"
     },
     {
       "path": "src/RadarFixTests.cs",
-      "bytes": 32583,
-      "sha256": "de90482419dce11ae902f15ef4b3d4ef5ab1a32158889c649c02150f28ce8e9c"
+      "bytes": 32643,
+      "sha256": "c1631a87ad46f8e76d97e1d75446e24f535a4e33b2eb143fb16a4bed5cb74291"
     },
     {
       "path": "src/Rc4ActiveUnreadNative.cs",
@@ -498,7 +498,7 @@
     {
       "path": "src/ResetRadar.cs",
       "bytes": 71342,
-      "sha256": "185bd6d01e1b9957aedbd96add14bbbf1de0e7e9cc3d57556636fca1f1a2086d"
+      "sha256": "23d7500eca3f56cb4c76fc966f4d42f20fea1fa3d6db1262187fa571231db7a4"
     },
     {
       "path": "src/Resources/History.resx",
