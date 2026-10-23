@@ -32,12 +32,14 @@ internal static class QuotaNormalizer
         var type=Str(Get(a,"type"));if(type=="apiKey"||type=="apikey")throw new MonitorException("API_KEY_ONLY");
         if(type is not ("chatgpt" or "chatgptAuthTokens"))throw new MonitorException("ACCOUNT_UNSUPPORTED");
         var id=Str(Get(a,"accountId"));var workspace=Str(Get(a,"workspaceId"));
-        var email=Str(Get(a,"email"));var stable=id.Length>0&&workspace.Length>0;
-        var identifier=id.Length>0?id:email;
+        // Preserve the existing HMAC input exactly. Email remains in memory and
+        // grants EMAIL_SCOPED comparison, without claiming an accountId/workspace.
+        var email=Str(Get(a,"email"));
+        var identifier=id.Length>0?id:!string.IsNullOrWhiteSpace(email)?email:"";
         if(identifier.Length==0)return(Safe.Hash(salt+generation),"CONNECTION_ONLY");
         using var h=new HMACSHA256(Convert.FromBase64String(salt));
         var raw=identifier+"|"+workspace+"|"+Str(Get(a,"planType"))+"|"+(Environment.GetEnvironmentVariable("CODEX_HOME")??"inherited-default");
-        return(Convert.ToHexString(h.ComputeHash(Encoding.UTF8.GetBytes(raw))).ToLowerInvariant(),stable?"STABLE_SCOPE":"SCOPE_NOT_FULLY_VERIFIED");
+        return(Convert.ToHexString(h.ComputeHash(Encoding.UTF8.GetBytes(raw))).ToLowerInvariant(),id.Length==0?"EMAIL_SCOPED":workspace.Length>0?"STABLE_SCOPE":"ACCOUNT_STABLE");
     }
     public static Snapshot Normalize(JsonElement response,string key,string assurance,string generation,string version,DateTimeOffset started,DateTimeOffset now,long mono)
     {
@@ -109,12 +111,12 @@ internal static class EventDetector
     {
         var list=new List<UsageEvent>();if(prev==null||prev.sample_id==cur.sample_id)return list;
         bool same=prev.comparison_key==cur.comparison_key;
-        bool gap=cur.had_gap||prev.source_generation!=cur.source_generation||cur.observed_at_utc<=prev.observed_at_utc||(cur.observed_at_utc-prev.observed_at_utc).TotalSeconds>cur.polling_interval_seconds*3;
+        bool gap=cur.had_gap||!QuotaWindow.SourceComparable(prev,cur)||cur.observed_at_utc<=prev.observed_at_utc||(cur.observed_at_utc-prev.observed_at_utc).TotalSeconds>cur.polling_interval_seconds*3;
         void Add(string type){
             string timing="UNCLASSIFIED";
-            if(!gap&&cur.context_assurance=="STABLE_SCOPE"&&prev.reset_at_unix_seconds.HasValue&&cur.remaining_percent>prev.remaining_percent){
+            if(!gap&&QuotaWindow.IdentityComparable(prev.context_assurance)&&QuotaWindow.IdentityComparable(cur.context_assurance)&&prev.reset_at_unix_seconds.HasValue&&cur.remaining_percent>prev.remaining_percent){
                 var reset=DateTimeOffset.FromUnixTimeSeconds(prev.reset_at_unix_seconds.Value);
-                timing=reset>prev.observed_at_utc&&reset<=cur.observed_at_utc?"MATCHES_PREVIOUS_ANNOUNCEMENT":cur.observed_at_utc<reset?"OBSERVED_BEFORE_PREVIOUS_ANNOUNCEMENT":"UNCLASSIFIED";
+                timing=QuotaWindow.ResetInObservationWindow(reset,prev.observed_at_utc,cur.observed_at_utc)?"MATCHES_PREVIOUS_ANNOUNCEMENT":QuotaWindow.DefinitelyBeforeReset(cur.observed_at_utc,reset)?"OBSERVED_BEFORE_PREVIOUS_ANNOUNCEMENT":"UNCLASSIFIED";
             }
             list.Add(new(){event_id=Safe.Hash(prev.sample_id+"|"+cur.sample_id+"|"+type),event_type=type,previous_sample_id=prev.sample_id,current_sample_id=cur.sample_id,observation_from_utc=prev.observed_at_utc,observation_to_utc=cur.observed_at_utc,first_observed_at_utc=cur.observed_at_utc,previous_remaining=prev.remaining_percent,current_remaining=cur.remaining_percent,previous_reset_at=prev.reset_at_unix_seconds,current_reset_at=cur.reset_at_unix_seconds,had_gap=gap,identity_assurance=cur.context_assurance,timing_relation=timing,limit_id=cur.limit_id,window_duration_mins=cur.window_duration_mins,account_context_key=cur.account_context_key,previous_credits_balance=prev.credits_balance??"",current_credits_balance=cur.credits_balance??"",previous_reset_credits=prev.reset_credits_available_count,current_reset_credits=cur.reset_credits_available_count});
         }
@@ -124,7 +126,14 @@ internal static class EventDetector
             if(cur.remaining_percent>prev.remaining_percent)Add(cur.remaining_percent==100?(prev.remaining_percent==0?"ZERO_TO_FULL_OBSERVED":"FULL_REPLENISHMENT_OBSERVED"):"QUOTA_INCREASE_OBSERVED");
             else if(cur.remaining_percent<prev.remaining_percent)Add("QUOTA_DECREASE_OBSERVED");
         }
-        if(cur.reset_at_unix_seconds!=prev.reset_at_unix_seconds)Add("RESET_TIMESTAMP_CHANGED");
+        bool resetChanged=!QuotaWindow.SameReset(QuotaWindow.ResetAt(prev),QuotaWindow.ResetAt(cur));
+        bool notStarted=QuotaWindow.State(cur)=="WINDOW_NOT_STARTED";
+        if(notStarted&&QuotaWindow.State(prev)!="WINDOW_NOT_STARTED")Add("WINDOW_NOT_STARTED");
+        if(resetChanged&&!(notStarted&&QuotaWindow.State(prev)=="WINDOW_NOT_STARTED"))Add("RESET_TIMESTAMP_CHANGED");
+        if(cur.remaining_percent>prev.remaining_percent&&QuotaWindow.ResetAt(prev) is DateTimeOffset oldReset&&QuotaWindow.ResetAt(cur)>oldReset.AddHours(1)){
+            if(gap)Add("RESET_DURING_GAP");
+            else if(QuotaWindow.DefinitelyBeforeReset(cur.observed_at_utc,oldReset))Add("EARLY_RESET");
+        }
         return list;
     }
 }

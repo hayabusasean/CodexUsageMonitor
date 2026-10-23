@@ -9,13 +9,14 @@ internal sealed record LocalQuotaCycleEvent {
  public DateTimeOffset observed_from{get;init;} public DateTimeOffset observed_to{get;init;}
  public decimal? remaining_before{get;init;} public decimal? remaining_after{get;init;} public decimal? delta_pp{get;init;}
  public DateTimeOffset? reset_at_before{get;init;} public DateTimeOffset? reset_at_after{get;init;}
+ public DateTimeOffset? cycle_started_at{get;init;}public string window_state{get;init;}="UNKNOWN";
  public int? banked_before{get;init;}public int? banked_after{get;init;}
  public string kind{get;init;}="UNVERIFIED_CHANGE"; public string schedule_relation{get;init;}="UNKNOWN";
  public string cause{get;init;}="UNKNOWN"; public string credit_relation{get;init;}="UNKNOWN";
  public string? confirmation_sample_id{get;init;} public DateTimeOffset? confirmed_at{get;init;}
  public DateTimeOffset first_processed_at{get;init;} public DateTimeOffset? retracted_at{get;init;}public string? retracted_reason{get;init;}
  public string[] related_signal_revisions{get;init;}=[];
- public bool Confirmed=>kind=="FULL_REPLENISHMENT_WITH_NEW_CYCLE"&&confirmation_sample_id!=null&&retracted_at==null;
+ public bool Confirmed=>(kind is "FULL_REPLENISHMENT_WITH_NEW_CYCLE" or "EARLY_RESET")&&confirmation_sample_id!=null&&retracted_at==null;
  public bool Full=>remaining_after==100&&remaining_before<100&&retracted_at==null&&evidence_assurance!="INSUFFICIENT";
 }
 internal sealed record RadarAttentionDisposition(string event_id,string revision_id,string local_cycle_event_id,string status,DateTimeOffset timestamp,string evidence_assurance,string scope_key="");
@@ -35,14 +36,14 @@ internal static class LocalQuotaCycle {
   return DailyUsageCalculator.Valid(p)&&DailyUsageCalculator.Valid(c)&&!c.had_gap&&seconds>0&&seconds<=Math.Max(300,3*c.polling_interval_seconds)
    &&!string.IsNullOrEmpty(p.comparison_key)&&p.comparison_key==c.comparison_key
    &&!string.IsNullOrEmpty(p.account_context_key)&&p.account_context_key==c.account_context_key
-   &&!string.IsNullOrEmpty(p.source_generation)&&p.source_generation==c.source_generation
+   &&!string.IsNullOrEmpty(p.source_generation)&&QuotaWindow.SourceComparable(p,c)
    &&p.plan_type==c.plan_type&&p.source_slot==c.source_slot&&p.limit_id==c.limit_id&&p.window_duration_mins==c.window_duration_mins;
  }
  internal static string Schedule(UsageSample p,UsageSample c,bool continuous){
   if(!continuous||p.reset_at_utc==null)return "UNKNOWN";
   var t=p.reset_at_utc.Value;
-  if(t>=p.observed_at_utc.AddMinutes(-10)&&t<=c.observed_at_utc.AddMinutes(10))return "AT_SCHEDULE_WINDOW";
-  return c.observed_at_utc<t.AddMinutes(-10)?"BEFORE_SCHEDULE_WINDOW":"UNKNOWN";
+  if(QuotaWindow.ResetInObservationWindow(t,p.observed_at_utc,c.observed_at_utc))return "AT_SCHEDULE_WINDOW";
+  return QuotaWindow.DefinitelyBeforeReset(c.observed_at_utc,t)?"BEFORE_SCHEDULE_WINDOW":"UNKNOWN";
  }
  internal static List<LocalQuotaCycleEvent> Derive(IEnumerable<UsageSample> input,DateTimeOffset processed){
   var result=new List<LocalQuotaCycleEvent>();
@@ -51,12 +52,18 @@ internal static class LocalQuotaCycle {
   for(int i=1;i<rows.Length;i++){
    var p=rows[i-1];var c=rows[i];
    if(!DailyUsageCalculator.Valid(p)||!DailyUsageCalculator.Valid(c))continue;
-   bool rise=c.remaining_percent>p.remaining_percent,metadata=c.reset_at_utc!=p.reset_at_utc;
+   bool rise=c.remaining_percent>p.remaining_percent,metadata=!QuotaWindow.SameReset(QuotaWindow.ResetAt(c),QuotaWindow.ResetAt(p));
+   if(QuotaWindow.State(p)=="WINDOW_NOT_STARTED"&&QuotaWindow.State(c)=="WINDOW_NOT_STARTED")metadata=false;
    if(!rise&&!metadata)continue;
    bool continuous=Continuous(p,c),full=rise&&c.remaining_percent==100;
    bool newCycle=continuous&&p.reset_at_utc!=null&&c.reset_at_utc>p.reset_at_utc.Value.AddMinutes(10)&&c.reset_at_utc>c.observed_at_utc&&c.reset_at_utc<=c.observed_at_utc.AddMinutes(10080+10);
-   string assurance=continuous?(p.context_assurance=="STABLE_SCOPE"&&c.context_assurance=="STABLE_SCOPE"?"STABLE_SCOPE":"LOCAL_STREAM_CONTINUITY_ONLY"):"INSUFFICIENT";
+   bool stable=QuotaWindow.IdentityComparable(p.context_assurance)&&QuotaWindow.IdentityComparable(c.context_assurance);
+   string assurance=continuous?(stable?QuotaWindow.ComparisonAssurance(p.context_assurance,c.context_assurance):"LOCAL_STREAM_CONTINUITY_ONLY"):"INSUFFICIENT";
    string kind=!continuous?"UNVERIFIED_CHANGE":full?(newCycle?"FULL_REPLENISHMENT_WITH_NEW_CYCLE":"FULL_REPLENISHMENT_OBSERVED"):rise?"PARTIAL_INCREASE":"CYCLE_CHANGE_ONLY";
+   if(rise&&QuotaWindow.ResetAt(p) is DateTimeOffset previousReset&&QuotaWindow.ResetAt(c)>previousReset.AddHours(1)){
+    if(!continuous)kind="RESET_DURING_GAP";
+    else if(QuotaWindow.DefinitelyBeforeReset(c.observed_at_utc,previousReset))kind="EARLY_RESET";
+   }
    UsageSample? confirmation=null;DateTimeOffset? retracted=null;string? reason=null;
    if(full&&newCycle){for(int j=i+1;j<rows.Length;j++){var next=rows[j];
     if(!Continuous(rows[j-1],next))break;
@@ -68,7 +75,7 @@ internal static class LocalQuotaCycle {
    result.Add(new(){id=Safe.Hash("local-cycle-v1|"+p.sample_id+"|"+c.sample_id),scope_key=Scope(c),plan=c.plan_type,stream_key=Safe.Hash(c.comparison_key+"|"+c.source_generation),evidence_assurance=assurance,
     before_sample_id=p.sample_id,after_sample_id=c.sample_id,observed_from=p.observed_at_utc,observed_to=c.observed_at_utc,
     remaining_before=p.remaining_percent,remaining_after=c.remaining_percent,delta_pp=c.remaining_percent-p.remaining_percent,
-    reset_at_before=p.reset_at_utc,reset_at_after=c.reset_at_utc,banked_before=p.reset_credits_available_count,banked_after=c.reset_credits_available_count,
+    reset_at_before=p.reset_at_utc,reset_at_after=c.reset_at_utc,cycle_started_at=QuotaWindow.StartedAt(c),window_state=QuotaWindow.State(c),banked_before=p.reset_credits_available_count,banked_after=c.reset_credits_available_count,
     kind=kind,schedule_relation=Schedule(p,c,continuous),credit_relation=p.reset_credits_available_count.HasValue&&c.reset_credits_available_count.HasValue&&c.reset_credits_available_count<p.reset_credits_available_count?"POSSIBLE_BANKED_RESET_ASSOCIATION":"UNKNOWN",
     confirmation_sample_id=confirmation?.sample_id,confirmed_at=confirmation?.observed_at_utc,first_processed_at=processed,retracted_at=retracted,retracted_reason=reason});
   }
@@ -93,14 +100,15 @@ internal sealed class LocalQuotaCycleStore {
  public bool Rebuild(IEnumerable<UsageSample> input,RadarState radar,DateTimeOffset now){
   lock(gate){
    var derived=LocalQuotaCycle.Derive(input,now);var old=state.events.ToDictionary(x=>x.id);
-   var merged=state.events.ToDictionary(x=>x.id);
-   foreach(var e in derived)merged[e.id]=old.TryGetValue(e.id,out var prior)?e with{first_processed_at=prior.first_processed_at}:e;
+   var merged=state.events.Where(x=>x.kind!="CYCLE_CHANGE_ONLY").ToDictionary(x=>x.id);
+   foreach(var e in derived.Where(x=>x.kind!="CYCLE_CHANGE_ONLY"))merged[e.id]=old.TryGetValue(e.id,out var prior)?e with{first_processed_at=prior.first_processed_at}:e;
    var events=merged.Values.OrderBy(x=>x.observed_to).TakeLast(2000).ToList();
    var dispositions=new List<RadarAttentionDisposition>();
    foreach(var e in events.Where(x=>x.Confirmed))foreach(var a in radar.Events.Where(a=>LocalQuotaCycle.Related(a,e,radar)))
     dispositions.Add(new(a.EventId,a.RevisionId,e.id,"SATISFIED_BY_LOCAL_CYCLE",e.confirmed_at!.Value,e.evidence_assurance,e.scope_key));
    dispositions=dispositions.OrderBy(d=>d.timestamp).ThenBy(d=>d.local_cycle_event_id,StringComparer.Ordinal).DistinctBy(d=>(d.event_id,d.revision_id,d.scope_key)).ToList();
-   var next=new LocalQuotaCycleState{events=events.Select(e=>e with{related_signal_revisions=dispositions.Where(d=>d.local_cycle_event_id==e.id).Select(d=>d.event_id+"/"+d.revision_id).ToArray()}).ToList(),dispositions=dispositions};
+   var next=new LocalQuotaCycleState{events=events.Select(e=>e with{related_signal_revisions=dispositions.Where(d=>d.local_cycle_event_id==e.id).Select(d=>d.event_id+"/"+d.revision_id)
+    .Concat(e.kind is "EARLY_RESET" or "RESET_DURING_GAP"?radar.Events.Where(a=>a.SignalLevel is "INCOMING" or "COMPLETED"&&a.PublishedAt.HasValue&&a.PublishedAt>=e.observed_from.AddHours(-6)&&a.PublishedAt<=e.observed_to.AddHours(6)&&(a.Scope is "UNKNOWN" or "ALL"||ResetRadar.ScopeMatches(a,e.plan))).Select(a=>a.EventId+"/"+a.RevisionId):[]).Distinct().ToArray()}).ToList(),dispositions=dispositions};
    try{AtomicJson.Save(path,next);state=next;Diagnostic="";return true;}
    catch{Diagnostic="LOCAL_CYCLE_STATE_NOT_SAVED";return false;}
   }

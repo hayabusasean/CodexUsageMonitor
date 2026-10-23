@@ -1,59 +1,53 @@
-# Changelog
+# 版本紀錄
 
-## [0.4.1] — 2026-09-13
+## 0.5.0-beta2 — 2026-10-23
 
-- Corrected an outdated CI test that still expected 29 report sections. The accepted Gold report already contains 34; tests now require the exact section names, framing and checksum keys.
-- No UI, quota semantics, report output or monitoring behavior changes.
-- v0.4.0 remains available as the first Gold release. This maintenance release is the recommended download.
+GitHub 預發行版，包含 0.5.0-beta 的燒速、重置預測、浮窗叫回與 Radar 改善；[發行說明](docs/releases/v0.5.0-beta2.md)與[作者實機截圖](README.md#實機畫面)。
 
-## [0.4.0] — 2026-09-13
+- 新增 EMAIL_SCOPED：以既有 HMAC 分辨 email 範圍，支援同範圍的跨連線分析；不保存 email。
+- 加入正式 CODEX_USAGE_MONITOR_HOME 資料目錄設定、啟動路徑與執行內容寫入診斷，支援最終 EXE 的隔離監測。
+- 每個視窗首次背景 Paint 前後各記錄一次 bitmap 尺寸、DPI、建立次數與耗時，按 UTC 日期追加診斷，不依賴錄影工具。
+- README 明訂退版前必須關閉新版並還原升級前含舊 Salt 的 settings.json。
+- 發行審查改讀取實際編譯來源與型別 metadata，區分測試來源檔數與宣告型別數，並在每次最終建置保存 EXE／ZIP SHA-256。
 
-### Added
-- Reset Radar source-readability display and explicit official/team-relay roles.
-- Independent active/unread WATCH and INCOMING indicators with source links.
-- Gold local replenishment summaries and event-focused history with observation intervals.
-- Retirement of relevant old-cycle attention after a matching local replenishment.
-- Time navigation, a resizable history/chart split, and source/event evidence in analysis exports.
+## 0.5.0-beta — 2026-10-22
 
-### Improved
-- Space-themed surfaces with restrained gold event accents.
-- Weekly overlay countdown and clear separation of quota colours from radar alerts.
-- More visible history rows; the gold summary stays outside the plot.
+本次提供本機試用包，尚未發布新的網路版本。
 
-### Fixed
-- Repeated idle redraw and expensive History grid repainting.
-- Details refresh/sizing behaviour and handling of missing or invalid metadata.
-- Confusing handoffs between different builds using the same data directory.
+- 浮窗加入燒速、重置倒數、用完時間與重置券資訊。主倒數採每週與有效公告中較早者；下次查詢秒數移到 tooltip。
+- 接上「顯示浮窗／隱藏浮窗」選單、通知區單擊叫回、首次隱藏提示與顯示剩餘百分比的專屬圖示。
+- Radar 讀取 RSS category、合併同作者 30 分鐘內的 reset 回覆，以 X status ID 還原發文時間；詞庫移到 `radar_rules.v2.json`。PST／PDT／PT 統一按洛杉磯當地時間處理，並顯示台灣時間。
+- INCOMING 來源改為每 5 分鐘查詢；長期 403 來源標示「被網站封鎖」並移出可讀率分母。浮窗移除來源可讀率百分比。
+- reset_at 比較容忍正負 120 秒，新增 `WINDOW_NOT_STARTED`、`EARLY_RESET`、`RESET_DURING_GAP`，並推導週期起點。
+- 新增 `ACCOUNT_STABLE`，個人帳戶有 accountId 時可參與比較；email 不作穩定身分。
+- 新增最近 30 分鐘、2 小時與本次連續區段燒速，及每週／公告兩份預測。視窗燒速以跳格中點統計完整可觀測視窗，包含沒有使用的尾段；不足兩個不同跳格或不足 2 個百分點時不推估。
+- 加入五項重置／券提醒，同條件節流 6 小時並保存狀態。新增不含帳戶識別資料的 `status.v1.json`；失敗時保留最後成功數值與資料時效。
+- JSON 改為不縮排、內容未變就不寫、變更時原子替換；來源檢查與覆蓋率改為每日 JSONL，最近 7 天採樣留在記憶體。
+- 優先尋找官方 codex.exe，加入 Authenticode／OpenAI 發行者驗證與路徑＋SHA-256 紀錄；HMAC salt 改由 DPAPI 保護。
+- account/usage/read 改為能力偵測；Log 縮減為狀態轉換與每 30 分鐘心跳，輪替保留舊檔。
+- 背景改用 JPEG 與尺寸快取，移除互相衝突的繪圖合成，捲動時整區重畫，浮窗不再每秒縮放大圖。啟用 single-file 壓縮，測試移至獨立專案，正式版移除測試旗標。
+- 保留歷史 CSV schema 1、欄位順序與意義、只追加、ID 去重與尾端修復。唯讀 RPC 邊界不變。
 
-### Notes
-- The author accepted this version for normal use. No claim of universal OS/DPI certification.
-- The September 12 story records one real WATCH and a local 7%→100% replenishment, not a correctly predicted reset time or a completed 72-hour soak.
-- New features are paused; maintenance is limited to issues that matter in use.
+具體回放數字、畫面檢查與尚待驗收項目以本次驗收報告為準。
 
-## v0.4.0-rc.3 — First public pre-release
+## 0.4.1 — 2026-09-13
 
-CodexUsageMonitor's first public release is a portable Windows x64 app under the MIT License.
+- 修正舊 CI 仍期待分析報告只有 29 節的測試；改為驗證 Gold 報告的 34 節、區段名稱、框架與 checksum 欄位。
+- 介面、額度語意、報告內容與監測行為未變更。
 
-- English and Traditional Chinese in one EXE, with live language switching and migration of existing settings.
-- Standard and Compact floating views showing weekly quota, update age and three days of estimated usage.
-- Local history with Latest segment / Full range charts, visible monitoring gaps and CSV export.
-- Reset Radar Lite with local-time notices and separate public-announcement, local-observation and correlation evidence.
-- More precise handling of article dates, duplicate notices and read state. Automatic resets, credit grants and mechanism explanations remain distinct; planned, completed and negated statements are handled conservatively.
-- Detailed bilingual analysis Logs with an embedded prompt, structured evidence and report-window display-scale metadata.
-- Portable packaging, public documentation and source build instructions.
+## 0.4.0 — 2026-09-13
 
-The final EXE was checked on Windows 10 Home 22H2 x64 at 150% display scale, including native bilingual views and real quota integration. Windows 11 for this release remains untested. The executable is unsigned; Radar source access and account-causation limits remain documented in the README.
+- 新增 Radar 來源可讀率、官方／團隊 relay 角色及有效／未讀訊號區分。
+- 加入金色本機補額摘要、事件聚焦與觀察區間；符合新週期的舊提醒可退場。
+- 歷史加入時間導覽、表格與圖表高度調整、來源證據與分析匯出。
+- 改善星際背景、低額度與 Radar 顏色區分、歷史重繪、詳細資訊刷新與不同版本啟動的提示。
+- 當時由作者日常使用驗收；未宣稱所有 Windows、DPI 或多螢幕組合都已驗證。9 月 12 日紀錄的是 WATCH 與本機 7%→100% 補額，未宣稱預測命中重置時間或完成 72 小時測試。
 
-### 繁體中文
+## 0.4.0-rc.3 — 首次公開預發行版
 
-這是 CodexUsageMonitor 首次公開的預發行版，以 MIT 授權提供 Windows x64 可攜程式。
-
-- 單一 EXE 提供英文／繁體中文即時切換，並遷移既有設定。
-- 標準與精簡浮窗呈現每週剩餘額度、相對更新秒數及三日估計用量。
-- 本機歷史提供最近區段／完整範圍圖表、監測空窗提示及 CSV 匯出。
-- Reset Radar Lite 以本機時區顯示訊息，區分公開公告、本機觀測與關聯證據。
-- 修正文章日期、重複公告與已讀狀態；區分自動重置、額度贈送及機制說明，保守處理預告、已執行與否定敘述。
-- 雙語詳細分析 Log 內嵌 Prompt、結構化證據及報告視窗顯示縮放資訊。
-- 提供可攜包、公開文件與原始碼建置說明。
-
-最終 EXE 已於 Windows 10 Home 22H2 x64、150% 顯示縮放環境檢查原生雙語畫面及真實額度串接。本版尚未實測 Windows 11，也尚未數位簽章；Radar 來源限制及帳號因果判定限制詳見 README。
+- 以 MIT 授權提供 Windows x64 可攜程式，當時提供英文／繁體中文即時切換與既有設定遷移。
+- 標準／精簡浮窗呈現每週剩餘、資料時效與三日估計用量。
+- 本機歷史支援最近區段、完整範圍、可見缺口與 CSV 匯出。
+- Reset Radar Lite 區分公開公告、本機觀察與關聯證據，保守處理預告、完成與否定敘述。
+- 詳細分析 Log 加入內嵌提示、結構化證據與顯示縮放資訊。
+- 當時在 Windows 10 Home 22H2 x64、150% 顯示縮放下檢查原生雙語畫面及額度串接；該預發行版未實測 Windows 11，EXE 未簽章。

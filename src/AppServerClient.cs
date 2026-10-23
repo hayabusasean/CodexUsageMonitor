@@ -14,15 +14,22 @@ internal static class Safe
 internal sealed class Diagnostic(string root)
 {
     public string LastStep="none"; public string Method="";public int RequestId; public int? ChildExitCode;
+    readonly object gate=new();readonly Dictionary<string,string> states=[];DateTimeOffset heartbeat;
     public void Write(string operation,string code,int retry=0,DateTimeOffset? next=null)
     {
+      lock(gate){
         try{
+            var now=DateTimeOffset.UtcNow;
+            bool transition=!states.TryGetValue(operation,out var prior)||prior!=code;
+            states[operation]=code;
+            if(!transition){if(operation!="poll"||now-heartbeat<TimeSpan.FromMinutes(30))return;}
+            if(operation=="poll")heartbeat=now;
             var dir=Path.Combine(root,"logs");Directory.CreateDirectory(dir);
             var path=Path.Combine(dir,"app_"+DateTime.UtcNow.ToString("yyyy-MM-dd")+".jsonl");
-            if(File.Exists(path)&&new FileInfo(path).Length>256*1024){File.Move(path,path+".1",true);}
+            if(File.Exists(path)&&new FileInfo(path).Length>256*1024){File.Move(path,path+"."+now.ToString("HHmmssfffffff")+"-"+Guid.NewGuid().ToString("N"));}
             var line=JsonSerializer.Serialize(new {utc=DateTimeOffset.UtcNow,operation,failed_step=code=="OK"?"":operation,last_successful_step=LastStep,error_class=code,child_exit_code=ChildExitCode,request_id=RequestId,method=Method,response_or_result_presence=code=="OK",sanitized_exception_type=code,sanitized_stderr_excerpt="raw stderr discarded",retry_count=retry,next_retry_at=next,local_log_path="logs/"+Path.GetFileName(path)});
             File.AppendAllText(path,line+"\n",new UTF8Encoding(false));if(code=="OK")LastStep=operation;
-        }catch{}
+        }catch{}}
     }
 }
 internal static class CodexLocator
@@ -30,6 +37,12 @@ internal static class CodexLocator
     public static IEnumerable<string> Candidates(string? selected)
     {
         var list=new List<string>();
+        var officialLocal=Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        foreach(var dir in new[]{Path.Combine(officialLocal,"OpenAI","Codex","bin"),Path.Combine(officialLocal,"Programs","OpenAI","Codex","bin"),Path.Combine(officialLocal,"Programs","Codex","resources")}){
+            list.Add(Path.Combine(dir,"codex.exe"));
+            if(Directory.Exists(dir))foreach(var p in Directory.EnumerateFiles(dir,"codex.exe",SearchOption.AllDirectories).Take(30))list.Add(p);
+        }
+        try{foreach(var d in Directory.EnumerateDirectories(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),"WindowsApps"),"OpenAI.Codex_*").OrderDescending().Take(4))foreach(var p in Directory.EnumerateFiles(d,"codex.exe",SearchOption.AllDirectories).Take(20))list.Add(p);}catch(UnauthorizedAccessException){}catch(DirectoryNotFoundException){}
         if(!string.IsNullOrWhiteSpace(selected))list.Add(selected);
         foreach(var dir in (Environment.GetEnvironmentVariable("PATH")??"").Split(';')){
             if(!Path.IsPathFullyQualified(dir.Trim('"')))continue;
@@ -68,6 +81,7 @@ internal static class CodexLocator
     public static async Task<string> ValidateVersion(string path,string cwd,CancellationToken ct)
     {
         ValidateArchitecture(path);
+        CodexTrust.Verify(path,Directory.GetParent(cwd)?.FullName??cwd);
         var v=await Capture(path,["--version"],cwd,ct);
         var m=Regex.Match(v,@"codex-cli (\d+\.\d+\.\d+[a-zA-Z0-9.\-]*)");
         if(!m.Success)throw new MonitorException("INVALID_CODEX_VERSION");

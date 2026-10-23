@@ -4,9 +4,12 @@ using Microsoft.Win32;
 namespace CodexUsageMonitor;
 
 internal sealed class OverlayForm:Form {
- readonly MonitorService service;readonly NotifyIcon tray=new();readonly System.Windows.Forms.Timer clock=new(){Interval=1000},hoverTimer=new(){Interval=350};
+ readonly MonitorService service;readonly NotifyIcon tray=new();readonly System.Windows.Forms.Timer clock=new(){Interval=1000},hoverTimer=new(){Interval=350},notificationTimer=new(){Interval=10000};
+ readonly Queue<string> pendingAlerts=new();
+ readonly FirstPaintDiagnostics firstPaintLog;
  readonly ContextMenuStrip menu=new();readonly ToolTip iconTip=new(){AutoPopDelay=3000};readonly bool synthetic;
- Point drag,origin;bool dragging,ready,hover;int hoveredDay=-1;DailyPopover? popover;string countdown="--",countdownTip="",radarCoverage="◔--%",weekly="—";bool countdownFailed;string[] dayValues=["—","—","—"];
+ Point drag,origin;bool dragging,ready,hover,hiddenHintShown;int hoveredDay=-1;DailyPopover? popover;string countdown="--",countdownTip="",radarCoverage="",weekly="—";bool countdownFailed;string[] dayValues=["—","—","—"];
+ string burnText="燒速資料不足",resetText="重置時間待更新",shortResetText="重置待更新",exhaustText="用完時間資料不足",creditsText="重置券資料待更新",trayValue="";Icon? quotaIcon;Bitmap? cardSurface;int cardSurfaceKey;
  WinEventDelegate? foregroundCallback;IntPtr foregroundHook,hookTargetHandle;IntPtr lastForeground;long lastForegroundTick;int topMostReassertCount;uint lastTopMostFlags;
  public bool? PreviewCompact;public string? TestWeekly,TestAge,TestCountdownTip,TestRadarCoverage;public bool? TestCountdownFailed;public string[]? TestDays;internal float? TestScale=null;
  public bool Compact=>PreviewCompact??service.Settings.Compact;
@@ -19,45 +22,48 @@ internal sealed class OverlayForm:Form {
  internal Rectangle CountdownHit=>Compact?new((int)(24*UiScale),(int)(54*UiScale),(int)(58*UiScale),(int)(34*UiScale)):new((int)(202*UiScale),0,(int)(104*UiScale),(int)(48*UiScale));
  internal string CountdownText=>countdown;internal string CountdownTooltip=>countdownTip;internal string RadarCoverageText=>radarCoverage;
  internal string RadarTooltip=>RadarTip();internal string RadarSignalLevel=>service.Radar.ActiveSignalLevel;internal bool RadarSignalUnread=>service.Radar.ActiveSignal is {ReadAt:null};
- public string DisplayText=>Compact?weekly+"\n"+countdown+" · "+radarCoverage:L.T("Overlay.WeeklyRemaining")+" "+weekly+"\n"+countdown+"\n"+string.Join(" · ",Enumerable.Range(0,3).Select(i=>L.T("Overlay.ObservedAccessible",DayName(i),dayValues[i])));
+ public string DisplayText=>"每週剩餘 "+weekly+"\n"+burnText+"\n"+resetText+"\n"+exhaustText+"\n"+creditsText;
  internal static string DayName(int i)=>L.T(new[]{"Overlay.Today","Overlay.Yesterday","Overlay.TwoDaysAgo"}[Math.Clamp(i,0,2)]);
  protected override bool ShowWithoutActivation=>true;
  protected override CreateParams CreateParams{get{var p=base.CreateParams;p.ExStyle|=0x08000000|0x80;return p;}}
  static readonly int TaskbarCreated=RegisterWindowMessage("TaskbarCreated");
  public OverlayForm(MonitorService s,bool synthetic=false){
-  service=s;this.synthetic=synthetic;Text=synthetic?"TEST DATA · CodexUsageMonitor":"CodexUsageMonitor";Name="Overlay";AccessibleName=L.T("Overlay.TrayName");FormBorderStyle=FormBorderStyle.None;ShowInTaskbar=false;BackColor=Theme.Canvas;DoubleBuffered=true;AutoScaleMode=AutoScaleMode.None;StartPosition=FormStartPosition.Manual;
+  service=s;firstPaintLog=new FirstPaintDiagnostics(s.Root,nameof(OverlayForm));this.synthetic=synthetic;Text=synthetic?"TEST DATA · CodexUsageMonitor":"CodexUsageMonitor";Name="Overlay";AccessibleName=L.T("Overlay.TrayName");FormBorderStyle=FormBorderStyle.None;ShowInTaskbar=false;BackColor=Theme.Canvas;DoubleBuffered=true;AutoScaleMode=AutoScaleMode.None;StartPosition=FormStartPosition.Manual;
   menu.BackColor=Theme.Surface;menu.ForeColor=Theme.Text;menu.Font=Theme.Font();menu.Renderer=new DarkMenuRenderer();menu.ShowImageMargin=false;menu.Padding=new(4);menu.ShowCheckMargin=false;
   var captions=new List<(ToolStripItem item,string key)>();
   ToolStripMenuItem Item(string key,EventHandler action){var item=new ToolStripMenuItem(L.T(key),null,action){Padding=new(8,4,8,4)};menu.Items.Add(item);captions.Add((item,key));return item;}
+  var visibilityItem=Item("Menu.Hide",(_,_)=>{if(Visible)HideOverlay();else Reveal();});
   Item("Menu.Refresh",(_,_)=>service.Refresh(true));var modeItem=Item("Overlay.ModeName",(_,_)=>ToggleMode());Item("Menu.History",(_,_)=>new HistoryForm(service).Show());Item("Menu.Details",(_,_)=>new DetailsForm(service).Show());
   Item("Menu.Reset",(_,_)=>OpenRadar());Item("Menu.Settings",(_,_)=>{ClosePopover();SettingsForm.Open(service,this);ApplySettings();});
   var languages=Item("Language.Label",(_,_)=>{});var english=new ToolStripMenuItem("English");var chinese=new ToolStripMenuItem("繁體中文");languages.DropDownItems.AddRange([english,chinese]);
   void Language(string lang){if(SettingsForm.Active is {IsDisposed:false})return;string previous=service.Settings.UiLanguage;service.Settings.UiLanguage=lang;if(service.SaveSettings())L.SetLanguage(lang);else service.Settings.UiLanguage=previous;}
   english.Click+=(_,_)=>Language("en-US");chinese.Click+=(_,_)=>Language("zh-TW");
-  Item("Menu.About",(_,_)=>new AboutForm(service).Show());Item("Menu.OfficialUsage",(_,_)=>OpenUrl("https://chatgpt.com/codex/settings/usage"));Item("Menu.Hide",(_,_)=>Hide());menu.Items.Add(new ToolStripSeparator());Item("Menu.Quit",(_,_)=>Close());ContextMenuStrip=menu;
-  menu.Opening+=(_,_)=>{languages.Enabled=modeItem.Enabled=SettingsForm.Active is not {IsDisposed:false};};
+  Item("Menu.About",(_,_)=>new AboutForm(service).Show());Item("Menu.OfficialUsage",(_,_)=>OpenUrl("https://chatgpt.com/codex/settings/usage"));menu.Items.Add(new ToolStripSeparator());Item("Menu.Quit",(_,_)=>Close());ContextMenuStrip=menu;
+  menu.Opening+=(_,_)=>{visibilityItem.Text=L.T(Visible?"Menu.Hide":"Menu.Show");languages.Enabled=modeItem.Enabled=SettingsForm.Active is not {IsDisposed:false};};
   L.Watch(this,()=>{foreach(var (item,key) in captions)item.Text=L.T(key);english.Checked=L.Language=="en-US";chinese.Checked=L.Language=="zh-TW";AccessibleName=L.T("Overlay.TrayName");if(IsHandleCreated)Render();});
-  iconTip.OwnerDraw=true;iconTip.Popup+=(_,e)=>e.ToolTipSize=new Size((int)(235*UiScale),(int)(40*UiScale));iconTip.Draw+=(_,e)=>{using var bg=new SolidBrush(Theme.Surface);e.Graphics.FillRectangle(bg,e.Bounds);TextRenderer.DrawText(e.Graphics,e.ToolTipText,Theme.Font(9),Rectangle.Inflate(e.Bounds,-10,-5),Theme.Text,TextFormatFlags.VerticalCenter|TextFormatFlags.WordBreak);};
-  tray.Icon=SystemIcons.Information;tray.Text="CodexUsageMonitor";tray.ContextMenuStrip=menu;tray.Visible=!synthetic;tray.DoubleClick+=(_,_)=>{if(Visible)Hide();else Reveal();};
+  iconTip.OwnerDraw=true;iconTip.Popup+=(_,e)=>e.ToolTipSize=new Size((int)(320*UiScale),(int)(96*UiScale));iconTip.Draw+=(_,e)=>{using var bg=new SolidBrush(Theme.Surface);e.Graphics.FillRectangle(bg,e.Bounds);using var font=Theme.Font(9);TextRenderer.DrawText(e.Graphics,e.ToolTipText,font,Rectangle.Inflate(e.Bounds,-10,-5),Theme.Text,TextFormatFlags.VerticalCenter|TextFormatFlags.WordBreak);};
+  UpdateTrayIcon();tray.Text="CodexUsageMonitor";tray.ContextMenuStrip=menu;tray.Visible=!synthetic;
+  tray.MouseClick+=OnTrayMouseClick;tray.DoubleClick+=(_,_)=>Reveal();tray.BalloonTipClicked+=(_,_)=>new DetailsForm(service).Show();
   MouseEnter+=(_,_)=>{hover=true;Invalidate();};MouseLeave+=(_,_)=>{hover=false;hoveredDay=-1;hoverTimer.Stop();ClosePopover();iconTip.SetToolTip(this,null);Invalidate();};
   MouseDown+=(_,e)=>{ClosePopover();if(e.Button!=MouseButtons.Left)return;if(ModeHit.Contains(e.Location)){ToggleMode();return;}if(RadarHit.Contains(e.Location)&&service.Radar.ActiveSignal!=null){OpenRadar();return;}drag=Cursor.Position;origin=Location;dragging=true;Capture=true;};
   MouseMove+=(_,e)=>{if(dragging&&MouseButtons==MouseButtons.Left){Location=new(origin.X+Cursor.Position.X-drag.X,origin.Y+Cursor.Position.Y-drag.Y);return;}
    int day=DailyHit(e.Location);if(day!=hoveredDay){hoveredDay=day;hoverTimer.Stop();ClosePopover();if(day>=0)hoverTimer.Start();}
-    string? label=CountdownHit.Contains(e.Location)?countdownTip:ModeHit.Contains(e.Location)?Compact?L.T("Overlay.SwitchStandard"):L.T("Overlay.SwitchCompact"):RadarHit.Contains(e.Location)&&service.Radar.ActiveSignal!=null?RadarTip():null;
+    string? label=ModeHit.Contains(e.Location)?Compact?L.T("Overlay.SwitchStandard"):L.T("Overlay.SwitchCompact"):RadarHit.Contains(e.Location)&&service.Radar.ActiveSignal!=null?RadarTip():DisplayText+"\n"+countdownTip;
    if(iconTip.GetToolTip(this)!=label)iconTip.SetToolTip(this,label);
   };
   MouseUp+=(_,_)=>{if(dragging){dragging=false;Capture=false;Clamp();Remember();}};
   MouseDoubleClick+=(_,e)=>{int day=DailyHit(e.Location);if(day>=0)new HistoryForm(service,DateTime.Today.AddDays(-day)).Show();};
   hoverTimer.Tick+=(_,_)=>{hoverTimer.Stop();if(hoveredDay>=0&&!dragging&&Visible)ShowDailyPopover(hoveredDay);};
-  service.Changed+=OnChanged;service.Radar.Changed+=OnChanged;
+  service.Changed+=OnChanged;service.Radar.Changed+=OnChanged;service.Alert+=OnAlert;
+  notificationTimer.Tick+=(_,_)=>ShowNextAlert();
 
   SystemEvents.UserPreferenceChanged+=PreferenceChanged;SystemEvents.TimeChanged+=TimeChanged;SystemEvents.PowerModeChanged+=PowerChanged;SystemEvents.DisplaySettingsChanged+=DisplayChanged;System.Net.NetworkInformation.NetworkChange.NetworkAvailabilityChanged+=NetworkChanged;
   clock.Tick+=(_,_)=>{if(Visible)Render();};VisibleChanged+=(_,_)=>{clock.Enabled=Visible;if(!Visible)ClosePopover();else ReassertTopMost(GetForegroundWindow());};
-  Load+=(_,_)=>{service.Settings.ApplyStartupMode();ApplySettings();ready=true;if(!synthetic)service.Start();if(service.Settings.StartHidden)BeginInvoke(Hide);};
+  Load+=(_,_)=>{service.Settings.ApplyStartupMode();ApplySettings();ready=true;if(!synthetic)service.Start();if(service.Settings.StartHidden)BeginInvoke(HideOverlay);};
   HandleCreated+=(_,_)=>{hookTargetHandle=Handle;EnsureForegroundHook();ReassertTopMost(GetForegroundWindow());};HandleDestroyed+=(_,_)=>hookTargetHandle=IntPtr.Zero;Shown+=(_,_)=>ReassertTopMost(GetForegroundWindow());
-  FormClosed+=(_,_)=>{ReleaseForegroundHook();Remember();service.Changed-=OnChanged;service.Radar.Changed-=OnChanged;SystemEvents.UserPreferenceChanged-=PreferenceChanged;SystemEvents.TimeChanged-=TimeChanged;SystemEvents.PowerModeChanged-=PowerChanged;SystemEvents.DisplaySettingsChanged-=DisplayChanged;System.Net.NetworkInformation.NetworkChange.NetworkAvailabilityChanged-=NetworkChanged;ClosePopover();hoverTimer.Dispose();clock.Dispose();tray.Visible=false;tray.Dispose();iconTip.Dispose();menu.Dispose();};
+  FormClosed+=(_,_)=>{ReleaseForegroundHook();Remember();service.Changed-=OnChanged;service.Radar.Changed-=OnChanged;service.Alert-=OnAlert;SystemEvents.UserPreferenceChanged-=PreferenceChanged;SystemEvents.TimeChanged-=TimeChanged;SystemEvents.PowerModeChanged-=PowerChanged;SystemEvents.DisplaySettingsChanged-=DisplayChanged;System.Net.NetworkInformation.NetworkChange.NetworkAvailabilityChanged-=NetworkChanged;ClosePopover();hoverTimer.Dispose();clock.Dispose();notificationTimer.Dispose();pendingAlerts.Clear();tray.Visible=false;tray.Dispose();quotaIcon?.Dispose();cardSurface?.Dispose();iconTip.Dispose();menu.Dispose();};
  }
- internal int DailyHit(Point p)=>Compact||p.Y<50*UiScale||p.Y>=80*UiScale||p.X<8*UiScale||p.X>=304*UiScale?-1:Math.Clamp((int)((p.X/UiScale-8)/100),0,2);
+ internal int DailyHit(Point p)=>-1;
  public void ToggleMode(){ClosePopover();hoveredDay=-1;var before=Bounds;var area=Screen.FromControl(this).WorkingArea;bool right=area.Right-before.Right<24*UiScale,bottom=area.Bottom-before.Bottom<24*UiScale;service.Settings.Compact=!Compact;PreviewCompact=null;service.SaveSettings();Render();if(right)Left=before.Right-Width;if(bottom)Top=before.Bottom-Height;Clamp();ReassertTopMost(GetForegroundWindow());}
  internal DailyPopover ShowDailyPopover(int day,DailySummary? fixture=null){
   ClosePopover();var d=fixture??service.Daily?.Days.FirstOrDefault(x=>x.date==DateTime.Today.AddDays(-day).ToString("yyyy-MM-dd"));
@@ -74,7 +80,19 @@ internal sealed class OverlayForm:Form {
  void NetworkChanged(object? sender,System.Net.NetworkInformation.NetworkAvailabilityEventArgs e){if(e.IsAvailable)service.Resume();}
  void DisplayChanged(object? sender,EventArgs e){if(IsHandleCreated)BeginInvoke(()=>{ClosePopover();Clamp();ReassertTopMost(GetForegroundWindow());});}
  void OnChanged(){if(IsHandleCreated&&!IsDisposed)try{BeginInvoke(Render);}catch(InvalidOperationException){}}
+ void OnAlert(List<string> messages){if(!IsHandleCreated||IsDisposed)return;try{BeginInvoke((Action)(()=>{if(IsDisposed||Disposing)return;foreach(var message in messages.Where(x=>!string.IsNullOrWhiteSpace(x)))pendingAlerts.Enqueue(message);if(!notificationTimer.Enabled)ShowNextAlert();}));}catch(InvalidOperationException){}}
+ internal int AlertDeliveryCount{get;private set;}
+ void ShowNextAlert(){if(!pendingAlerts.TryDequeue(out var message)){notificationTimer.Stop();return;}AlertDeliveryCount++;if(!synthetic)tray.ShowBalloonTip(8000,"Codex 額度提醒",message,ToolTipIcon.Info);notificationTimer.Start();}
  public void Reveal(){Show();Clamp();Render();ReassertTopMost(GetForegroundWindow());}
+ public void HideOverlay(){Hide();if(hiddenHintShown)return;hiddenHintShown=true;if(!synthetic)tray.ShowBalloonTip(6000,"浮窗已隱藏","點右下角的 CodexUsageMonitor 圖示就能叫回浮窗。",ToolTipIcon.Info);}
+ void OnTrayMouseClick(object? sender,MouseEventArgs e){if(e.Button==MouseButtons.Left)Reveal();}
+ internal void TrayLeftClickForTest()=>OnTrayMouseClick(tray,new MouseEventArgs(MouseButtons.Left,1,0,0,0));
+ internal string VisibilityCaption=>L.T(Visible?"Menu.Hide":"Menu.Show");
+ void UpdateTrayIcon(){
+  if(trayValue==weekly&&quotaIcon!=null)return;trayValue=weekly;
+  using var bitmap=new Bitmap(64,64);using(var g=Graphics.FromImage(bitmap)){g.SmoothingMode=System.Drawing.Drawing2D.SmoothingMode.AntiAlias;g.Clear(Color.Transparent);using var fill=new SolidBrush(Theme.Canvas);g.FillEllipse(fill,1,1,62,62);using var ring=new Pen(Theme.Accent,4);g.DrawEllipse(ring,3,3,58,58);using var font=new Font("Segoe UI",weekly.Length>3?17:22,FontStyle.Bold,GraphicsUnit.Pixel);using var text=new SolidBrush(Theme.Text);using var format=new StringFormat{Alignment=StringAlignment.Center,LineAlignment=StringAlignment.Center};g.DrawString(weekly.TrimEnd('%'),font,text,new RectangleF(0,0,64,57),format);using var small=new Font("Segoe UI",10,FontStyle.Bold,GraphicsUnit.Pixel);g.DrawString("%",small,text,new RectangleF(0,46,64,16),format);}
+  var handle=bitmap.GetHicon();try{using var borrowed=Icon.FromHandle(handle);var next=(Icon)borrowed.Clone();tray.Icon=next;var old=quotaIcon;quotaIcon=next;old?.Dispose();}finally{DestroyIcon(handle);}
+ }
  public void ApplySettings(){TopMost=service.Settings.TopMost;Opacity=Theme.HighContrast?1:service.Settings.OpacityPercent/100d;if(!ready){var a=Screen.PrimaryScreen!.WorkingArea;Location=service.Settings.X.HasValue&&service.Settings.Y.HasValue?new(service.Settings.X.Value,service.Settings.Y.Value):new(a.Right-480,a.Bottom-160);}Render();Clamp();if(IsHandleCreated){if(service.Settings.TopMost)ReassertTopMost(GetForegroundWindow());else{lastTopMostFlags=SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE;SetWindowPos(Handle,HWND_NOTOPMOST,0,0,0,0,lastTopMostFlags);}}}
  void EnsureForegroundHook(){if(foregroundHook!=IntPtr.Zero)return;foregroundCallback=OnForegroundChanged;foregroundHook=SetWinEventHook(EVENT_SYSTEM_FOREGROUND,EVENT_SYSTEM_FOREGROUND,IntPtr.Zero,foregroundCallback,0,0,WINEVENT_OUTOFCONTEXT);}
  void ReleaseForegroundHook(){hookTargetHandle=IntPtr.Zero;IntPtr hook=foregroundHook;foregroundHook=IntPtr.Zero;if(hook!=IntPtr.Zero)UnhookWinEvent(hook);foregroundCallback=null;}
@@ -106,23 +124,44 @@ internal sealed class OverlayForm:Form {
  public void Render(){
   var value=service.MainClock.Value?.Remaining;weekly=value==null?"—":value==0?"0%":value<1?"<1%":value.Value.ToString("0.#",System.Globalization.CultureInfo.InvariantCulture)+"%";
   var now=DateTimeOffset.UtcNow;var schedule=Countdown(now,service.MonitoringStarted,service.Busy,false,service.Failures,service.NextRetry,service.LastErrorCode);countdown=schedule.text;countdownTip=schedule.tip;countdownFailed=schedule.state=="RETRY";
-  var radar=service.Radar.Snapshot();radarCoverage="◔"+RadarCoverage.Percent(RadarCoverage.Measure(radar,service.Radar.Enabled,now))+"%";
+  radarCoverage="";
   for(int i=0;i<3;i++)dayValues[i]=service.Daily?.Days.FirstOrDefault(x=>x.date==DateTime.Today.AddDays(-i).ToString("yyyy-MM-dd"))?.Display??"—";
-  if(synthetic){weekly=TestWeekly??weekly;countdown=TestAge??countdown;countdownTip=TestCountdownTip??countdownTip;radarCoverage="◔"+(TestRadarCoverage??radarCoverage.TrimStart('◔'));countdownFailed=TestCountdownFailed??countdownFailed;if(TestDays!=null)dayValues=TestDays.ToArray();}
+  if(synthetic){weekly=TestWeekly??weekly;countdown=TestAge??countdown;countdownTip=TestCountdownTip??countdownTip;countdownFailed=TestCountdownFailed??countdownFailed;if(TestDays!=null)dayValues=TestDays.ToArray();}
+  var forecast=service.Forecast;bool stale=forecast?.Confidence=="STALE"||!synthetic&&(service.MainClock.Failed||service.MainClock.Age(service.Monotonic,now)>3*service.Settings.Interval);
+  burnText=stale?"燒速資料已過時":forecast?.IdleMinutes is {} idle?$"最近 {idle:0} 分鐘沒在用":forecast?.Rate2h is {} rate?$"燒速 {rate:0.0}%/h（2h）":forecast?.Rate30m is {} shortRate?$"燒速 {shortRate:0.0}%/h（30m）":"燒速資料不足";
+  var deadline=forecast?.Weekly?.Deadline;bool announced=forecast?.Announced is {} a&&a.Deadline>now&&(!deadline.HasValue||a.Deadline<deadline.Value);if(announced)deadline=forecast!.Announced!.Deadline;
+  resetText=forecast?.WindowState=="WINDOW_NOT_STARTED"&&!announced?"本週期尚未開始":deadline is {} d?RemainingUntil(d,now)+(announced?" 公告重置":" 每週重置"):"重置時間待更新";
+  shortResetText=forecast?.WindowState=="WINDOW_NOT_STARTED"&&!announced?"週期未開始":deadline is {} compactDeadline?CompactRemainingUntil(compactDeadline,now)+(announced?"公告重置":"重置"):"重置待更新";
+  exhaustText=!stale&&forecast?.Weekly?.ExhaustAt is {} end?$"照速度 {Taiwan(end):MM-dd HH:mm} 用完":"用完時間資料不足";
+  var credits=service.Current?.ResetCredits;var firstExpiry=service.Current?.CreditExpirations.Where(x=>x is >=-62135596800 and <=253402300799).Order().Cast<long?>().FirstOrDefault();
+  creditsText=credits.HasValue?$"券 {credits} 張"+(firstExpiry is {} ex?$" · 最早 {Taiwan(DateTimeOffset.FromUnixTimeSeconds(ex)):MM-dd HH:mm} 到期":""):"重置券資料待更新";
   var size=new Size((int)((Compact?156:330)*UiScale),(int)((Compact?88:84)*UiScale));
   if(ClientSize!=size||Region==null){ClientSize=size;using var shape=Theme.Round(new RectangleF(0,0,Width,Height),12*UiScale);var old=Region;Region=new Region(shape);old?.Dispose();}
-  AccessibleDescription=DisplayText+" · "+countdownTip+(service.Radar.ActiveSignal==null?"":" · "+RadarTip());Invalidate();string title="Codex · "+weekly+" · "+countdown;tray.Text=title[..Math.Min(63,title.Length)];
+  AccessibleDescription=DisplayText+" · "+countdownTip+(service.Radar.ActiveSignal==null?"":" · "+RadarTip());PrepareCardSurface();UpdateTrayIcon();Invalidate();string title="Codex · "+weekly+" · "+burnText;tray.Text=title[..Math.Min(63,title.Length)];
  }
- protected override void OnPaint(PaintEventArgs e){
-  base.OnPaint(e);var g=e.Graphics;g.ScaleTransform(UiScale,UiScale);Theme.PaintCard(g,new Rectangle(0,0,(Compact?156:330)-1,(Compact?88:84)-1));
-  decimal? v=decimal.TryParse(weekly.TrimEnd('%').Replace("<",""),System.Globalization.NumberStyles.Number,System.Globalization.CultureInfo.InvariantCulture,out var parsed)?parsed:null;var color=Theme.QuotaColor(v);var secondary=Theme.HighContrast?Theme.Text:Theme.Hex("#E0E5EA");if(Theme.HighContrast)color=Theme.Text;if(!synthetic&&(service.MainClock.Failed||service.MainClock.Age(service.Monotonic,DateTimeOffset.UtcNow)>3*service.Settings.Interval))color=Theme.Muted;
+ static DateTimeOffset Taiwan(DateTimeOffset t)=>TimeZoneInfo.ConvertTime(t,TimeZoneInfo.FindSystemTimeZoneById("Taipei Standard Time"));
+ static string RemainingUntil(DateTimeOffset deadline,DateTimeOffset now){var left=deadline-now;if(left<=TimeSpan.Zero)return "已到重置時間";return left.TotalDays>=1?$"{(int)left.TotalDays}天 {left.Hours}小時後":left.TotalHours>=1?$"{(int)left.TotalHours}小時 {left.Minutes}分後":$"{Math.Max(1,(int)Math.Ceiling(left.TotalMinutes))}分鐘後";}
+ static string CompactRemainingUntil(DateTimeOffset deadline,DateTimeOffset now){var left=deadline-now;return left<=TimeSpan.Zero?"已到":left.TotalDays>=1?$"約{Math.Ceiling(left.TotalDays):0}天後":left.TotalHours>=1?$"約{Math.Ceiling(left.TotalHours):0}小時後":$"{Math.Max(1,(int)Math.Ceiling(left.TotalMinutes))}分後";}
+ internal int CardSurfaceBuilds{get;private set;}
+ internal double CardSurfaceBuildMs{get;private set;}
+ FirstPaintSurfaceState CardSurfaceState()=>new(Compact?"overlay_compact":"overlay_standard",DeviceDpi,ClientSize.Width,ClientSize.Height,cardSurface?.Width,cardSurface?.Height,CardSurfaceBuilds,CardSurfaceBuildMs,ComposedBackground.Builds,Theme.HighContrast);
+ void PrepareCardSurface(){var key=HashCode.Combine(ClientSize,UiScale,Theme.HighContrast,R2.Rollout);if(cardSurface!=null&&key==cardSurfaceKey)return;long started=Stopwatch.GetTimestamp();var next=new Bitmap(Math.Max(1,Width),Math.Max(1,Height));using(var g=Graphics.FromImage(next)){g.ScaleTransform(UiScale,UiScale);Theme.PaintCard(g,new Rectangle(0,0,(Compact?156:330)-1,(Compact?88:84)-1));}var old=cardSurface;cardSurface=next;cardSurfaceKey=key;CardSurfaceBuilds++;CardSurfaceBuildMs=Stopwatch.GetElapsedTime(started).TotalMilliseconds;old?.Dispose();}
+ protected override void OnPaint(PaintEventArgs e){bool first=firstPaintLog.Pending&&firstPaintLog.Begin(CardSurfaceState());bool failed=false;try{PaintOverlay(e);}catch{failed=true;throw;}finally{if(first)firstPaintLog.Complete(CardSurfaceState(),failed);}}
+ void PaintOverlay(PaintEventArgs e){
+  base.OnPaint(e);var g=e.Graphics;PrepareCardSurface();g.DrawImageUnscaled(cardSurface!,Point.Empty);g.ScaleTransform(UiScale,UiScale);
+  decimal? v=decimal.TryParse(weekly.TrimEnd('%').Replace("<",""),System.Globalization.NumberStyles.Number,System.Globalization.CultureInfo.InvariantCulture,out var parsed)?parsed:null;var color=Theme.Text;var secondary=Theme.HighContrast?Theme.Text:Theme.Hex("#E0E5EA");
   var countdownColor=countdownFailed&&!Theme.HighContrast?Theme.Warning:secondary;
-  if(Compact){Theme.TextAt(g,weekly,new(4,12,148,48),32,color,true,StringAlignment.Center);Theme.TextAt(g,countdown,new(28,60,48,26),8f,countdownColor,false,StringAlignment.Near);Theme.TextAt(g,radarCoverage,new(78,60,52,26),8f,secondary,false,StringAlignment.Far);}
+  var forecast=service.Forecast;var now=DateTimeOffset.UtcNow;bool stale=forecast?.Confidence=="STALE"||!synthetic&&(service.MainClock.Failed||service.MainClock.Age(service.Monotonic,now)>3*service.Settings.Interval);
+  var projection=forecast?.Weekly;if(forecast?.Announced is {} announced&&announced.Deadline>now&&(projection==null||announced.Deadline<projection.Deadline))projection=announced;
+  if(v<10&&projection is {} far&&(far.Deadline-now).TotalHours>12)color=Theme.Critical;else if(projection?.ProjectedUsedAtReset is <90)color=Theme.Warning;else if(projection?.ExhaustAt is {} exhaust&&projection.Deadline>exhaust)color=Theme.Accent;
+  if(stale)color=Theme.Muted;else if(Theme.HighContrast)color=Theme.Text;
+  if(Compact){Theme.TextAt(g,weekly,new(4,3,148,46),30,color,true,StringAlignment.Center);string shortBurn=stale?"資料過時":forecast?.Rate is {} r?$"{r:0.#}%/h":"資料不足";Theme.TextAt(g,shortBurn,new(8,45,140,18),8f,stale?Theme.Muted:secondary,false,StringAlignment.Center,true);Theme.TextAt(g,shortResetText,new(24,64,106,18),7.5f,countdownColor,false,StringAlignment.Center,true);}
   else{
-   Theme.TextAt(g,L.T("Overlay.WeeklyRemaining"),new(12,8,80,34),8.5f,secondary);Theme.TextAt(g,weekly,new(98,4,108,44),26,color,true);
-   Theme.TextAt(g,countdown,new(208,8,96,36),8,countdownColor,false,StringAlignment.Far);
-   for(int i=0;i<3;i++){int x=12+i*100;int label=L.Language=="zh-TW"?34:i==0?36:i==1?54:58;Theme.TextAt(g,DayName(i),new(x,53,label,24),L.Language=="en-US"?7.5f:8f,secondary,false,StringAlignment.Near,true);Theme.TextAt(g,dayValues[i],new(x+label,53,98-label,24),L.Language=="en-US"?8.2f:9f,Theme.Text,true);}
-
+   Theme.TextAt(g,"每週剩餘",new(12,5,72,15),7.5f,secondary);Theme.TextAt(g,weekly,new(12,20,108,38),25,color,true);
+   Theme.TextAt(g,resetText,new(124,5,177,22),8.2f,countdownColor);
+   Theme.TextAt(g,burnText,new(124,28,177,21),8.2f,secondary);
+   Theme.TextAt(g,exhaustText,new(124,49,177,20),7.8f,secondary);
+   Theme.TextAt(g,creditsText,new(12,66,286,16),7.2f,secondary);
   }
   // Two stable, separate 24-DIP hit targets; content does not move when unread state changes.
   var m=Compact?new Rectangle(0,62,24,24):new Rectangle(306,56,24,24);using var pen=new Pen(hover?Theme.Text:Theme.Micro,1.2f);
@@ -151,6 +190,7 @@ internal sealed class OverlayForm:Form {
  public static void OpenUrl(string url){try{if(Uri.TryCreate(url,UriKind.Absolute,out var u)&&u.Scheme=="https")Process.Start(new ProcessStartInfo(u.AbsoluteUri){UseShellExecute=true});}catch{}}
  public static void SelectFile(string path){try{Process.Start(new ProcessStartInfo("explorer.exe"){Arguments="/select,"+OwnedProcess.Quote(path),UseShellExecute=true});}catch{}}
  [DllImport("user32.dll",CharSet=CharSet.Unicode)]static extern int RegisterWindowMessage(string s);
+ [DllImport("user32.dll")]static extern bool DestroyIcon(IntPtr icon);
  delegate void WinEventDelegate(IntPtr hook,uint eventType,IntPtr hwnd,int objectId,int childId,uint thread,uint milliseconds);
  static readonly IntPtr HWND_TOPMOST=new(-1),HWND_NOTOPMOST=new(-2);const uint EVENT_SYSTEM_FOREGROUND=0x0003,WINEVENT_OUTOFCONTEXT=0,SWP_NOSIZE=0x0001,SWP_NOMOVE=0x0002,SWP_NOACTIVATE=0x0010;
  [DllImport("user32.dll")]static extern bool SetWindowPos(IntPtr hwnd,IntPtr insertAfter,int x,int y,int cx,int cy,uint flags);

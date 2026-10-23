@@ -11,13 +11,13 @@ internal sealed record Announcement(
  DateTimeOffset? PublishedAt,string? SourceDate,DateTimeOffset? ResetUtc,string SourceTimeZone,string TimeQuality,
  string Scope,string ResetType,string Phase,string ContentHash,DateTimeOffset FirstSeen,DateTimeOffset LastSeen,
  DateTimeOffset? ReadAt=null,DateTimeOffset? MajorTime=null,string Eligibility="UNKNOWN",string IdentityConfidence="LOW_STRUCTURED_FALLBACK",string Effect="UNKNOWN",string OriginalId="",string PublicationBasis="",string Migration="",
- string SourceClass="OFFICIAL_OPENAI",string Author="Unknown",string OriginalSourceUrl="",string RelayUrl="",string CanonicalOriginalId="",string OriginalQuote="",string RelayForecast="",string SignalLevel="NONE",string SignalReason="",List<RadarEvidenceSource>? EvidenceSources=null);
+ string SourceClass="OFFICIAL_OPENAI",string Author="Unknown",string OriginalSourceUrl="",string RelayUrl="",string CanonicalOriginalId="",string OriginalQuote="",string RelayForecast="",string SignalLevel="NONE",string SignalReason="",List<RadarEvidenceSource>? EvidenceSources=null,List<string>? OriginalAliases=null,string SupersededByEventId="",string RelayCategory="");
 internal sealed record RadarEvidenceSource(string SourceId,string SourceClass,string Url,string Role,string BodyHash="");
 internal sealed record RadarSourceDefinition(string Id,string Url,string DisplayName,string SourceClass,string Adapter,int Tier,int IntervalMinutes);
 internal sealed record SourceStatus(string Id,string Url,string Status="NOT_CHECKED",DateTimeOffset? LastAttempt=null,
  DateTimeOffset? LastSuccess=null,DateTimeOffset? NextCheck=null,int Failures=0,int HttpStatus=0,int CandidateCount=0,
  string? ETag=null,DateTimeOffset? Modified=null,string BodyHash="",long ResponseBytes=0,string Error="",string CandidateExcerpt="",string FinalUrl="",DateTimeOffset? RetryAfterUtc=null,
- string SourceClass="OFFICIAL_OPENAI",string DisplayName="",string Adapter="HTML");
+ string SourceClass="OFFICIAL_OPENAI",string DisplayName="",string Adapter="HTML",int Consecutive403=0);
 internal sealed record RadarSourceCheck(DateTimeOffset Timestamp,string SourceId,string SourceClass,string Status,int CandidateCount,int HttpStatus,string BodyHash,DateTimeOffset? LastSuccess,DateTimeOffset? NextCheck,string Error);
 internal sealed record RadarTransition(string EventId,string RevisionId,DateTimeOffset Timestamp,string FromSignal,string ToSignal,string Reason);
 internal sealed record RadarQuotaEvidence(string EventId,DateTimeOffset CapturedAt,string PreviousSample,string CurrentSample,DateTimeOffset From,DateTimeOffset To,decimal? WeeklyBefore,decimal? WeeklyAfter,DateTimeOffset? ResetAtBefore,DateTimeOffset? ResetAtAfter,int? BankedBefore,int? BankedAfter,double ObservationGapSeconds,string ScopeAssurance,string Cause="UNKNOWN");
@@ -26,6 +26,7 @@ internal sealed record ResetCorrelation(string PreviousSample,string CurrentSamp
  decimal? Before,decimal? After,string Classification,string Reason,string? AnnouncementId,bool ScopeVerified,bool Scheduled,
  string AnnouncementStatus="UNVERIFIED",string LocalObservation="NOT_COMPARABLE",string Correlation="NOT_ASSESSED",string Cause="UNKNOWN");
 internal sealed class RadarState {
+ public List<string> StoppedAccelerationRevisions{get;set;}=[];
  public List<string> CurrentLocalScopes{get;set;}=[];public string LocalCycleDiagnostic{get;set;}="";
  public List<LocalQuotaCycleEvent> LocalCycleEvents{get;set;}=[];public List<RadarAttentionDisposition> AttentionDispositions{get;set;}=[];
  public List<RadarCoveragePoint> CoverageTimeline{get;set;}=[];public List<Announcement> Events{get;set;}=[];public List<SourceStatus> Sources{get;set;}=[];public List<ResetCorrelation> Correlations{get;set;}=[];
@@ -47,11 +48,14 @@ internal static class AnnouncementParser {
  }
  internal static (DateTimeOffset? utc,string zone,string quality) Time(string text,DateTimeOffset? published){
   var iso=Match(text,@"\b20\d{2}-\d\d-\d\dT\d\d:\d\d(?::\d\d)?(?:Z|[+-]\d\d:\d\d)");
-  bool deadline=Match(text,@"\bby\s+(?:\d|January|February|March|April|May|June|July|August|September|October|November|December)").Success;bool approx=Match(text,@"\b(around|approximately|approx|about)\b|~").Success;
+  bool deadline=Match(text,@"\b(?:by|before|within)\b").Success;bool approx=Match(text,@"\b(around|approximately|approx|about)\b|~").Success;
   if(iso.Success&&DateTimeOffset.TryParse(iso.Value,CultureInfo.InvariantCulture,DateTimeStyles.None,out var dt))return(dt.ToUniversalTime(),"UTC/OFFSET",deadline?"DEADLINE":approx?"APPROXIMATE":"EXPLICIT");
+  var relative=Match(text,@"\bwithin\s+the\s+next\s+(?<n>\d{1,4})\s+(?<unit>hours?|minutes?)\b");
+  if(relative.Success&&published!=null){int n=int.Parse(relative.Groups["n"].Value,CultureInfo.InvariantCulture);return(published.Value.AddMinutes(n*(relative.Groups["unit"].Value.StartsWith("hour",StringComparison.OrdinalIgnoreCase)?60:1)),"RELATIVE","DEADLINE");}
   var m=Match(text,@"\b(?<h>\d{1,2})(?::(?<m>\d{2}))?\s*(?<ap>AM|PM)?\s*(?<tz>PDT|PST|PT|UTC)\b");
-  if(!m.Success)return(null,"UNKNOWN","UNKNOWN");int hour=int.Parse(m.Groups["h"].Value),minute=m.Groups["m"].Success?int.Parse(m.Groups["m"].Value):0;
-  string ap=m.Groups["ap"].Value.ToUpperInvariant(),zone=m.Groups["tz"].Value.ToUpperInvariant();
+  bool eod=Match(text,@"\bEOD\b").Success;
+  if(!m.Success&&!eod)return(null,"UNKNOWN","UNKNOWN");int hour=eod?23:int.Parse(m.Groups["h"].Value),minute=eod?59:m.Groups["m"].Success?int.Parse(m.Groups["m"].Value):0;
+  string ap=eod?"":m.Groups["ap"].Value.ToUpperInvariant(),zone=eod?"PT":m.Groups["tz"].Value.ToUpperInvariant();
   if(minute>59||(ap!=""&&(hour<1||hour>12))||(ap==""&&hour>23))return(null,zone,"INVALID");
   if(ap!="")hour=hour%12+(ap=="PM"?12:0);
   var pacific=TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
@@ -65,9 +69,9 @@ internal static class AnnouncementParser {
    else if(!Match(text,@"\btomorrow\s*,\s*(?:20\d{2}-\d\d-\d\d|[A-Za-z]+\s+\d{1,2})").Success)return(null,zone,"AMBIGUOUS_DATE");
   }
   var local=date.Value.ToDateTime(new TimeOnly(hour,minute),DateTimeKind.Unspecified);
-  if(zone=="PT"&&(pacific.IsInvalidTime(local)||pacific.IsAmbiguousTime(local)))return(null,zone,"DST_AMBIGUOUS");
-  TimeSpan offset=zone=="UTC"?TimeSpan.Zero:zone=="PDT"?TimeSpan.FromHours(-7):zone=="PST"?TimeSpan.FromHours(-8):pacific.GetUtcOffset(local);
-  return(new DateTimeOffset(local,offset).ToUniversalTime(),zone,deadline?"DEADLINE":approx?"APPROXIMATE":"EXPLICIT");
+  if(zone!="UTC"&&(pacific.IsInvalidTime(local)||pacific.IsAmbiguousTime(local)))return(null,"America/Los_Angeles","DST_AMBIGUOUS");
+  TimeSpan offset=zone=="UTC"?TimeSpan.Zero:pacific.GetUtcOffset(local);
+  return(new DateTimeOffset(local,offset).ToUniversalTime(),zone=="UTC"?"UTC":"America/Los_Angeles",deadline||eod?"DEADLINE":approx?"APPROXIMATE":"EXPLICIT");
  }
  internal static string LocalTime(Announcement a,DateTimeOffset now,TimeZoneInfo? zone=null,string? language=null){
   language??=L.Language;zone??=TimeZoneInfo.Local;
@@ -76,7 +80,14 @@ internal static class AnnouncementParser {
   var local=TimeZoneInfo.ConvertTime(a.ResetUtc.Value,zone);
   string offset=(local.Offset<TimeSpan.Zero?"-":"+")+local.Offset.Duration().ToString(@"hh\:mm",CultureInfo.InvariantCulture);
   string value=local.ToString("yyyy-MM-dd HH:mm",CultureInfo.InvariantCulture)+" (UTC"+offset+")";
-  return T(a.TimeQuality=="APPROXIMATE"?"TimeAround":a.TimeQuality=="DEADLINE"?"TimeBy":"TimeExact",value);
+  string display=T(a.TimeQuality=="APPROXIMATE"?"TimeAround":a.TimeQuality=="DEADLINE"?"TimeBy":"TimeExact",value);
+  if(a.SourceTimeZone=="America/Los_Angeles"){
+   var taiwan=TimeZoneInfo.ConvertTime(a.ResetUtc.Value,TimeZoneInfo.FindSystemTimeZoneById("Taipei Standard Time"));
+   var pacific=TimeZoneInfo.ConvertTime(a.ResetUtc.Value,TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time"));
+   display+=$" · 台灣 {taiwan:MM-dd HH:mm}"+(a.TimeQuality=="DEADLINE"?" 前":"")+$"（太平洋當地 {pacific:MM-dd HH:mm}）";
+   if(Match(a.OriginalQuote+" "+a.Summary,@"\bPST\b").Success&&pacific.Offset==TimeSpan.FromHours(-7))display+=$"；若照字面 PST：台灣 {taiwan.AddHours(1):HH:mm}";
+  }
+  return display;
  }
  // Kept only for the historical R004 fixture API. Production always uses LocalTime.
  internal static string Taipei(Announcement a,DateTimeOffset now)=>LocalTime(a,now,TimeZoneInfo.FindSystemTimeZoneById("Taipei Standard Time"),"zh-TW");
@@ -241,40 +252,48 @@ internal static class AnnouncementParser {
 internal sealed class ResetRadar:IDisposable {
  internal LocalQuotaCycleStore? LocalCycles;
  internal Func<List<string>>? VerifiedLocalScopes;
+ internal Func<bool>? LocalQuotaIsFull;
  public static readonly RadarSourceDefinition[] Sources=[
-  new("codex-changelog-rss","https://developers.openai.com/codex/changelog/rss.xml","Codex Changelog","OFFICIAL_OPENAI","RSS",1,15),
-  new("openai-release-notes-rss","https://openai.com/products/release-notes/","OpenAI Release Notes","OFFICIAL_OPENAI","LEGACY_HTML",1,15),
-  new("openai-status-rss","https://status.openai.com/feed.rss","OpenAI Status","OPENAI_STATUS","RSS",1,12),
-  new("openai-help-resets","https://help.openai.com/en/articles/20001498-how-banked-codex-resets-work","OpenAI Help Center","OFFICIAL_OPENAI","LEGACY_HTML",1,15),
-  new("team-modelyard-rss","https://tibo.modelyard.dev/feed.xml","ModelYard team signal relay","TEAM_SIGNAL_RELAY","RSS",2,12),
-  new("team-codex-reset","https://codex-reset.com/tibo","Codex Reset team signal relay","TEAM_SIGNAL_RELAY","TEAM_HTML",2,12)];
+  new("codex-changelog-rss","https://developers.openai.com/codex/changelog/rss.xml","Codex 更新紀錄","OFFICIAL_OPENAI","RSS",1,15),
+  new("openai-release-notes-rss","https://openai.com/products/release-notes/","OpenAI 版本資訊","OFFICIAL_OPENAI","LEGACY_HTML",1,15),
+  new("openai-status-rss","https://status.openai.com/feed.rss","OpenAI 服務狀態","OPENAI_STATUS","RSS",1,12),
+  new("openai-help-resets","https://help.openai.com/en/articles/20001498-how-banked-codex-resets-work","OpenAI 說明中心","OFFICIAL_OPENAI","LEGACY_HTML",1,15),
+  new("team-modelyard-rss","https://tibo.modelyard.dev/feed.xml","ModelYard 團隊消息轉送","TEAM_SIGNAL_RELAY","RSS",2,12),
+  new("team-codex-reset","https://codex-reset.com/tibo","Codex Reset 團隊消息轉送","TEAM_SIGNAL_RELAY","TEAM_HTML",2,12)];
  // Retained as a source-enumeration compatibility surface for the existing rc.3 harnesses.
  public static readonly (string id,string url)[] OfficialSources=Sources.Select(x=>(x.Id,x.Url)).ToArray();
  internal const int MaxResponseBytes=4*1024*1024;
  internal static readonly TimeSpan RequestTimeout=TimeSpan.FromSeconds(20);
  static readonly HashSet<string> AllowedHosts=new(StringComparer.OrdinalIgnoreCase){"help.openai.com","learn.chatgpt.com","developers.openai.com","openai.com","www.openai.com","status.openai.com","tibo.modelyard.dev","codex-reset.com","www.codex-reset.com"};
- readonly string path;readonly object gate=new();readonly CancellationTokenSource stop=new();readonly SemaphoreSlim fetchGate=new(1,1);
+ readonly string path;readonly RadarJournal journal;readonly string root;readonly object gate=new();readonly CancellationTokenSource stop=new();readonly SemaphoreSlim fetchGate=new(1,1);
  readonly HttpClient http;RadarState state;Task? loop;CancellationTokenSource? activePoll;volatile bool enabled=true;int requestCount;
  public event Action? Changed;
  public int HttpRequestCount=>Volatile.Read(ref requestCount);public string SaveError{get;private set;}="";
  public int FailedSourceCount=>Rc4Radar.FailedConfiguredCount(Snapshot());
  internal Action<string,string,string>? HtmlObserved;
  public bool Enabled=>enabled;
- public ResetRadar(string root,HttpMessageHandler? handler=null){path=Path.Combine(root,"reset_radar.json");
-  state=AtomicJson.Load(path,()=>new RadarState());state.Events??=[];state.Sources??=[];state.Correlations??=[];state.SourceChecks??=[];state.Transitions??=[];state.QuotaEvidence??=[];state.SignalHistory??=[];state.CoverageTimeline??=[];
+ public ResetRadar(string root,HttpMessageHandler? handler=null){this.root=root;path=Path.Combine(root,"reset_radar.json");journal=new(root);
+  state=AtomicJson.Load(path,()=>new RadarState());state.Events??=[];state.Sources??=[];state.Correlations??=[];state.SourceChecks??=[];state.Transitions??=[];state.QuotaEvidence??=[];state.SignalHistory??=[];state.CoverageTimeline??=[];state.StoppedAccelerationRevisions??=[];
+  state.SourceChecks=state.SourceChecks.Concat(journal.Read<RadarSourceCheck>("source_checks",x=>x.Timestamp)).Distinct().OrderBy(x=>x.Timestamp).TakeLast(5000).ToList();
+  state.CoverageTimeline=state.CoverageTimeline.Concat(journal.Read<RadarCoveragePoint>("coverage",x=>x.timestamp)).Distinct().OrderBy(x=>x.timestamp).TakeLast(5000).ToList();
+  state.Sources=state.Sources.Select(s=>{
+   var definition=Sources.FirstOrDefault(d=>d.Id==s.Id);if(definition!=null)s=s with{DisplayName=definition.DisplayName};
+   int consecutive=state.SourceChecks.Where(x=>x.SourceId==s.Id).OrderByDescending(x=>x.Timestamp).TakeWhile(x=>x.HttpStatus==403).Count();
+   return s.HttpStatus==403&&consecutive>=3?s with{Status="BLOCKED",Consecutive403=Math.Max(s.Consecutive403,consecutive),NextCheck=s.Status=="BLOCKED"?s.NextCheck:DateTimeOffset.UtcNow.AddDays(1)}:s;
+  }).ToList();
   // Old labels are historical analysis, never evidence of an account-specific cause.
   state.Correlations=state.Correlations.Select(x=>x with{Classification=x.Classification=="GLOBAL_RESET_CONFIRMED"?"GLOBAL_RESET_PROBABLE":x.Classification,Cause="UNKNOWN",
    Correlation=x.Classification=="GLOBAL_RESET_CONFIRMED"?"INCONCLUSIVE":x.Correlation}).ToList();
   http=new HttpClient(handler??new HttpClientHandler{UseCookies=false,UseDefaultCredentials=false,AllowAutoRedirect=false,AutomaticDecompression=DecompressionMethods.GZip|DecompressionMethods.Deflate|DecompressionMethods.Brotli}){Timeout=Timeout.InfiniteTimeSpan};
-  http.DefaultRequestHeaders.UserAgent.ParseAdd("CodexUsageMonitor/0.4.1");http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/rss+xml"));http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xml",0.9));http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html",0.8));
+  http.DefaultRequestHeaders.UserAgent.ParseAdd("CodexUsageMonitor/0.5.0-beta");http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/rss+xml"));http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/xml",0.9));http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html",0.8));
  }
- public RadarState Snapshot(){var cycles=LocalCycles?.Snapshot();lock(gate)return new(){CurrentLocalScopes=VerifiedLocalScopes?.Invoke()??[],LocalCycleDiagnostic=LocalCycles?.Diagnostic??"",LocalCycleEvents=cycles?.events??[],AttentionDispositions=cycles?.dispositions??[],Events=state.Events.Select(x=>x with{EvidenceSources=x.EvidenceSources?.ToList()}).ToList(),Sources=state.Sources.ToList(),Correlations=state.Correlations.ToList(),SourceChecks=state.SourceChecks.ToList(),Transitions=state.Transitions.ToList(),QuotaEvidence=state.QuotaEvidence.ToList(),SignalHistory=state.SignalHistory.ToList(),CoverageTimeline=state.CoverageTimeline.ToList()};}
+ public RadarState Snapshot(){var cycles=LocalCycles?.Snapshot();lock(gate)return new(){CurrentLocalScopes=VerifiedLocalScopes?.Invoke()??[],LocalCycleDiagnostic=LocalCycles?.Diagnostic??"",LocalCycleEvents=cycles?.events??[],AttentionDispositions=cycles?.dispositions??[],Events=state.Events.Select(x=>x with{EvidenceSources=x.EvidenceSources?.ToList(),OriginalAliases=x.OriginalAliases?.ToList()}).ToList(),Sources=state.Sources.ToList(),Correlations=state.Correlations.ToList(),SourceChecks=state.SourceChecks.ToList(),Transitions=state.Transitions.ToList(),QuotaEvidence=state.QuotaEvidence.ToList(),SignalHistory=state.SignalHistory.ToList(),CoverageTimeline=state.CoverageTimeline.ToList()};}
  public IReadOnlyList<Announcement> ActiveSignalItems=>ActiveSignalsAt(DateTimeOffset.UtcNow);
  public Announcement? ActiveSignal=>ActiveSignalItems.FirstOrDefault();
  public string ActiveSignalLevel=>ActiveSignal?.SignalLevel??"NONE";
  internal IReadOnlyList<Announcement> ActiveSignalsAt(DateTimeOffset now){var snapshot=Snapshot();return snapshot.Events.Where(x=>ActiveSignalAt(x,snapshot,now)).OrderByDescending(x=>Rc4Radar.SignalPriority(x.SignalLevel)).ThenBy(x=>x.ReadAt!=null).ThenByDescending(x=>x.LastSeen).ThenBy(x=>x.EventId,StringComparer.Ordinal).ToArray();}
  public IReadOnlyList<Announcement> UnreadItems=>UnreadAt(DateTimeOffset.UtcNow);
- internal IReadOnlyList<Announcement> UnreadAt(DateTimeOffset now){var snapshot=Snapshot();return snapshot.Events.Where(x=>x.ReadAt==null&&Rc4Radar.IsAlert(x)&&Fresh(x,now)&&!LocallySatisfied(x,snapshot,now)).OrderByDescending(x=>Rc4Radar.SignalPriority(x.SignalLevel)).ThenByDescending(x=>x.LastSeen).ThenBy(x=>x.EventId,StringComparer.Ordinal).ToArray();}
+ internal IReadOnlyList<Announcement> UnreadAt(DateTimeOffset now){var snapshot=Snapshot();return snapshot.Events.Where(x=>x.SupersededByEventId==""&&x.ReadAt==null&&Rc4Radar.IsAlert(x)&&Fresh(x,now)&&!LocallySatisfied(x,snapshot,now)).OrderByDescending(x=>Rc4Radar.SignalPriority(x.SignalLevel)).ThenByDescending(x=>x.LastSeen).ThenBy(x=>x.EventId,StringComparer.Ordinal).ToArray();}
  public Announcement? Unread=>UnreadItems.FirstOrDefault();
  public string AlertLevel=>Unread?.SignalLevel??"NONE";
  internal static bool Fresh(Announcement x,DateTimeOffset now){
@@ -284,6 +303,7 @@ internal sealed class ResetRadar:IDisposable {
    DateOnly.TryParseExact(x.SourceDate,"yyyy-MM-dd",CultureInfo.InvariantCulture,DateTimeStyles.None,out var d)&&d>=DateOnly.FromDateTime(now.UtcDateTime).AddDays(-2)&&d<=DateOnly.FromDateTime(now.UtcDateTime).AddDays(2);
  }
  internal static bool ActiveSignalAt(Announcement x,RadarState snapshot,DateTimeOffset now){
+  if(x.SupersededByEventId!="")return false;
   if(LocallySatisfied(x,snapshot,now))return false;
   if(x.SignalLevel is not ("WATCH" or "INCOMING")||x.Phase is "CANCELLED" or "COMPLETED")return false;
   DateTimeOffset anchor=x.PublishedAt??x.FirstSeen;
@@ -300,7 +320,10 @@ internal sealed class ResetRadar:IDisposable {
   if(source?.LastSuccess>=x.ResetUtc)return false;
   return now-x.ResetUtc.Value<=TimeSpan.FromHours(6);
  }
- void Save(){try{AtomicJson.Save(path,state);SaveError="";}catch{SaveError="READ_STATE_NOT_SAVED";}}
+ void Save(){try{
+  journal.Append("source_checks",state.SourceChecks,x=>x.Timestamp);journal.Append("coverage",state.CoverageTimeline,x=>x.timestamp);journal.Cleanup(DateTimeOffset.UtcNow);
+  AtomicJson.Save(path,new{journal_schema=2,state.Events,state.Sources,state.Correlations,state.Transitions,state.QuotaEvidence,state.SignalHistory,state.StoppedAccelerationRevisions});SaveError="";
+ }catch{SaveError="READ_STATE_NOT_SAVED";}}
  internal static bool LocallySatisfied(Announcement x,RadarState snapshot,DateTimeOffset now)=>snapshot.AttentionDispositions.Any(d=>d.event_id==x.EventId&&d.revision_id==x.RevisionId&&d.timestamp<=now&&snapshot.CurrentLocalScopes.Contains(d.scope_key)&&d.status=="SATISFIED_BY_LOCAL_CYCLE"&&snapshot.LocalCycleEvents.Any(e=>e.id==d.local_cycle_event_id&&e.Confirmed));
  public void Read(string eventId,string? revisionId=null){
    bool changed=false;
@@ -312,7 +335,8 @@ internal sealed class ResetRadar:IDisposable {
   old.TimeQuality!=n.TimeQuality||(old.MajorTime==null&&n.ResetUtc!=null)||(old.MajorTime!=null&&n.ResetUtc==null)||(old.MajorTime!=null&&n.ResetUtc!=null&&Math.Abs((old.MajorTime.Value-n.ResetUtc.Value).TotalMinutes)>=30);
  RadarSignalEvidence SignalEvidence(Announcement n,string eventId,string revision,DateTimeOffset timestamp)=>new(timestamp,eventId,revision,n.SignalLevel,n.Phase,n.Effect,n.Scope,n.ResetUtc,n.TimeQuality,n.PublishedAt,n.ReadAt,n.Source,n.SourceClass,n.OriginalSourceUrl,n.RelayUrl,n.OriginalQuote,n.ContentHash,n.SignalReason,RadarCoverage.Measure(state,enabled,timestamp));
  static bool DemonstrablyNewerTerminal(Announcement old,Announcement n)=>n.Phase is "CANCELLED" or "COMPLETED"&&old.Phase!=n.Phase&&
-  (n.PublishedAt>old.PublishedAt||n.SourceClass=="OFFICIAL_OPENAI"&&n.Source==old.Source&&n.ContentHash!=old.ContentHash);
+  (n.PublishedAt>old.PublishedAt||n.SourceClass=="OFFICIAL_OPENAI"&&n.Source==old.Source&&n.ContentHash!=old.ContentHash||
+   n.Phase=="COMPLETED"&&n.RelayCategory.Split('|').Any(x=>x.Trim()=="Reset Completed")&&n.PublishedAt>=old.PublishedAt&&Rc4Radar.VerifiedOriginalAliases(n).Overlaps(Rc4Radar.VerifiedOriginalAliases(old)));
  static bool WeakerThan(Announcement old,Announcement n)=>Rc4Radar.SignalPriority(n.SignalLevel)<Rc4Radar.SignalPriority(old.SignalLevel)||
   Rc4Radar.SignalPriority(n.SignalLevel)==Rc4Radar.SignalPriority(old.SignalLevel)&&(old.ResetUtc!=null&&n.ResetUtc==null||old.Effect!="UNKNOWN"&&n.Effect=="UNKNOWN"||old.Scope!="UNKNOWN"&&n.Scope=="UNKNOWN"||old.Confidence=="HIGH"&&n.Confidence!="HIGH");
  public void Apply(IEnumerable<Announcement> entries,DateTimeOffset now){
@@ -320,7 +344,25 @@ internal sealed class ResetRadar:IDisposable {
     // Classify legacy/parser fixtures at the product boundary as well as adapter output.
     // This keeps stored rc.3 events and focused production-path tests on one policy.
     var n=incoming.SignalLevel=="NONE"?Rc4Radar.Classify(incoming):incoming;
-    int i=state.Events.FindIndex(x=>x.EventId==n.EventId);
+    int i=-1;bool aliasMatch=false;DateTimeOffset? aliasRead=null;
+    var aliases=Rc4Radar.VerifiedOriginalAliases(n);
+    if(aliases.Count>0){
+     var matched=new List<int>();bool expanded;
+     do{expanded=false;for(int index=0;index<state.Events.Count;index++){
+      if(matched.Contains(index))continue;var priorAliases=Rc4Radar.VerifiedOriginalAliases(state.Events[index]);
+      if(!priorAliases.Overlaps(aliases))continue;matched.Add(index);aliases.UnionWith(priorAliases);expanded=true;
+     }}while(expanded);
+     if(matched.Count>0){
+      i=matched.Where(index=>state.Events[index].SupersededByEventId=="").OrderBy(index=>state.Events[index].FirstSeen).ThenBy(index=>state.Events[index].EventId,StringComparer.Ordinal).DefaultIfEmpty(matched[0]).First();
+      aliasMatch=true;var primary=state.Events[i];aliasRead=matched.Select(index=>state.Events[index].ReadAt).Where(x=>x.HasValue).Max();
+      var terminal=matched.Select(index=>state.Events[index]).Append(n).Where(x=>x.Phase is "COMPLETED" or "CANCELLED").OrderByDescending(x=>x.PublishedAt??x.FirstSeen).FirstOrDefault();
+      var evidence=matched.SelectMany(index=>state.Events[index].EvidenceSources??[]).Concat(n.EvidenceSources??[]).DistinctBy(x=>(x.SourceId,x.Url,x.Role)).ToList();
+      if(terminal!=null&&n.Phase is not ("COMPLETED" or "CANCELLED"))n=terminal;
+      n=n with{OriginalAliases=aliases.Order(StringComparer.Ordinal).ToList(),EvidenceSources=evidence,SupersededByEventId=""};
+      foreach(int duplicate in matched.Where(index=>index!=i))state.Events[duplicate]=state.Events[duplicate] with{SupersededByEventId=primary.EventId};
+     }else n=n with{OriginalAliases=aliases.Order(StringComparer.Ordinal).ToList()};
+    }
+    if(i<0)i=state.Events.FindIndex(x=>x.EventId==n.EventId);
 
     // The original post identity is authoritative across independent community relays.
     if(i<0&&n.CanonicalOriginalId!="")i=state.Events.FindIndex(x=>x.CanonicalOriginalId==n.CanonicalOriginalId);
@@ -339,13 +381,13 @@ internal sealed class ResetRadar:IDisposable {
       var added=n with{MajorTime=n.ResetUtc,ReadAt=inherited??n.ReadAt,Migration=inherited!=null?"LEGACY_LIST_READ_INHERITED":n.Migration,EvidenceSources=n.EvidenceSources?.DistinctBy(x=>(x.SourceId,x.Url,x.Role)).ToList()};state.Events.Add(added);
       if(Rc4Radar.IsAlert(added))state.SignalHistory.Add(SignalEvidence(added,added.EventId,added.RevisionId,now));continue;
      }
-      var old=state.Events[i];bool legacyMatch=old.OriginalId=="";bool sameOriginal=n.CanonicalOriginalId!=""&&n.CanonicalOriginalId==old.CanonicalOriginalId;bool strongIdentity=old.EventId==n.EventId||sameOriginal;
+      var old=state.Events[i];bool legacyMatch=old.OriginalId=="";bool sameOriginal=n.CanonicalOriginalId!=""&&n.CanonicalOriginalId==old.CanonicalOriginalId;bool strongIdentity=old.EventId==n.EventId||sameOriginal||aliasMatch;
       bool preserveTerminal=old.Phase is "COMPLETED" or "CANCELLED"&&!DemonstrablyNewerTerminal(old,n);
-      if(strongIdentity&&(preserveTerminal||!DemonstrablyNewerTerminal(old,n)&&WeakerThan(old,n)))n=old with{LastSeen=now,EvidenceSources=Rc4Radar.MergeEvidence(old,n),RelayUrl=old.RelayUrl!=""?old.RelayUrl:n.RelayUrl};
+      if(strongIdentity&&(preserveTerminal||!DemonstrablyNewerTerminal(old,n)&&WeakerThan(old,n)))n=old with{LastSeen=now,EvidenceSources=Rc4Radar.MergeEvidence(old,n),OriginalAliases=n.OriginalAliases??old.OriginalAliases,RelayUrl=old.RelayUrl!=""?old.RelayUrl:n.RelayUrl};
      bool major=!legacyMatch&&Major(old,n);
      string revision=major?Safe.Hash(old.RevisionId+"|"+n.RevisionId):old.RevisionId;
      if(major){state.Transitions.Add(new(old.EventId,revision,now,old.SignalLevel,n.SignalLevel,old.SignalLevel!=n.SignalLevel?"SIGNAL_LEVEL_CHANGED":"MAJOR_EVIDENCE_UPDATE"));if(Rc4Radar.IsAlert(n))state.SignalHistory.Add(SignalEvidence(n,old.EventId,revision,now));}
-    state.Events[i]=n with{EventId=old.EventId,FirstSeen=old.FirstSeen,LastSeen=now,ReadAt=major?null:old.ReadAt,RevisionId=revision,MajorTime=major?n.ResetUtc:old.MajorTime,
+    state.Events[i]=n with{EventId=old.EventId,CanonicalOriginalId=aliasMatch?old.CanonicalOriginalId:n.CanonicalOriginalId,OriginalId=aliasMatch?old.OriginalId:n.OriginalId,FirstSeen=old.FirstSeen,LastSeen=now,ReadAt=major?null:old.ReadAt??aliasRead,RevisionId=revision,MajorTime=major?n.ResetUtc:old.MajorTime,
      Migration=legacyMatch?"LEGACY_CANONICAL_READ_PRESERVED":old.Migration,EvidenceSources=Rc4Radar.MergeEvidence(old,n),RelayUrl=old.RelayUrl!=""?old.RelayUrl:n.RelayUrl};}
 
    state.Events=state.Events.OrderByDescending(x=>x.LastSeen).Take(200).ToList();state.Transitions=state.Transitions.OrderBy(x=>x.Timestamp).TakeLast(1000).ToList();state.SignalHistory=state.SignalHistory.Where(x=>x.Timestamp>=now.AddHours(-96)).OrderBy(x=>x.Timestamp).TakeLast(2000).ToList();Save();}Changed?.Invoke();
@@ -407,7 +449,7 @@ internal sealed class ResetRadar:IDisposable {
    next=next with{HttpStatus=status,FinalUrl=response.RequestMessage?.RequestUri?.GetLeftPart(UriPartial.Path)??url};
    if(status==304){
     if(old.LastSuccess==null)throw new InvalidDataException("UNEXPECTED_304");
-    next=next with{Status="UNCHANGED",Failures=0,LastSuccess=now,NextCheck=NextHealthy(now,source),Error=""};
+    next=next with{Status="UNCHANGED",Failures=0,Consecutive403=0,LastSuccess=now,NextCheck=NextHealthy(now,source),Error=""};
    }else if(status==429){
     var retry=RetryAfter(response,now);next=Failed(next,"HTTP_429",429,now) with{RetryAfterUtc=retry};
     if(retry>next.NextCheck)next=next with{NextCheck=retry};
@@ -418,8 +460,8 @@ internal sealed class ResetRadar:IDisposable {
     while((read=await stream.ReadAsync(bytes,requestToken))>0){if(buffer.Length+read>MaxResponseBytes)throw new InvalidDataException("RESPONSE_TOO_LARGE");buffer.Write(bytes,0,read);}
     byte[] data=buffer.ToArray();string html=Encoding.UTF8.GetString(data);
     try{HtmlObserved?.Invoke(id,url,html);}catch{} // Read-only owned QA observer, absent in normal operation.
-    parsedEntries=Rc4Radar.Parse(source,html,now,out int count);
-    next=next with{Status="HEALTHY",Failures=0,LastSuccess=now,NextCheck=NextHealthy(now,source),CandidateCount=count,
+    parsedEntries=Rc4Radar.Parse(source,html,now,out int count,RadarRules.Load(root));
+    next=next with{Status="HEALTHY",Failures=0,Consecutive403=0,LastSuccess=now,NextCheck=NextHealthy(now,source),CandidateCount=count,
      ETag=response.Headers.ETag?.ToString(),Modified=response.Content.Headers.LastModified,
      BodyHash=Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(data)).ToLowerInvariant(),ResponseBytes=data.Length,Error="",
      CandidateExcerpt=AnnouncementParser.Clean(AnnouncementParser.Plain(html),240)};
@@ -430,36 +472,50 @@ internal sealed class ResetRadar:IDisposable {
    catch(RegexMatchTimeoutException){next=Failed(next,"PARSER_TIMEOUT",next.HttpStatus,now);}
    catch(OperationCanceledException){throw;}
    catch{next=Failed(next,"PARSER_ERROR",0,now);}
+  if(parsedEntries!=null)next=next with{NextCheck=ShouldAccelerate(source,parsedEntries)?now.AddMinutes(5):now.AddSeconds(source.IntervalMinutes*60+Random.Shared.Next(31,91))};
   lock(gate){state.Sources.RemoveAll(x=>x.Id==id);state.Sources.Add(next);state.SourceChecks.Add(new(now,id,source.SourceClass,next.Status,next.CandidateCount,next.HttpStatus,next.BodyHash,next.LastSuccess,next.NextCheck,next.Error));
    state.SourceChecks=state.SourceChecks.Where(x=>x.Timestamp>=now.AddHours(-96)).OrderBy(x=>x.Timestamp).TakeLast(5000).ToList();Save();}
   // Include the producing source in the signal observation coverage.
   if(parsedEntries!=null)Apply(parsedEntries,now);Changed?.Invoke();
  }
- static DateTimeOffset NextHealthy(DateTimeOffset now,RadarSourceDefinition source)=>now.AddSeconds(source.IntervalMinutes*60+Random.Shared.Next(31,91));
- static SourceStatus Failed(SourceStatus s,string code,int http,DateTimeOffset now)=>s with{Status="DEGRADED",Failures=s.Failures+1,HttpStatus=http,Error=code,NextCheck=now.AddMinutes(BackoffMinutes(s.Failures+1))};
+ internal bool ShouldAccelerate(RadarSourceDefinition source,IEnumerable<Announcement>? latest=null){
+  lock(gate){
+   var newest=(latest??[]).ToArray();
+   var candidates=state.Events.Where(x=>x.SupersededByEventId==""&&((x.EvidenceSources??[]).Any(e=>e.SourceId==source.Id)||x.Source==source.Id));
+   bool SameOriginal(Announcement a,Announcement b)=>a.EventId==b.EventId||Rc4Radar.VerifiedOriginalAliases(a).Overlaps(Rc4Radar.VerifiedOriginalAliases(b));
+   var terminal=state.Events.Where(x=>x.SupersededByEventId=="").Concat(newest).Where(x=>x.Phase is "COMPLETED" or "CANCELLED").ToArray();
+   var signals=candidates.Concat(newest).Where(x=>x.SignalLevel=="INCOMING"&&!terminal.Any(t=>SameOriginal(x,t))).ToArray();
+   string Key(Announcement x)=>(state.Events.FirstOrDefault(e=>e.SupersededByEventId==""&&SameOriginal(e,x))?.EventId??x.EventId)+"|";
+   bool Stopped(Announcement x){var ids=state.Events.Where(e=>SameOriginal(e,x)).Select(e=>e.EventId).Append(x.EventId).ToArray();return state.StoppedAccelerationRevisions.Any(key=>ids.Any(id=>key.StartsWith(id+"|",StringComparison.Ordinal)));}
+   if(LocalQuotaIsFull?.Invoke()==true){foreach(var x in signals)if(!Stopped(x))state.StoppedAccelerationRevisions.Add(Key(x));return false;}
+   return signals.Any(x=>!Stopped(x));
+  }
+ }
+ DateTimeOffset NextHealthy(DateTimeOffset now,RadarSourceDefinition source)=>ShouldAccelerate(source)?now.AddMinutes(5):now.AddSeconds(source.IntervalMinutes*60+Random.Shared.Next(31,91));
+ static SourceStatus Failed(SourceStatus s,string code,int http,DateTimeOffset now)=>s with{Status=http==403&&s.Consecutive403>=2?"BLOCKED":"DEGRADED",Failures=s.Failures+1,Consecutive403=http==403?s.Consecutive403+1:0,HttpStatus=http,Error=code,NextCheck=now.AddMinutes(http==403&&s.Consecutive403>=2?1440:BackoffMinutes(s.Failures+1))};
  internal static bool ScopeMatches(Announcement a,string? plan)=>a.Eligibility=="AS_ANNOUNCED"&&!string.IsNullOrWhiteSpace(plan)&&new[]{"free","plus","pro","team","business","enterprise","edu"}.Contains(plan.ToLowerInvariant())&&
   (a.Scope=="ALL"||(a.Scope=="PAID"&&new[]{"plus","pro","business","enterprise"}.Contains(plan.ToLowerInvariant()))||a.Scope.Split('|').Contains(plan.ToUpperInvariant()));
  public void Correlate(IEnumerable<UsageSample> input){
    var rows=input.Where(x=>x.limit_id=="codex"&&x.window_duration_mins==10080).OrderBy(x=>x.observed_at_utc).ToArray();var announcements=Snapshot().Events;var list=new List<ResetCorrelation>();var quota=new List<RadarQuotaEvidence>();
    for(int i=1;i<rows.Length;i++){
-    var p=rows[i-1];var c=rows[i];bool bankedObservedDifference=p.reset_credits_available_count!=c.reset_credits_available_count;if(!DailyUsageCalculator.Valid(p)||!DailyUsageCalculator.Valid(c)||!(c.remaining_percent>p.remaining_percent||p.reset_at_unix_seconds!=c.reset_at_unix_seconds||bankedObservedDifference))continue;
+    var p=rows[i-1];var c=rows[i];bool bankedObservedDifference=p.reset_credits_available_count!=c.reset_credits_available_count;if(!DailyUsageCalculator.Valid(p)||!DailyUsageCalculator.Valid(c)||!(c.remaining_percent>p.remaining_percent||!LocalQuotaCycle.SameResetWindow(p.reset_at_utc,c.reset_at_utc)&&!(p.remaining_percent==100&&c.remaining_percent==100)||bankedObservedDifference))continue;
    double seconds=(c.observed_at_utc-p.observed_at_utc).TotalSeconds;
-   bool stable=p.context_assurance=="STABLE_SCOPE"&&c.context_assurance=="STABLE_SCOPE"&&p.account_context_key==c.account_context_key&&p.comparison_key==c.comparison_key&&p.plan_type==c.plan_type&&p.source_slot==c.source_slot&&!c.had_gap&&seconds>0&&seconds<=Math.Max(3*c.polling_interval_seconds,300);
+   bool stable=QuotaWindow.IdentityComparable(p.context_assurance)&&QuotaWindow.IdentityComparable(c.context_assurance)&&p.account_context_key==c.account_context_key&&p.comparison_key==c.comparison_key&&p.plan_type==c.plan_type&&p.source_slot==c.source_slot&&!c.had_gap&&seconds>0&&seconds<=3*c.polling_interval_seconds;
    bool scheduled=p.reset_at_utc.HasValue&&p.reset_at_utc>=p.observed_at_utc&&p.reset_at_utc<=c.observed_at_utc;
-   var a=announcements.Where(x=>x.Effect=="AUTOMATIC_QUOTA_RESET"&&x.Phase!="CANCELLED"&&x.SignalLevel is "INCOMING" or "COMPLETED"&&x.ResetUtc!=null&&Math.Abs((x.ResetUtc.Value-c.observed_at_utc).TotalHours)<=2).OrderByDescending(x=>x.SourceClass=="OFFICIAL_OPENAI").ThenByDescending(x=>x.LastSeen).FirstOrDefault();
+   var a=announcements.Where(x=>x.Effect=="AUTOMATIC_QUOTA_RESET"&&x.Phase!="CANCELLED"&&x.SignalLevel is "INCOMING" or "COMPLETED"&&Math.Abs(((x.ResetUtc??x.PublishedAt??x.FirstSeen)-c.observed_at_utc).TotalHours)<=6).OrderByDescending(x=>x.SourceClass=="OFFICIAL_OPENAI").ThenByDescending(x=>x.LastSeen).FirstOrDefault();
     bool bankedComparable=stable&&p.reset_credits_available_count.HasValue&&c.reset_credits_available_count.HasValue;bool bankedChanged=bankedComparable&&p.reset_credits_available_count!=c.reset_credits_available_count;bool banked=bankedChanged&&c.reset_credits_available_count<p.reset_credits_available_count;
    bool scopeMatches=a!=null&&ScopeMatches(a,c.plan_type);
    bool refill=c.remaining_percent>p.remaining_percent;
     bool probable=stable&&refill&&a!=null&&scopeMatches&&!scheduled&&!bankedObservedDifference&&a.Phase!="CANCELLED";
     string classification=stable&&scheduled?"SCHEDULED_WEEKLY_RESET":stable&&banked&&refill?"BANKED_RESET_PROBABLE":bankedChanged?"BANKED_CREDIT_MOVEMENT":bankedObservedDifference?"INCONCLUSIVE":probable?"GLOBAL_RESET_PROBABLE":a!=null?"INCONCLUSIVE":"UNCLASSIFIED_REPLENISHMENT";
-    string reason=!stable?"Identity or observation scope insufficient":scheduled?"Scheduled time coincided; this is supporting evidence only":
-     bankedObservedDifference&&!bankedComparable?"Banked reset count baseline or observation scope is insufficient":bankedChanged?"Banked reset count changed; this is supporting evidence only":a==null?"No matching announcement evidence":
-    !scopeMatches?"Announcement eligibility or plan not verified":!refill?"No numerical refill observed":"Official announcement and local refill occurred around the same time; cause remains unknown";
+    string reason=!stable?"身分或觀察範圍不足，無法直接比較。":scheduled?"與原定每週重置時間相符，僅作為輔助證據。":
+     bankedObservedDifference&&!bankedComparable?"重置券基準或觀察範圍不足。":bankedChanged?"觀察到重置券數量變化，僅作為輔助證據。":a==null?"沒有時間相近的公告證據。":
+    !scopeMatches?"尚未確認公告適用方案。":!refill?"尚未觀察到額度回升。":"公告與本機額度回升時間相近，實際原因仍未確認。";
    list.Add(new(p.sample_id,c.sample_id,p.observed_at_utc,c.observed_at_utc,p.remaining_percent,c.remaining_percent,classification,reason,a?.EventId,stable,scheduled,
      a==null?"UNVERIFIED":a.Tier==1?"OFFICIAL_ANNOUNCED":a.Tier==2?"TEAM_REPORTED":"UNVERIFIED",
       !stable||bankedObservedDifference&&!bankedComparable?"NOT_COMPARABLE":refill?"REPLENISHMENT_OBSERVED":bankedChanged?"BANKED_RESET_MOVEMENT":"NO_OBSERVATION",
      probable?"PROBABLE":a!=null?"INCONCLUSIVE":"NOT_ASSESSED","UNKNOWN"));
-    quota.Add(new(a?.EventId??(bankedChanged?"BANKED_RESET_MOVEMENT":bankedObservedDifference?"BANKED_RESET_OBSERVATION":"LOCAL_REPLENISHMENT_OBSERVED"),c.observed_at_utc,p.sample_id,c.sample_id,p.observed_at_utc,c.observed_at_utc,p.remaining_percent,c.remaining_percent,p.reset_at_utc,c.reset_at_utc,p.reset_credits_available_count,c.reset_credits_available_count,seconds,stable&&(!bankedObservedDifference||bankedComparable)?"STABLE_SCOPE":"SCOPE_NOT_FULLY_VERIFIED","UNKNOWN"));
+    quota.Add(new(a?.EventId??(bankedChanged?"BANKED_RESET_MOVEMENT":bankedObservedDifference?"BANKED_RESET_OBSERVATION":"LOCAL_REPLENISHMENT_OBSERVED"),c.observed_at_utc,p.sample_id,c.sample_id,p.observed_at_utc,c.observed_at_utc,p.remaining_percent,c.remaining_percent,p.reset_at_utc,c.reset_at_utc,p.reset_credits_available_count,c.reset_credits_available_count,seconds,stable&&(!bankedObservedDifference||bankedComparable)?QuotaWindow.ComparisonAssurance(p.context_assurance,c.context_assurance):"SCOPE_NOT_FULLY_VERIFIED","UNKNOWN"));
    }
    var anchor=rows.LastOrDefault()?.observed_at_utc??DateTimeOffset.UtcNow;var cutoff=anchor.AddHours(-96);
    lock(gate){state.Correlations=state.Correlations.Concat(list).Where(x=>x.To>=cutoff).GroupBy(x=>(x.PreviousSample,x.CurrentSample)).Select(x=>x.Last()).OrderBy(x=>x.To).TakeLast(500).ToList();state.QuotaEvidence=state.QuotaEvidence.Concat(quota).Where(x=>x.To>=cutoff).GroupBy(x=>(x.PreviousSample,x.CurrentSample)).Select(x=>x.Last()).OrderBy(x=>x.To).TakeLast(500).ToList();Save();}
@@ -495,7 +551,7 @@ internal sealed class ResetInfoForm:ProductForm {
  readonly FlowLayoutPanel eventsPanel=new(){Dock=DockStyle.Top,FlowDirection=FlowDirection.TopDown,WrapContents=false,AutoSize=false,Height=0,Tag=0,Padding=new(0)};
   readonly RadarAccentPanel eventCard=new(){Dock=DockStyle.Top,Height=522,Tag=522,Padding=new(16,12,12,12),BackColor=Theme.Secondary};
  readonly Button nextButton,sourceButton,relayButton,closeButton,checkButton,detailsButton,explainButton;
- public ResetInfoForm(MonitorService s,Announcement? a):base(L.T("Radar.PageTitle"),1120,860){
+ public ResetInfoForm(MonitorService s,Announcement? a):base(L.T("Radar.PageTitle"),1120,860,s.Root){
   service=s;current=a;KeyPreview=true;statusSummary.SizeChanged+=(_,_)=>FitStatusSummary();
   void CardStack(params Control[] controls){foreach(var c in controls.Reverse()){c.BackColor=Color.Transparent;eventCard.Controls.Add(c);}}
    CardStack(badge,eventTitle,signalState,readState,quote,published,timeCaption,time,weeklyCaption,amount,suggestion,credits,source,evidence);
@@ -558,7 +614,7 @@ internal sealed class ResetInfoForm:ProductForm {
   foreach(var button in new[]{nextButton,sourceButton,relayButton})button.AccessibleName=button.Text;
  }
  void ApplyTexts(){
-  if(IsDisposed)return;var now=DateTimeOffset.UtcNow;var state=service.Radar.Snapshot();if(current!=null)current=state.Events.FirstOrDefault(x=>x.EventId==current.EventId&&x.RevisionId==current.RevisionId)??state.Events.FirstOrDefault(x=>x.EventId==current.EventId)??current;Text=L.T("Radar.PageTitle");AccessibleName=Text;
+  if(IsDisposed)return;var now=DateTimeOffset.UtcNow;var state=service.Radar.Snapshot();if(current!=null){current=state.Events.FirstOrDefault(x=>x.EventId==current.EventId&&x.RevisionId==current.RevisionId)??state.Events.FirstOrDefault(x=>x.EventId==current.EventId)??current;var visited=new HashSet<string>(StringComparer.Ordinal);while(current.SupersededByEventId!=""&&visited.Add(current.EventId)){var primary=state.Events.FirstOrDefault(x=>x.EventId==current.SupersededByEventId);if(primary==null)break;current=primary;}}Text=L.T("Radar.PageTitle");AccessibleName=Text;
 
   closeButton.Text=L.T("Radar.Close");nextButton.Text=L.T("Radar.Next");checkButton.Text=L.T(checking?"Radar.Checking":"Radar.CheckNow");checkButton.Enabled=!checking;
   detailsButton.Text=L.T(detailsOpen?"Radar.HideDetails":"Radar.ShowDetails");explainButton.Text=L.T(explainOpen?"Radar.HideHow":"Radar.ShowHow");
@@ -605,11 +661,11 @@ internal sealed class ResetInfoForm:ProductForm {
  static Color SignalColor(string level,bool sourceFailure)=>Theme.HighContrast?Theme.Text:sourceFailure?Theme.Critical:level=="WATCH"?Theme.Warning:level=="INCOMING"?Theme.ResetAlert:level is "COMPLETED" or "OBSERVED"?Theme.Accent:Theme.Text;
  static string DisplaySignal(Announcement a,bool observed)=>observed?L.T("Radar.BadgeObserved"):L.T(a.SignalLevel switch{"WATCH"=>"Radar.BadgeWatch","INCOMING"=>"Radar.BadgeIncoming","COMPLETED"=>"Radar.BadgeCompleted",_=>"Radar.BadgeNotice"});
  static string Relative(DateTimeOffset? value,DateTimeOffset now){if(value==null)return L.T("Radar.NeverChecked");var age=now-value.Value;if(age<TimeSpan.Zero)age=TimeSpan.Zero;if(age.TotalMinutes<1)return L.T("Radar.JustNow");if(age.TotalHours<1)return L.T("Radar.MinutesAgo",(int)age.TotalMinutes);if(age.TotalDays<1)return L.T("Radar.HoursAgo",(int)age.TotalHours);return L.T("Radar.DaysAgo",(int)age.TotalDays);}
-  static string HealthWord(SourceStatus item,DateTimeOffset now){if(item.Status is "HEALTHY" or "UNCHANGED"&&!Rc4Radar.CurrentHealthy(item,now))return L.T("Radar.HealthStale");return L.T(item.Status switch{"HEALTHY"=>"Radar.HealthHealthy","UNCHANGED"=>"Radar.HealthUnchanged","DEGRADED"=>"Radar.HealthDegraded","BLOCKED"=>"Radar.HealthBlocked",_=>"Radar.HealthNotChecked"});}
+  static string HealthWord(SourceStatus item,DateTimeOffset now){if(RadarCoverage.PermanentlyBlocked(item))return "被網站封鎖";if(item.Status is "HEALTHY" or "UNCHANGED"&&!Rc4Radar.CurrentHealthy(item,now))return L.T("Radar.HealthStale");return L.T(item.Status switch{"HEALTHY"=>"Radar.HealthHealthy","UNCHANGED"=>"Radar.HealthUnchanged","DEGRADED"=>"Radar.HealthDegraded","BLOCKED"=>"Radar.HealthBlocked",_=>"Radar.HealthNotChecked"});}
  static string SourceClassWord(string value)=>L.T(value switch{"OFFICIAL_OPENAI"=>"Radar.SourceOfficial","OPENAI_STATUS"=>"Radar.SourceStatus","TEAM_SIGNAL_RELAY"=>"Radar.SourceRelay",_=>"Radar.SourceThirdParty"});
  static string SourceText(RadarState state,bool detailed,DateTimeOffset now){
     var lines=new List<string>();foreach(var definition in ResetRadar.Sources){var item=state.Sources.Where(x=>x.Id==definition.Id).OrderByDescending(x=>x.LastAttempt??DateTimeOffset.MinValue).FirstOrDefault()??new(definition.Id,definition.Url,SourceClass:definition.SourceClass,DisplayName:definition.DisplayName,Adapter:definition.Adapter);
-    string icon=Rc4Radar.CurrentHealthy(item,now)?"✓":item.Status=="NOT_CHECKED"?"○":"⚠";string basic=$"{icon} {definition.DisplayName} — {SourceClassWord(definition.SourceClass)}"+(item.HttpStatus>0&&item.Status=="DEGRADED"?$" · HTTP {item.HttpStatus}":"");lines.Add(basic);
+    string icon=Rc4Radar.CurrentHealthy(item,now)?"✓":item.Status=="NOT_CHECKED"?"○":"⚠";string basic=$"{icon} {definition.DisplayName} — {SourceClassWord(definition.SourceClass)}"+(RadarCoverage.PermanentlyBlocked(item)?" · 被網站封鎖（不列入覆蓋率）":item.HttpStatus>0&&item.Status=="DEGRADED"?$" · HTTP {item.HttpStatus}":"");lines.Add(basic);
    if(detailed)lines.Add("   "+L.T("Radar.SourceDetail",item.Url,HealthWord(item,now),item.LastSuccess?.ToLocalTime().ToString("yyyy-MM-dd HH:mm zzz",CultureInfo.InvariantCulture)??L.T("Radar.NotProvided"),item.LastAttempt?.ToLocalTime().ToString("yyyy-MM-dd HH:mm zzz",CultureInfo.InvariantCulture)??L.T("Radar.NotProvided"),item.HttpStatus==0?L.T("Radar.NotProvided"):item.HttpStatus.ToString(CultureInfo.InvariantCulture),item.NextCheck?.ToLocalTime().ToString("yyyy-MM-dd HH:mm zzz",CultureInfo.InvariantCulture)??L.T("Radar.NotProvided"),item.CandidateCount));}
   return string.Join("\n",lines);
  }

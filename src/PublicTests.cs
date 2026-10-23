@@ -12,7 +12,7 @@ internal static class PublicTests {
   void Check(string id,Action action){try{action();results.Add(new{id,result="PASS",classification="SYNTHETIC_PRODUCTION_CODE"});}catch(Exception ex){results.Add(new{id,result="FAIL",classification="SYNTHETIC_PRODUCTION_CODE",error=ex.GetType().Name+": "+ex.Message});}AtomicJson.Save(Path.Combine(root,"public-tests-progress.json"),results);}
   void Assert(bool value,string reason="assertion"){if(!value)throw new InvalidOperationException(reason);}
   string Hash(string p)=>Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(p))).ToLowerInvariant();
-  Check("L01 New English default independent of OS culture",()=>{var before=CultureInfo.CurrentCulture;try{CultureInfo.CurrentCulture=CultureInfo.GetCultureInfo("zh-TW");Assert(Settings.Load(Path.Combine(root,"new","settings.json")).UiLanguage=="en-US");}finally{CultureInfo.CurrentCulture=before;}});
+  Check("L01 新版預設繁體中文",()=>{var before=CultureInfo.CurrentCulture;try{CultureInfo.CurrentCulture=CultureInfo.GetCultureInfo("zh-TW");Assert(Settings.Load(Path.Combine(root,"new","settings.json")).UiLanguage=="zh-TW");}finally{CultureInfo.CurrentCulture=before;}});
   Check("L02 Legacy settings and history preserved",()=>{var dir=Path.Combine(root,"legacy");Directory.CreateDirectory(dir);var path=Path.Combine(dir,"settings.json");var history=Path.Combine(dir,"history.csv");File.WriteAllText(path,"{\"Interval\":180,\"OpacityPercent\":85,\"Compact\":true,\"X\":-100,\"Y\":40}");File.WriteAllText(history,"SYNTHETIC original history\n");string original=Hash(path),hh=Hash(history);var value=Settings.Load(path);Assert(value.UiLanguage=="zh-TW"&&value.Compact&&value.OpacityPercent==85&&value.X==-100&&value.Interval==180);Assert(Hash(history)==hh&&Hash(path)==original&&Hash(path+".pre-bilingual.bak")==original);AtomicJson.Save(path,value);Assert(Settings.Load(path).UiLanguage=="zh-TW");});
   Check("L03 Explicit invalid and wrong type language preserve other settings",()=>{
    foreach(var lang in new[]{"\"en-US\"","\"zh-TW\"","\"unknown\"","123","{}","null"}){string path=Path.Combine(root,"language-"+Guid.NewGuid().ToString("N")+".json");File.WriteAllText(path,"{\"ui_language\":"+lang+",\"OpacityPercent\":85,\"Compact\":true}");var value=Settings.Load(path);Assert(value.UiLanguage==(lang=="\"zh-TW\""?"zh-TW":"en-US")&&value.OpacityPercent==85&&value.Compact);}
@@ -49,4 +49,5 @@ internal static class PublicTests {
   Environment.ExitCode=results.Select(x=>JsonSerializer.SerializeToElement(x)).Any(x=>x.GetProperty("result").GetString()=="FAIL")?1:0;
  }
 }
+
 

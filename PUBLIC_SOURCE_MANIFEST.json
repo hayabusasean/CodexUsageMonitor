@@ -1,14 +1,22 @@
 {
   "schema_version": 1,
   "kind": "PUBLIC_SOURCE_RELEASE",
-  "version": "0.4.1",
-  "informational_version": "0.4.1+gold",
+  "version": "0.5.0-beta2",
+  "informational_version": "0.5.0-beta2",
   "repository": "https://github.com/hayabusasean/CodexUsageMonitor",
-  "tag": "v0.4.1",
+  "tag": "v0.5.0-beta2",
   "project_license": "MIT",
   "copyright": "Copyright (c) 2026 hayabusasean",
-  "exe_sha256": "258d58290470f9bfc357162c8869312de8eda33812d40a09e0fe040f95b050b8",
-  "entry_count": 124,
+  "exe_sha256": "21ff85e3b5edb5bffbfbe22a1457fda72838bee87c0b74ef7cb0e64daf4e0bde",
+  "zip_sha256": "8f0457ba70c4902a454fff2c4446dd4730df69cfd2efcb2f2d6b9bb348b5b86e",
+  "entry_count": 172,
+  "manifest_self_excluded": true,
+  "privacy_check": {
+    "real_identifier_matches": 0,
+    "anonymized_fixture_rows": 2295,
+    "private_runtime_included": false,
+    "author_provided_new_screenshots": 3
+  },
   "files": [
     {
       "path": ".gitattributes",
@@ -27,8 +35,8 @@
     },
     {
       "path": ".github/workflows/build.yml",
-      "bytes": 1290,
-      "sha256": "b2623dc19c332210500152c189f3434e928789dd9ef5a962181360b4a5da6e12"
+      "bytes": 1272,
+      "sha256": "f9f9ddd1611631dfbac86b76b6a2dcf1efbcb51f69fa3c59c9b379b6b184d3f6"
     },
     {
       "path": ".gitignore",
@@ -37,8 +45,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 4051,
-      "sha256": "f4b62b5d73c2a20a81e2792a53cda685fa695e7e1639a5727b6b2d4783e8aa5f"
+      "bytes": 4747,
+      "sha256": "60b7fb3c75b574beb1fd4bb1dbf64231dfe5d0da4b1401122e5fbf76d0cd8fda"
     },
     {
       "path": "CONTRIBUTING.md",
@@ -59,6 +67,31 @@
       "path": "docs/privacy-and-limits.zh-TW.md",
       "bytes": 3496,
       "sha256": "8237b296fa807d6f3d1970d43f0bdcfd045230750beffabc1410fc03b380c1ec"
+    },
+    {
+      "path": "docs/releases/v0.5.0-beta2.md",
+      "bytes": 6239,
+      "sha256": "dda481ef7d2b4520252fb9089b4ab71980587bc6689d83349dc4adf59a98ecbb"
+    },
+    {
+      "path": "docs/releases/verification-beta2.json",
+      "bytes": 3263,
+      "sha256": "c41c413ee274527029b67030738d30382e53bd75d2cc814eb6f2862015d31f3e"
+    },
+    {
+      "path": "docs/screenshots/beta2/compact-zh-TW.png",
+      "bytes": 35593,
+      "sha256": "f63c5fa09b250b1256d474c2459db8e6ddda5cef73f2121b45b350d27fcefa18"
+    },
+    {
+      "path": "docs/screenshots/beta2/reset-radar-zh-TW.png",
+      "bytes": 2860978,
+      "sha256": "c8f9789c5a2262036138c625ae0c56f0cb067866920e2db928af35ac2c0ae846"
+    },
+    {
+      "path": "docs/screenshots/beta2/standard-zh-TW.png",
+      "bytes": 65038,
+      "sha256": "404afa0c21c54d8c9460d6b8f662632e762672d28837be334ab048afdd854bd2"
     },
     {
       "path": "docs/screenshots/compact-en.png",
@@ -201,24 +234,29 @@
       "sha256": "a89886665765362eb77e0f8e26602c924520041d1711b2eedc136434fe4d01ab"
     },
     {
+      "path": "NuGet.Config",
+      "bytes": 179,
+      "sha256": "fd6836e883aa6bf334e587a02ff7239f68713f4baac6d749f743a2b489b1769c"
+    },
+    {
       "path": "PRIVACY.md",
       "bytes": 3026,
       "sha256": "0c574e4f2d00415f429d4bdcb46732e9a8b54cfd5ce2d613a23ec2e116b28b04"
     },
     {
+      "path": "README_BUILD.md",
+      "bytes": 5718,
+      "sha256": "9a09f74c890c1eb90df01b52adfed82f325bbd5a136bd0162adddade1ba93ad5"
+    },
+    {
       "path": "README.md",
-      "bytes": 6982,
-      "sha256": "8c9074bd8c60f92ae98bd19219f3bad721f66a78148a781c30c54672929f3c75"
+      "bytes": 13817,
+      "sha256": "6396c7410e7a7a303f0e81d5222801c9276ccdc06002f6d69e66d3fa970de31e"
     },
     {
       "path": "README.zh-TW.md",
-      "bytes": 6344,
-      "sha256": "c040b4db6b4e56fe9081a9ce5a03701f5354094293c00315c133bff3d81b2f52"
-    },
-    {
-      "path": "README_BUILD.md",
-      "bytes": 1357,
-      "sha256": "9795c682590f3055de87af4fa64994e06b2fad1dd84fbb68a5a58b24bd54429a"
+      "bytes": 3145,
+      "sha256": "66cb38c52071e70b848d89b01c3b09d8ed9e2a5cfc0d233f3b4478f02bf26d95"
     },
     {
       "path": "SECURITY.md",
@@ -232,8 +270,13 @@
     },
     {
       "path": "src/AppServerClient.cs",
-      "bytes": 12142,
-      "sha256": "07a882b0fe4554725591e5ccd431b59784d5a6b5af6e46cd0828d29988f44ade"
+      "bytes": 13614,
+      "sha256": "00fe929ad5e41f82263a72538bdf31c18e025b8d83aac727ee8bac03bf76d3ac"
+    },
+    {
+      "path": "src/Assets/r002-history.jpg",
+      "bytes": 243877,
+      "sha256": "d9342e6335caca5ee9b43a230d2d33320e6f1dc93636d200212ebc55894544e5"
     },
     {
       "path": "src/Assets/r002-history.png",
@@ -241,9 +284,19 @@
       "sha256": "1783b2a471b4cfde50391e6c882e35d777b63404edec5b69a95d1b56a8a25edc"
     },
     {
+      "path": "src/Assets/r002-radar.jpg",
+      "bytes": 348103,
+      "sha256": "4f76cab020e08836b274b42681586182767a6b64417616bd2dae4e09801c5deb"
+    },
+    {
       "path": "src/Assets/r002-radar.png",
       "bytes": 2684582,
       "sha256": "84dcf7081cd254c16fd3fb70dfc6e686cef09714cfd231d2a32bf44a0dd9afc0"
+    },
+    {
+      "path": "src/Assets/r002-settings.jpg",
+      "bytes": 315031,
+      "sha256": "bb33ae040187bea9faad5e518cff387dbfddcd68c362eae8e52de226c1bb9ef8"
     },
     {
       "path": "src/Assets/r002-settings.png",
@@ -251,19 +304,34 @@
       "sha256": "62c70d25b6e94391e1a54c047cdbf33e925020cc520e944f5e92cad52678588f"
     },
     {
+      "path": "src/Assets/stellar-backdrop-r001.jpg",
+      "bytes": 158957,
+      "sha256": "5078882cc90f4ff16b59802d99b0b9e3539dd31554ed7ae6e905dac8baf3a2cb"
+    },
+    {
       "path": "src/Assets/stellar-backdrop-r001.png",
       "bytes": 1936993,
       "sha256": "3486cca25caf29f0103ccccf1e18c76d1f4785960c2b479f8793b995a7c475b1"
     },
     {
+      "path": "src/BurnForecast.cs",
+      "bytes": 7478,
+      "sha256": "9211e9bffd2b470374ee495c6ae6d2e90d9ba6e499a5f2fad9b6e917543a91a2"
+    },
+    {
+      "path": "src/CodexTrust.cs",
+      "bytes": 2659,
+      "sha256": "418f6c96ad1a017da1a9dcb12b170c1bdd0b60ac95cb4b356a419e6ae72971a7"
+    },
+    {
       "path": "src/CodexUsageMonitor.csproj",
-      "bytes": 1536,
-      "sha256": "3af7a0b45db2286512d8f9eed07ab51058311411c006d015107abde69189b90f"
+      "bytes": 1644,
+      "sha256": "a281abee019b56f6845eff8c9910e9d66c41d592df75a3029512236a770071cc"
     },
     {
       "path": "src/DailyUsageCalculator.cs",
-      "bytes": 12487,
-      "sha256": "f5b7705a689db5bc01e4a1dccc512974557d386aba68f621cfc2dc4bc331c27d"
+      "bytes": 12441,
+      "sha256": "0b38afc9017d7dee4696a29ce3c4c22fd809d666ac0740b0c63e8c5f7400241d"
     },
     {
       "path": "src/DarkControls.cs",
@@ -286,14 +354,19 @@
       "sha256": "76c8c4ecde75e192ca1e834666756516816fe61a2f865026370fb8526262e0e7"
     },
     {
+      "path": "src/FirstPaintDiagnostics.cs",
+      "bytes": 2724,
+      "sha256": "30aaac1d599a5d4747bb0867f2b47d5565fed94352fa69daa7f4db729b486f9c"
+    },
+    {
       "path": "src/Forms.cs",
-      "bytes": 16099,
-      "sha256": "f5e84880aca33568542d32262cf638690167ed49782c8ed053d8852a96e108d9"
+      "bytes": 17753,
+      "sha256": "f80c51c825bb9ad4ae03f4072fb70b6a25a9e232ddc5753e95ca245bdb9c16bb"
     },
     {
       "path": "src/GoldCycleTests.cs",
-      "bytes": 9452,
-      "sha256": "7a465252761f6f19c8999cb86172d2375c09cb39657156a24d5386e5952d4a14"
+      "bytes": 9477,
+      "sha256": "bdb29660ece718f7b91d1508a60849588ca2f7fdf5d2cb3cbc9d351ea59c606b"
     },
     {
       "path": "src/GoldEventRail.cs",
@@ -307,8 +380,8 @@
     },
     {
       "path": "src/GoldVisual.cs",
-      "bytes": 5367,
-      "sha256": "3fbf6c57969cf3468f75af3c80b087332d971321cc1fcdfb194aab12e57edc29"
+      "bytes": 5511,
+      "sha256": "df375cda1c9b898960e671c5dc93beadc95459e0bb67e6af5f41bbbc62114ac7"
     },
     {
       "path": "src/HistoryDivider.cs",
@@ -317,8 +390,8 @@
     },
     {
       "path": "src/HistoryForm.cs",
-      "bytes": 26667,
-      "sha256": "11062756bbbb49c0cddf31bc4df17351adf960a10b4009a1a78e1df32f05b800"
+      "bytes": 27249,
+      "sha256": "5f05ba58d995456fdbdc5a33818213ac7e086ce0b357146b361fe22fc4234aed"
     },
     {
       "path": "src/HumanFixProbe.cs",
@@ -327,23 +400,23 @@
     },
     {
       "path": "src/L.cs",
-      "bytes": 3455,
-      "sha256": "feef976f98f354209666844410d337aaf7544524166668ea14c0b834a1679d8a"
+      "bytes": 3463,
+      "sha256": "7d51213b8c1de8a7d5cee439be442c2dd04a94d63841e43e1fce0f901e069bad"
     },
     {
       "path": "src/LocalQuotaCycle.cs",
-      "bytes": 9171,
-      "sha256": "a134cc9f0e14ed85cb3dc9222596fa18cced6a5a91098aaac973e605c3569d37"
+      "bytes": 10342,
+      "sha256": "f6b25e7bb4b626d238ed3de23dd10c60d8a412b43a4ff4a7a17358e93c68e8a4"
     },
     {
       "path": "src/Models.cs",
-      "bytes": 12810,
-      "sha256": "1b51cb081d44ca323fddb6076837ad25529b6da41527111f78b7b7d693019e2c"
+      "bytes": 13736,
+      "sha256": "3369737d28b6a01cef9b1cd201bd844fdac944e060566d5e4697c2a0454bb6af"
     },
     {
       "path": "src/MonitorService.cs",
-      "bytes": 14086,
-      "sha256": "f151196fd41388b08b1ceba2d4604d9c1e993252b210a6a2018f474ac0b1210b"
+      "bytes": 19665,
+      "sha256": "a947a39e70c0354fa6db1cde202221954f682cae2d15d733a5c00f0dc861f6f6"
     },
     {
       "path": "src/NativeR003Harness.cs",
@@ -357,8 +430,8 @@
     },
     {
       "path": "src/OverlayForm.cs",
-      "bytes": 26270,
-      "sha256": "b89e049a1191b08dfa921bd9a262543e41eda7021dfb6083ac23a77db4452148"
+      "bytes": 33045,
+      "sha256": "3967c422a23e41f2feb19841896a7440f6e8971ff391256413a1b8a73f755d77"
     },
     {
       "path": "src/OwnedProcess.cs",
@@ -367,13 +440,13 @@
     },
     {
       "path": "src/Program.cs",
-      "bytes": 5595,
-      "sha256": "d3f3b34a5b82d33606e3742d184cf59a2866e9e47bcaf9d9f2c8207b868c972c"
+      "bytes": 8142,
+      "sha256": "c402370cb3185097e0c93e08620c56ddd90fda379c26d1aa6ebd48f65440ce2f"
     },
     {
       "path": "src/PublicHistoryTests.cs",
-      "bytes": 9576,
-      "sha256": "887d4c8124e20bdaf9c028ad3e3e76e1507a136322aef694b51253ac439d43e2"
+      "bytes": 10153,
+      "sha256": "1bb42db291ac30f50dc5da8a22ba21c9f398bf64f5346455d49c5db289030698"
     },
     {
       "path": "src/PublicNativeHarness.cs",
@@ -382,8 +455,8 @@
     },
     {
       "path": "src/PublicRadarTests.cs",
-      "bytes": 19470,
-      "sha256": "029edf6d69d028c4708abb9bf97b31a70d3ca97c4edcd67562630a08ed8ae37f"
+      "bytes": 19390,
+      "sha256": "ba6716fa4027ed9123191f59e361a76e1ad6eda042fb9b218a97ff7995bcc963"
     },
     {
       "path": "src/PublicReportTests.cs",
@@ -392,8 +465,13 @@
     },
     {
       "path": "src/PublicTests.cs",
-      "bytes": 9203,
-      "sha256": "a681885c5711f58538342817ff920a341a943fa2da54983a58de1ca4b0bd3b7d"
+      "bytes": 9184,
+      "sha256": "0e8e4da7987c012a771e39d7945d1a5065e9fcbc358803e979684c605c3a525c"
+    },
+    {
+      "path": "src/QuotaAdvice.cs",
+      "bytes": 2913,
+      "sha256": "11a1d4d49e80a389f250c4b168cdf7149de44ca367238908a56f2ce68a3a46ad"
     },
     {
       "path": "src/R002Visual.cs",
@@ -412,8 +490,8 @@
     },
     {
       "path": "src/RadarCoverage.cs",
-      "bytes": 6637,
-      "sha256": "9c9f4dc405c3541ef3dcc9831e5d8ff81ea11b13faa1f3c62842881020121f9d"
+      "bytes": 6840,
+      "sha256": "8f5f460eb6b8ef0a9653f8819dedd045376399ce1e886b99e4dd8d1d17e15132"
     },
     {
       "path": "src/RadarFixNativeHarness.cs",
@@ -424,6 +502,26 @@
       "path": "src/RadarFixTests.cs",
       "bytes": 32643,
       "sha256": "c1631a87ad46f8e76d97e1d75446e24f535a4e33b2eb143fb16a4bed5cb74291"
+    },
+    {
+      "path": "src/RadarJournal.cs",
+      "bytes": 2490,
+      "sha256": "e375806047d7a902b582bc2c65f0b44b98ae76d0f26328fb233554fda9da585e"
+    },
+    {
+      "path": "src/RadarRules.cs",
+      "bytes": 2282,
+      "sha256": "fa2279027fedc1e1f05a627896fa3ca5c6ecfd7182898e9f7a1ee7ea654db364"
+    },
+    {
+      "path": "src/RadarTestIdsTests.cs",
+      "bytes": 548,
+      "sha256": "c01c15067bc0b3eb75f46a36498c84a7ba2d53c13f98bf594b02313bffba5661"
+    },
+    {
+      "path": "src/RadarV050Tests.cs",
+      "bytes": 11929,
+      "sha256": "4455865c94673eaee6ca8c9b9981f8d5e4ccdcf686dc31f48d54ebbd70f78807"
     },
     {
       "path": "src/Rc4ActiveUnreadNative.cs",
@@ -442,13 +540,13 @@
     },
     {
       "path": "src/Rc4CoverageTests.cs",
-      "bytes": 7982,
-      "sha256": "8e3a6664d7fa4790dded8c67ba996df63b88a7e5311d80d34e14c24ec3aadeff"
+      "bytes": 8030,
+      "sha256": "b149f890197f1300959df6e8d345ce3a714f5386eb02181cbc5b96de3cd16420"
     },
     {
       "path": "src/Rc4FieldTrialTests.cs",
-      "bytes": 28995,
-      "sha256": "a635232ef26940e40c918b54730d5d8634c9e927319c051ab73a7c832ef9aecf"
+      "bytes": 29390,
+      "sha256": "9d94a49ba0f505f877d47ccbbae5251091d8ec03eff44cc5172652b0b00b2d91"
     },
     {
       "path": "src/Rc4HistoryEventNative.cs",
@@ -472,8 +570,8 @@
     },
     {
       "path": "src/Rc4Radar.cs",
-      "bytes": 18168,
-      "sha256": "3b547444d25c3fc682f19a63aebfdcb0940205dcbad435240c5218d59ff821c4"
+      "bytes": 21865,
+      "sha256": "cc9c1a0c47ea0b0dfb62e3867bce59a20e8327359fcdd91bf4a8464f76537ac2"
     },
     {
       "path": "src/Rc4SignalPolishNative.cs",
@@ -482,8 +580,8 @@
     },
     {
       "path": "src/Rc4SignalPolishTests.cs",
-      "bytes": 5543,
-      "sha256": "9e430c591ebe447cc81d5246c9d1f081781e51f974af9a99ae87e8e043453841"
+      "bytes": 5567,
+      "sha256": "c6d2edbd3e2641b0e2ab6bb74db8e9fa870c1e4ed6a25249c0f012ab6b6a973a"
     },
     {
       "path": "src/RedesignNative.cs",
@@ -492,13 +590,13 @@
     },
     {
       "path": "src/ReportExporter.cs",
-      "bytes": 26964,
-      "sha256": "f0c9b98b9c3b6cd517b04b2a35d23ac70a2a150479e93f81ba4b7fb3a890832a"
+      "bytes": 27327,
+      "sha256": "1e41262728114dfd3d3d339bed3d0b2dd00a6348290f824292f5b956b8354038"
     },
     {
       "path": "src/ResetRadar.cs",
-      "bytes": 71342,
-      "sha256": "23d7500eca3f56cb4c76fc966f4d42f20fea1fa3d6db1262187fa571231db7a4"
+      "bytes": 78369,
+      "sha256": "0c8323af13bbf310d7457ff113056ad50076f1f23f357e02b0f7ece26511c0e1"
     },
     {
       "path": "src/Resources/History.resx",
@@ -542,8 +640,18 @@
     },
     {
       "path": "src/RuntimeIdentity.cs",
-      "bytes": 2726,
-      "sha256": "5112fa878e5168b443d97200f9fc320b6043678714f5ec6c40ff352b896a07c2"
+      "bytes": 2710,
+      "sha256": "fb979ab5ccd6de3460d8d072ac71007a7c5f9fd4c257eccdf36f7f41a1ea80f0"
+    },
+    {
+      "path": "src/RuntimeMetrics.cs",
+      "bytes": 738,
+      "sha256": "87c450a1f7c7aac7932c6013fa72a7fae2485a9a87309bdbbd71eb1ca3087572"
+    },
+    {
+      "path": "src/RuntimeSessionMetrics.cs",
+      "bytes": 8531,
+      "sha256": "da745bf25052dec49e27b00e1297ac50b6c776f7eb59ac844aa6b8be6881800b"
     },
     {
       "path": "src/SmokeHarness.cs",
@@ -551,19 +659,24 @@
       "sha256": "06841c39b074bf8d7c97df89ae3d78438501eb8efa0ab979fce5b3f0e9594efd"
     },
     {
+      "path": "src/StatusWriter.cs",
+      "bytes": 2171,
+      "sha256": "d4b6a0b41c38b4b1400dfdc6c18e79dadc37eb7c098070303c9b488dc81dee3d"
+    },
+    {
       "path": "src/StellarSurface.cs",
-      "bytes": 4810,
-      "sha256": "c258a20dbca6628d4a67c9b930c4827eb36586fb89f03d01fe388df01696d5eb"
+      "bytes": 6655,
+      "sha256": "8921dff7508013ecedabfc5c0655b5442965132c45966bb23d87b9e876e63c26"
     },
     {
       "path": "src/Storage.cs",
-      "bytes": 18905,
-      "sha256": "ad4f66807d11af27a28748078ccd774b72c5742faf2938adf8e750e208e6f86b"
+      "bytes": 21243,
+      "sha256": "ade3392d5bdecc7b13f67954d2fa288b6c8fe8c9d582ac9acd7c9e687c7270fd"
     },
     {
       "path": "src/Theme.cs",
-      "bytes": 25385,
-      "sha256": "52d8d3e3d4ee051f059aa0df68498566a556e7430fa87dc6499f92f6e570a731"
+      "bytes": 25767,
+      "sha256": "e2f7f0646806d6898469859af249d4b18564bf63439826082ae124c68d70b823"
     },
     {
       "path": "src/TrendGold.cs",
@@ -572,8 +685,8 @@
     },
     {
       "path": "src/TrendView.cs",
-      "bytes": 12954,
-      "sha256": "9f3cf684de13795457b41e6ddd46901df585d94fd90dd128c5dc42a2f1521a2e"
+      "bytes": 12947,
+      "sha256": "bf8b72ae8ea588cf32c0cb70f386611e8dbbf32536647deb990ac9388f232573"
     },
     {
       "path": "src/UiDpi.cs",
@@ -581,14 +694,69 @@
       "sha256": "6365cbc56cefc1d19904435caa9bd80216503515bd4da42b25a738a65c9fac42"
     },
     {
+      "path": "tests/Analytics050Tests.cs",
+      "bytes": 9943,
+      "sha256": "5eb32add6fc0db08af820ae085e5d8b820d1b8f79bfac2888abf3dc58e05643a"
+    },
+    {
+      "path": "tests/app.manifest",
+      "bytes": 744,
+      "sha256": "cc88203f44d8fa73be84f294d0dfbaf61a358d74d3f4ed8853a8167c94d23ef8"
+    },
+    {
+      "path": "tests/AuditRelease050.ps1",
+      "bytes": 16088,
+      "sha256": "0bd987aef78d00f279bad1d32fed2d6560e0074e87dde8c780a01fedda72b43a"
+    },
+    {
+      "path": "tests/build_beta.ps1",
+      "bytes": 6208,
+      "sha256": "aa507c9538e30ac00044e93a26bebfe551ce59c4bef01de7d4c3d2d2daab3d2d"
+    },
+    {
       "path": "tests/build_public.ps1",
-      "bytes": 9369,
-      "sha256": "aaccff58400e474b8463ceb26334d1b814f5a0d48032881cbddf1f0cb3681c95"
+      "bytes": 217,
+      "sha256": "a74c4b800274ef4429143e2ced54a5780dadba4cb0bdf4bc65ecd5f6e848deef"
+    },
+    {
+      "path": "tests/CodexUsageMonitor.Tests.csproj",
+      "bytes": 1565,
+      "sha256": "b5a57a63500e02e1a18ed443b41aab124e771242fdf0613d48f5090c06d5e69a"
+    },
+    {
+      "path": "tests/CreateReplayFixtures.ps1",
+      "bytes": 2085,
+      "sha256": "4f70bf780d960ed532ef3ba23161c1f9b6c106a0c4368b97cabe4eb8ad5bf926"
+    },
+    {
+      "path": "tests/EmailScopedTests.cs",
+      "bytes": 20395,
+      "sha256": "ff8c13b84fa7cf5c9933f3a47a64df80d45625aacc04c7ee64353f3539361126"
+    },
+    {
+      "path": "tests/encode_ui_recordings.py",
+      "bytes": 9387,
+      "sha256": "0a0d6cd520b0fd0cf1fdc4b28431a57a0aec70ad3bc5d3ce26bf2d57deb2b498"
+    },
+    {
+      "path": "tests/FirstPaintDiagnosticsTests.cs",
+      "bytes": 9882,
+      "sha256": "e3b5a0366094c3e58a9b7bf06d1db8caf95842784abb9892e5d0b9552f8c6808"
     },
     {
       "path": "tests/fixtures/DAILY_USAGE_TEST_CASES_R003.json",
       "bytes": 34008,
       "sha256": "07a300972256bc63e9b066e96366474fbd95932e3109cc0b9acfc19ab1b129ed"
+    },
+    {
+      "path": "tests/fixtures/modelyard-live-20261022.xml",
+      "bytes": 15954,
+      "sha256": "00e117f4ebbcf1eecf1adfb8aa061006374ab16e1ac7083df9c0a2402575181a"
+    },
+    {
+      "path": "tests/fixtures/radar-a1.json",
+      "bytes": 1256,
+      "sha256": "5d33f5046431388cdd9339cd9868e28ce4ace0f86e7fdddee6f546a556d93ec1"
     },
     {
       "path": "tests/fixtures/radar-fix-r001/EXPECTED_BEHAVIOR.json",
@@ -616,21 +784,99 @@
       "sha256": "788ca8c3fc3cf45f19a4d1bcb7751c9d54576b9ea1fa2f4f46d9c633283092a5"
     },
     {
+      "path": "tests/fixtures/tibo-live-20261022.html",
+      "bytes": 98831,
+      "sha256": "75e7d81afc7caf4be85df66653b74a82c4ea2651dcad7d74980de87271e35a64"
+    },
+    {
+      "path": "tests/fixtures/usage-replay/fixture-manifest.json",
+      "bytes": 1331,
+      "sha256": "fc99295447c4cacfd50e476e308c9fbdb58d6f638e08fec3fd918b9a5031315e"
+    },
+    {
+      "path": "tests/fixtures/usage-replay/usage_2026-10-17.csv",
+      "bytes": 288696,
+      "sha256": "1764fff8150010eed94814f60584d92ca364624be6f4c59a1e8f76b032499610"
+    },
+    {
+      "path": "tests/fixtures/usage-replay/usage_2026-10-18.csv",
+      "bytes": 258727,
+      "sha256": "8d1dfdb1af09ecd8d0955546543f5fbdfb93bd5abad3d1670e55430f5fa621d4"
+    },
+    {
+      "path": "tests/fixtures/usage-replay/usage_2026-10-19.csv",
+      "bytes": 130548,
+      "sha256": "1f346574ebe64a9fc0e72eb182021cc00070e14943e9de85b0f104e885d92181"
+    },
+    {
+      "path": "tests/fixtures/usage-replay/usage_2026-10-20.csv",
+      "bytes": 309103,
+      "sha256": "15145d5795346a94173a06d603fe894c9a7ae2f54a99b2087c23223e27eeb009"
+    },
+    {
+      "path": "tests/fixtures/usage-replay/usage_2026-10-21.csv",
+      "bytes": 224520,
+      "sha256": "1a63eada04d654e6fe198ffe2533a5d6e5790363d4903af353ca6a6e1ac5ea33"
+    },
+    {
+      "path": "tests/fixtures/usage-replay/usage_2026-10-22.csv",
+      "bytes": 105541,
+      "sha256": "8398cbfcf19e4e9abfe9dcd3277fabb33f7fb5bf2ce40438ef4ac7113d402c5a"
+    },
+    {
+      "path": "tests/LiveAudit050Tests.cs",
+      "bytes": 2599,
+      "sha256": "69a3dd007a7ab04a25bfd55f73fb98cd33915ef83501723a7d5cf08cd121b302"
+    },
+    {
+      "path": "tests/RadarForecast050Tests.cs",
+      "bytes": 8052,
+      "sha256": "35409c2bf7434eecad77847e6e06ef6765b28f05625e5a69b17385818e9ee0f2"
+    },
+    {
       "path": "tests/run_final_private_desktop.py",
       "bytes": 3139,
       "sha256": "238bd236827767a27bb368cc16b62dc0482cb68f41f0c9ded8a5e128ad4e38b7"
     },
     {
+      "path": "tests/RunFinalExeAuditBeta2.ps1",
+      "bytes": 9714,
+      "sha256": "1dd4fda48bcc3745b327798516011656801ec2fcf9d8dfb14426c2888c0785de"
+    },
+    {
+      "path": "tests/SummarizeBetaTests050.ps1",
+      "bytes": 2573,
+      "sha256": "111c39d8918912772db0b3e393d1bef9e9423a61c5d79c4ad2a3fef3349d4947"
+    },
+    {
       "path": "tests/TestHarness.cs",
-      "bytes": 17269,
-      "sha256": "3f8f8132ad9a803cbb854a8d62ed2ecd7d58f91e2f172877f31790b366c15072"
+      "bytes": 17750,
+      "sha256": "0e25baf741f120e21112abc6beac33552f919197c1ea8d61948d816d5b6b6698"
+    },
+    {
+      "path": "tests/V050IntegrationTests.cs",
+      "bytes": 22108,
+      "sha256": "ef9063a081293af35b077d3ac29b998ef3b4fd1b63cf82b970588ec01e7b585b"
+    },
+    {
+      "path": "tests/V050ScreenRecordTests.cs",
+      "bytes": 9931,
+      "sha256": "5b5bd64cb8893ea737f9897be1f5151e33430f7d3414c83e3415f64361b77f7f"
+    },
+    {
+      "path": "tests/V050UiTests.cs",
+      "bytes": 9640,
+      "sha256": "b4a0cfdb1116de14775c5ae5167be0f274556db9f9ff5093d0968246825a53f2"
+    },
+    {
+      "path": "tests/WriteSourceManifest050.ps1",
+      "bytes": 15214,
+      "sha256": "8797c924cc091157bdc9d1388894687e597aaab3fc9f3cd647f980b696d80c84"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
       "bytes": 2221,
       "sha256": "efbed153cf366545c024c24b8856f5a57a2cae13713e5c407816d2c58eb8fd70"
     }
-  ],
-  "build": "Windows x64; SDK 10.0.400; self-contained single-file .NET/WindowsDesktop 10.0.11",
-  "verification_scope": "One release build from these source inputs. Existing accepted Gold behavior checks reused; release metadata, dependency closure, short bilingual native smoke and safe real quota startup verified separately."
+  ]
 }

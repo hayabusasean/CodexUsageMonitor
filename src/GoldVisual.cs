@@ -6,7 +6,7 @@ internal static class GoldVisual {
  internal static Color Light=>Theme.HighContrast?Theme.Text:Theme.Hex("#F0D690");
  internal static string Copy(string en,string zh)=>L.Language=="zh-TW"?zh:en;
  internal static string Percent(decimal? x)=>x.HasValue?TrendView.Number(x.Value)+"%":"—";
- internal static string Assurance(string s)=>s switch{"STABLE_SCOPE"=>Copy("Verified scope","範圍已驗證"),"LOCAL_STREAM_CONTINUITY_ONLY"=>Copy("Local stream continuity only","僅確認本機資料連續性"),_=>Copy("Insufficient scope evidence","範圍證據不足")};
+ internal static string Assurance(string s)=>s switch{"STABLE_SCOPE"=>Copy("Verified scope","範圍已驗證"),"ACCOUNT_STABLE"=>Copy("Stable account identity","帳號身分穩定"),"EMAIL_SCOPED"=>Copy("Email scoped identity","電子郵件範圍身分"),"LOCAL_STREAM_CONTINUITY_ONLY"=>Copy("Local stream continuity only","僅確認本機資料連續性"),_=>Copy("Insufficient scope evidence","範圍證據不足")};
  internal static string ReadState(string s)=>s switch{"READ"=>Copy("Read","已讀"),"UNREAD"=>Copy("Unread","未讀"),_=>Copy("Unknown","未知")};
  internal static string At(DateTimeOffset x)=>TrendView.Local(x,"yyyy-MM-dd HH:mm:ss zzz");
  internal static string Schedule(string? s)=>s switch{"BEFORE_SCHEDULE_WINDOW"=>Copy("Before the source's previous schedule","早於來源原訂時間"),"AT_SCHEDULE_WINDOW"=>Copy("Within the previous scheduled window","在原訂時間區間內"),_=>Copy("Schedule relation unknown","與原訂時間關係未知")};

@@ -35,8 +35,8 @@ internal static class DailyUsageCalculator
   if(c.had_gap)reasons.Add("KNOWN_GAP");
   if(seconds>Math.Max(1,c.polling_interval_seconds)*3)reasons.Add("LONG_GAP");
   if(p.account_context_key!=c.account_context_key||p.plan_type!=c.plan_type||p.limit_id!=c.limit_id||p.window_duration_mins!=c.window_duration_mins||p.source_slot!=c.source_slot||
-    (p.source_generation!=c.source_generation&&(p.context_assurance!="STABLE_SCOPE"||c.context_assurance!="STABLE_SCOPE"))||
-    p.reset_at_unix_seconds!=c.reset_at_unix_seconds||
+    !QuotaWindow.SourceComparable(p,c)||
+    !QuotaWindow.SameReset(QuotaWindow.ResetAt(p),QuotaWindow.ResetAt(c))||
     (p.reset_at_utc.HasValue&&p.reset_at_utc>p.observed_at_utc&&p.reset_at_utc<=c.observed_at_utc))reasons.Add("RESET_OR_CONTEXT_BOUNDARY");
   return reasons.ToArray();
  }
@@ -86,7 +86,7 @@ internal static class DailyUsageCalculator
     unallocated_count=rejected.Count,unallocated_net_change_pp=rejected.Sum(v=>v.net_decline_pp??0),boundary_estimated_pp=aa.Where(v=>v.allocation_method=="TIME_PROPORTIONAL_ESTIMATE").Sum(v=>v.observed_drawdown_pp),
     suspected_correction_pp=aa.Where(a=>intervalLookup[a.interval_id].suspected_correction).Sum(v=>v.observed_drawdown_pp),
     has_rebound_or_correction=relevant.Any(v=>v.rebound||v.suspected_correction),mixed_basis=bases.Count>1,source_context_assurance=string.Join(",",samples.Select(s=>s.context_assurance).Distinct()),flags=flags.ToArray()};
-   sum.partial=sum.coverage_ratio<0.999||rejected.Count>0||samples.Any(s=>s.context_assurance!="STABLE_SCOPE");
+   sum.partial=sum.coverage_ratio<0.999||rejected.Count>0||samples.Any(s=>!QuotaWindow.IdentityComparable(s.context_assurance));
    foreach(var g in aa.GroupBy(a=>{var v=intervalLookup[a.interval_id];return v.context+"|"+v.plan;}))sum.segments[g.Key]=g.Sum(v=>v.observed_drawdown_pp);
    days.Add(sum);
    for(var h=start;h<end;){

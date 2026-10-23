@@ -105,8 +105,11 @@ internal static class PublicHistoryTests {
   });
   check("H source/account/plan/comparison changes split the latest segment",()=>{
    var p=Sample(92,0);var c=Sample(91,1);
-   foreach(var changed in new[]{c with{source_generation="NEW"},c with{account_context_key="NEW"},c with{plan_type="plus"},c with{comparison_key="NEW"},c with{reset_at_unix_seconds=c.reset_at_unix_seconds+1}})
+   foreach(var changed in new[]{c with{account_context_key="NEW"},c with{plan_type="plus"},c with{comparison_key="NEW"},c with{reset_at_unix_seconds=c.reset_at_unix_seconds+121,reset_at_utc=c.reset_at_utc!.Value.AddSeconds(121)}})
     Assert(TrendView.LatestSegment([p,changed]).Count==1,"A comparison boundary was bridged.");
+   Assert(TrendView.LatestSegment([p,c with{source_generation="NEW"}]).Count==2,"A comparable identity was split after reconnect.");
+   Assert(TrendView.LatestSegment([p with{context_assurance="CONNECTION_ONLY"},c with{context_assurance="CONNECTION_ONLY",source_generation="NEW"}]).Count==1,"A connection-only identity crossed producer generations.");
+   Assert(TrendView.LatestSegment([p,c with{reset_at_unix_seconds=c.reset_at_unix_seconds+120,reset_at_utc=c.reset_at_utc!.Value.AddSeconds(120)}]).Count==2,"Reset timestamp jitter split the chart.");
   });
   check("H chart x-axis has 3–6 ticks",()=>{
    foreach(float width in new[]{320,650,900,1600})Assert(TrendView.TickCount(width) is >=3 and <=6,"Invalid tick count.");

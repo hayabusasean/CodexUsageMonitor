@@ -1,0 +1,10 @@
+[
+  {"id":"A1-01","published":"2026-10-10T22:16:00Z","quote":"Global reset by EOD. May the tokens do good things for you.","category":"Reset Planned","expected":"INCOMING"},
+  {"id":"A1-02","published":"2026-10-11T04:01:00Z","quote":"Put the reset in the bag. All propagated.","category":"Reset Completed","expected":"COMPLETED"},
+  {"id":"A1-03","published":"2026-10-13T01:03:00Z","quote":"Global reset landing by EOD PST time. Enjoy","category":"Reset Planned","expected":"INCOMING"},
+  {"id":"A1-04","published":"2026-10-15T04:56:00Z","quote":"Landing within the next 2 hours","context":"Codex global reset incoming.","expected":"INCOMING"},
+  {"id":"A1-05","published":"2026-10-15T06:28:00Z","quote":"Done and dusted","category":"Reset Completed","expected":"COMPLETED"},
+  {"id":"A1-06","published":"2026-10-17T16:21:00Z","quote":"Landing sometime today by EOD PST","category":"Reset Planned","expected":"INCOMING"},
+  {"id":"A1-07","published":"2026-10-22T06:55:22Z","quote":"Day 17/ it's reset day today.","expected":"INCOMING"},
+  {"id":"A1-08","published":"2026-10-22T06:55:54Z","quote":"Lands tomorrow before 10am PST.","context":"Day 17/ it's reset day today.","expected":"INCOMING","resetUtc":"2026-10-22T17:00:00Z","timeQuality":"DEADLINE"}
+]

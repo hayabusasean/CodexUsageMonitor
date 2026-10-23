@@ -1,0 +1,62 @@
+[
+  {
+    "file": "usage_2026-10-17.csv",
+    "rows": 503,
+    "source_unchanged": true,
+    "identity_fields_replaced": [
+      "account_context_key",
+      "comparison_key",
+      "source_generation"
+    ]
+  },
+  {
+    "file": "usage_2026-10-18.csv",
+    "rows": 451,
+    "source_unchanged": true,
+    "identity_fields_replaced": [
+      "account_context_key",
+      "comparison_key",
+      "source_generation"
+    ]
+  },
+  {
+    "file": "usage_2026-10-19.csv",
+    "rows": 227,
+    "source_unchanged": true,
+    "identity_fields_replaced": [
+      "account_context_key",
+      "comparison_key",
+      "source_generation"
+    ]
+  },
+  {
+    "file": "usage_2026-10-20.csv",
+    "rows": 539,
+    "source_unchanged": true,
+    "identity_fields_replaced": [
+      "account_context_key",
+      "comparison_key",
+      "source_generation"
+    ]
+  },
+  {
+    "file": "usage_2026-10-21.csv",
+    "rows": 391,
+    "source_unchanged": true,
+    "identity_fields_replaced": [
+      "account_context_key",
+      "comparison_key",
+      "source_generation"
+    ]
+  },
+  {
+    "file": "usage_2026-10-22.csv",
+    "rows": 184,
+    "source_unchanged": true,
+    "identity_fields_replaced": [
+      "account_context_key",
+      "comparison_key",
+      "source_generation"
+    ]
+  }
+]

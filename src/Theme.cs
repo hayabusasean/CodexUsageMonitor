@@ -179,18 +179,21 @@ internal sealed class DarkMenuRenderer:ToolStripProfessionalRenderer {
  }
 }
 internal class ProductForm:Form {
- // Commit the descendant window paints together; per-control buffering alone can
- // expose an unfinished child HWND while siblings have already been presented.
- protected override CreateParams CreateParams{get{var p=base.CreateParams;p.ExStyle|=0x02000000;return p;}}
+ [DllImport("user32.dll")]static extern bool RedrawWindow(IntPtr window,IntPtr rect,IntPtr region,uint flags);
+ // Descendants buffer their own paints. Compositing the whole HWND as well can
+ // expose stale transparent child backgrounds during scrolling and DPI changes.
  internal static Action<ProductForm>? PresentationObserved;
  protected override void OnHandleCreated(EventArgs e){base.OnHandleCreated(e);PresentationObserved?.Invoke(this);}
  protected readonly Panel Body=new SpacePanel(){Dock=DockStyle.Fill,AutoScroll=true,Padding=new(24)};
  readonly UserPreferenceChangedEventHandler preferenceChanged;
  protected readonly FlowLayoutPanel Footer=new(){Dock=DockStyle.Bottom,Height=64,Padding=new(24,12,16,12),FlowDirection=FlowDirection.RightToLeft,BackColor=Theme.Surface1};
- public ProductForm(string title,int width=620,int height=680){
+ public ProductForm(string title,int width=620,int height=680,string? diagnosticRoot=null){
+  if(diagnosticRoot!=null)((SpacePanel)Body).FirstPaintLog=new FirstPaintDiagnostics(diagnosticRoot,GetType().Name);
   preferenceChanged=(_,_)=>{if(IsDisposed||!IsHandleCreated)return;try{BeginInvoke((Action)(()=>{if(!IsDisposed)Theme.RefreshPalette(this);}));}catch(InvalidOperationException){}};
   SystemEvents.UserPreferenceChanged+=preferenceChanged;Disposed+=(_,_)=>SystemEvents.UserPreferenceChanged-=preferenceChanged;
+  Opacity=0;DoubleBuffered=true;
   KeyPreview=true;KeyDown+=(_,e)=>{if(e.KeyCode==Keys.Escape&&!e.Handled){if(this is HistoryForm h&&h.IsEventFocusVisible){h.SetChartMode(false);e.Handled=true;}else{Close();e.Handled=true;}}};Text=title;Name=GetType().Name;AccessibleName=title;Font=Theme.Font();BackColor=Theme.Canvas;ForeColor=Theme.Text;AutoScaleMode=AutoScaleMode.None;StartPosition=FormStartPosition.CenterScreen;ClientSize=new(width,height);MinimumSize=new(Math.Min(width,520),400);Controls.Add(Body);Controls.Add(Footer);Footer.Paint+=(_,e)=>{using var edge=new Pen(Theme.Border);e.Graphics.DrawLine(edge,0,0,Footer.Width,0);};var rail=new ScrollRail(Body);Controls.Add(rail);Shown+=(_,_)=>rail.Sync();R2.Install(this,Body,Footer);}
+ protected override void OnShown(EventArgs e){base.OnShown(e);PerformLayout();((SpacePanel)Body).PrepareSurface();RedrawWindow(Handle,IntPtr.Zero,IntPtr.Zero,0x0001|0x0004|0x0080|0x0100);Opacity=1;}
  protected override void OnLoad(EventArgs e){
   SuspendLayout();Body.SuspendLayout();
   float k=DeviceDpi/96f;if(DeviceDpi!=96)Scale(new SizeF(k,k));

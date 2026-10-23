@@ -4,10 +4,10 @@ using System.Globalization;
 using System.Resources;
 namespace CodexUsageMonitor;
 internal static class L {
- public const string Version="0.4.1";
+ public const string Version="0.5.0-beta2";
  static readonly ConcurrentDictionary<string,ResourceManager> Managers=new();
  static readonly HashSet<string> Groups=["History","Radar","Report"];
- static string language="en-US";
+ static string language="zh-TW";
  public static string Language=>language;
  public static CultureInfo Culture=>CultureInfo.GetCultureInfo(language);
  public static event Action? Changed;
@@ -36,4 +36,5 @@ internal static class L {
  public static string Window(int? minutes)=>minutes==10080?T("Details.Weekly"):minutes==300?T("Details.FiveHour"):T("Details.Minutes",minutes);
  public static string Health(MonitorService s)=>s.History.SaveError!=null?T("State.SaveFailed"):s.Verified?T("Settings.Connected"):string.IsNullOrEmpty(s.LastErrorCode)?T("Overlay.Connecting"):MonitorService.Explain(s.LastErrorCode);
 }
+
 

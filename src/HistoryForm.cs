@@ -26,7 +26,7 @@ internal sealed class HistoryForm:ProductForm {
  string statusKey="History.Loading";object[] statusArgs=[];Action? relayoutToolbars;
  const int PageSize=200;
  string? pendingFocusSample;
- public HistoryForm(MonitorService s,DateTime? date=null,string? focusSampleId=null):base(L.T("History.Title"),1120,920){
+ public HistoryForm(MonitorService s,DateTime? date=null,string? focusSampleId=null):base(L.T("History.Title"),1120,920,s.Root){
   pendingFocusSample=focusSampleId;goldRail=new GoldEventRail(trend){Visible=false};
   service=s;timeZoneRevision=L.TimeZoneRevision;MinimumSize=new(760,560);from.Value=date??DateTime.Today.AddDays(-6);to.Value=date??DateTime.Today;
   pool.Items.Add("codex");foreach(var id in s.Current?.Windows.Select(w=>w.LimitId).Distinct().Where(x=>x!="codex").OrderBy(x=>x.Contains("bengalfox")?1:0).ToList()??[])pool.Items.Add(id);pool.SelectedIndex=0;
@@ -195,7 +195,7 @@ internal sealed class HistoryForm:ProductForm {
   try{
    // One bounded store snapshot per date/pool query. Page, language and chart switches use the snapshot.
    var data=await Task.Run(()=>{
-    List<UsageSample> Read(HistoryFilter filter){var result=new List<UsageSample>();foreach(var row in service.History.Query<UsageSample>(filter)){token.ThrowIfCancellationRequested();result.Add(row);}token.ThrowIfCancellationRequested();result.Sort((a,b)=>a.observed_at_utc.CompareTo(b.observed_at_utc));return result;}
+    List<UsageSample> Read(HistoryFilter filter){var result=new List<UsageSample>();foreach(var row in service.History.Query<UsageSample>(filter)){token.ThrowIfCancellationRequested();result.Add(row);}token.ThrowIfCancellationRequested();result.Sort((a,b)=>a.observed_at_utc.CompareTo(b.observed_at_utc));return service.AnalysisSamples(result);}
     var sampleRows=Read(f);var chartRows=f.Pool=="codex"&&f.Duration==10080?sampleRows:Read(f with{Pool="codex",Duration=10080});
     var eventRows=new List<UsageEvent>();foreach(var row in service.History.Query<UsageEvent>(f)){token.ThrowIfCancellationRequested();eventRows.Add(row);}
     var chartEvents=eventRows;if(f.Pool!="codex"||f.Duration!=10080){chartEvents=[];foreach(var row in service.History.Query<UsageEvent>(f with{Pool="codex",Duration=10080})){token.ThrowIfCancellationRequested();chartEvents.Add(row);}}
@@ -220,6 +220,7 @@ internal sealed class HistoryForm:ProductForm {
   visibleRows=selected.ToList();page=Math.Clamp(page,0,Math.Max(0,(visibleRows.Count-1)/PageSize));RenderGrid();
  }
  static string Percent(decimal? v)=>v is decimal n?TrendView.Number(n)+"%":"—";
+ internal static string AssuranceCaption(string assurance)=>assurance=="EMAIL_SCOPED"?"電子郵件範圍身分":assurance=="ACCOUNT_STABLE"?"帳號身分穩定":L.T(assurance=="STABLE_SCOPE"?"History.ScopeVerified":"History.ScopeLimited");
  internal static string Change(UsageSample? previous,UsageSample current){
   if(previous==null||DailyUsageCalculator.Reject(previous,current).Length!=0)return"—";
   decimal delta=current.remaining_percent!.Value-previous.remaining_percent!.Value;
@@ -227,8 +228,10 @@ internal sealed class HistoryForm:ProductForm {
  }
  internal static string RowStatus(UsageSample? previous,UsageSample current){
   if(!DailyUsageCalculator.Valid(current))return L.T("History.UnavailableObservation");
+  if(QuotaWindow.State(current)=="WINDOW_NOT_STARTED")return "本週期尚未開始";
   if(previous==null)return L.T("History.Started");
   var reasons=DailyUsageCalculator.Reject(previous,current);
+  if(current.remaining_percent>previous.remaining_percent&&QuotaWindow.ResetAt(previous) is {} oldReset&&QuotaWindow.ResetAt(current)>oldReset.AddHours(1))return current.had_gap||reasons.Contains("LONG_GAP")?"缺口期間重置（推定）":"提前重置";
   if(current.had_gap||reasons.Contains("LONG_GAP"))return L.T("History.Resumed");
   if(current.remaining_percent>previous.remaining_percent)return L.T("History.IncreaseUnknown");
   if(!TrendView.Bridge(previous,current))return L.T("History.ContextBoundary");
@@ -259,7 +262,7 @@ internal sealed class HistoryForm:ProductForm {
   if(grid.CurrentRow?.Tag is not UsageSample c){detail.Text=L.T("History.SelectDetail");eventFocus.Enabled=false;return;}
   var p=previousById.GetValueOrDefault(c.sample_id);
   string qualityText=L.T(c.data_quality=="VALID"?"History.ValidData":"History.SourceIssue");
-  string assurance=L.T(c.context_assurance=="STABLE_SCOPE"?"History.ScopeVerified":"History.ScopeLimited");
+  string assurance=AssuranceCaption(c.context_assurance);
   detail.Text=L.T("History.DetailText",TrendView.Local(c.observed_at_utc,"yyyy-MM-dd HH:mm:ss zzz"),c.limit_id,c.window_duration_mins?.ToString(CultureInfo.InvariantCulture)??"—",RowStatus(p,c),assurance,qualityText);
   eventFocus.Enabled=FindEvent(c.sample_id)!=null;if(eventView.Visible)ShowEventFocus(FindEvent(c.sample_id));
  }
@@ -278,7 +281,7 @@ internal sealed class HistoryForm:ProductForm {
   var matches=events.Where(x=>x.current_sample_id==sample.sample_id).ToList();
   if(matches.Count==0){SetStatus("NoEventForNote");return;}
   var entry=matches[0];string path=Path.Combine(service.Root,"event_notes.json");var notes=AtomicJson.Load(path,()=>new Dictionary<string,EventNote>());
-  using var form=new ProductForm(L.T("History.NoteTitle"),520,330);
+  using var form=new ProductForm(L.T("History.NoteTitle"),520,330,service.Root);
   var text=new TextBox{Dock=DockStyle.Fill,Multiline=true,MaxLength=2000,Text=notes.GetValueOrDefault(entry.event_id)?.Text??""};Theme.Style(text);form.Controls.Add(text);text.BringToFront();
   var save=Theme.Button(L.T("History.SaveNote"),(_,_)=>{try{notes[entry.event_id]=new(text.Text,entry.event_type,entry.observation_from_utc,entry.observation_to_utc);AtomicJson.Save(path,notes);form.Close();}catch{SetStatus("NoteFailed");}},true);
   save.Dock=DockStyle.Bottom;form.Controls.Add(save);save.BringToFront();

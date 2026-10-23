@@ -5,11 +5,13 @@ namespace CodexUsageMonitor;
 internal sealed class SettingsForm:ProductForm {
  internal static SettingsForm? Active;
  public static void Open(MonitorService s,OverlayForm overlay){if(Active is {IsDisposed:false}){Active.Activate();return;}using var f=new SettingsForm(s,overlay);f.ShowDialog();}
- public SettingsForm(MonitorService s,OverlayForm? overlay=null):base(L.T("Settings.Title"),1120,820){
+ public SettingsForm(MonitorService s,OverlayForm? overlay=null):base(L.T("Settings.Title"),1120,820,s.Root){
   Active=this;var original=s.Settings.Copy();string originalLanguage=L.Language;bool saved=false,refreshing=false,checking=false;string stateKey="";
   var language=new DarkChoice{Width=220,AccessibleName=L.T("Language.Label")};language.Items.AddRange(["English","繁體中文"]);language.SelectedIndex=L.Language=="zh-TW"?1:0;
   var mode=new DarkChoice{Width=210};mode.Items.AddRange(["","",""]);mode.SelectedIndex=original.StartupMode=="STANDARD"?1:original.StartupMode=="COMPACT"?2:0;
   var top=L.Check("Settings.AlwaysOnTop",original.TopMost);var hidden=L.Check("Settings.StartHidden",original.StartHidden);var startup=L.Check("Settings.StartWithWindows",original.Startup);var radar=L.Check("Settings.RadarEnabled",original.RadarEnabled);
+  bool canConfigureStartup=StartupLink.CanConfigure(s.Root);startup.Name="StartWithWindows";startup.Enabled=canConfigureStartup;
+  var startupHint=Theme.Label("獨立資料目錄不會改開機設定",40,9,Theme.Muted);startupHint.Name="StartupIsolationNotice";startupHint.Visible=!canConfigureStartup;
   var opacity=new OpacitySlider{Value=original.OpacityPercent,Width=300};var opacityText=Theme.Label(original.OpacityPercent+"%",36);opacityText.Width=52;opacityText.Dock=DockStyle.None;
   var low=L.Label("Settings.LowOpacity",28,9,Theme.Muted);low.Visible=original.OpacityPercent<70;
   opacity.ValueChanged+=(_,_)=>{opacityText.Text=opacity.Value+"%";low.Visible=opacity.Value<70;if(overlay!=null)overlay.Opacity=Theme.HighContrast?1:opacity.Value/100d;};
@@ -36,9 +38,9 @@ internal sealed class SettingsForm:ProductForm {
 
     s.Settings.StartupMode=new[]{"REMEMBER","STANDARD","COMPACT"}[Math.Max(0,mode.SelectedIndex)];
     s.Settings.TopMost=top.Checked;s.Settings.OpacityPercent=opacity.Value;s.Settings.Interval=(int)interval.SelectedItem!;s.Settings.RetentionDays=(int)retention.SelectedItem!;
-    s.Settings.StartHidden=hidden.Checked;s.Settings.Startup=startup.Checked;s.Settings.CodexPath=path.Text;s.Settings.UiLanguage=L.Language;s.Settings.RadarEnabled=radar.Checked;
+    s.Settings.StartHidden=hidden.Checked;s.Settings.Startup=canConfigureStartup?startup.Checked:original.Startup;s.Settings.CodexPath=path.Text;s.Settings.UiLanguage=L.Language;s.Settings.RadarEnabled=radar.Checked;
     if(!s.SaveSettings()){Restore();stateKey="Settings.SaveFailed";state.Text=L.T(stateKey);return;}
-    try{if(startup.Checked!=original.Startup)StartupLink.Set(startup.Checked,Environment.ProcessPath!);}catch{Restore();s.SaveSettings();try{StartupLink.Set(original.Startup,Environment.ProcessPath!);}catch{}stateKey="Settings.SaveFailed";state.Text=L.T(stateKey);return;}
+    try{if(startup.Checked!=original.Startup)StartupLink.ApplyForDataRoot(s.Root,startup.Checked,Environment.ProcessPath!);}catch{Restore();s.SaveSettings();try{StartupLink.ApplyForDataRoot(s.Root,original.Startup,Environment.ProcessPath!);}catch{}stateKey="Settings.SaveFailed";state.Text=L.T(stateKey);return;}
     s.Radar.SetEnabled(radar.Checked);if(changed)s.Refresh(false,true);saved=true;overlay?.ApplySettings();Close();
    }catch{stateKey="Settings.SaveFailed";state.Text=L.T(stateKey);}
   },true);
@@ -49,7 +51,7 @@ internal sealed class SettingsForm:ProductForm {
   var languageHeading=langCard.Controls.OfType<Label>().First(x=>x.Padding.Left>0);L.Watch(languageHeading,()=>languageHeading.Text=languageHeading.AccessibleName=L.Language=="zh-TW"?"語言":"Language");
   opacity.Width=250;var opRow=Theme.Row(opacity,opacityText);opRow.SizeChanged+=(_,_)=>opacity.Width=Math.Max(80,opRow.Width-opacityText.Width-30);
   var appearance=Card("✧","Settings.Appearance","Your floating HUD, your way.","調整浮窗，讓重要資訊陪伴工作。",Theme.Brand,L.Label("Settings.StartupView",24,9,Theme.Muted),Theme.Row(mode),Theme.Row(top),L.Label("Settings.Opacity",24,9,Theme.Muted),opRow,Theme.Row(L.Button("Settings.ResetOpacity",(_,_)=>opacity.Value=70,width:160)),low);
-  var monitoring=Card("↻","Settings.Monitoring","A steady rhythm for your quota.","穩定更新額度，保留觀測足跡。",Theme.Electric,Theme.Row(Inline("Settings.PollInterval",165),interval),Theme.Row(Inline("Settings.Retention",165),retention),L.Label("Settings.Startup",30,11),Theme.Row(startup),Theme.Row(hidden));
+  var monitoring=Card("↻","Settings.Monitoring","A steady rhythm for your quota.","穩定更新額度，保留觀測足跡。",Theme.Electric,Theme.Row(Inline("Settings.PollInterval",165),interval),Theme.Row(Inline("Settings.Retention",165),retention),L.Label("Settings.Startup",30,11),Theme.Row(startup),startupHint,Theme.Row(hidden));
   var radarCard=Card("◉","Settings.Radar","Signals worth your attention.","將注意力留給值得關注的訊號。",Theme.Warning,Theme.Row(radar),L.Label("Settings.RadarHint",58,9,Theme.Muted));
   var connection=Card("⌁","Settings.Connection","Connected locally. No setup rituals.","本機連線，輕鬆掌握來源狀態。",Theme.Accent,state,checkedAt,Theme.Row(check),Theme.Row(advancedToggle),advanced);
   advanced.SizeChanged+=(_,_)=>{path.Width=Math.Max(120,advanced.Width-12);};browse.Width=240;detect.Width=240;advanced.Controls.Clear();advanced.Height=186;advanced.Tag=186;advanced.Controls.Add(L.Label("Settings.NoCodexMutation",40,9,Theme.Muted));advanced.Controls.Add(Theme.Row(path));advanced.Controls.Add(Theme.Row(detect));advanced.Controls.Add(Theme.Row(browse));
@@ -69,26 +71,34 @@ internal sealed class SettingsForm:ProductForm {
 }
 internal sealed class DetailsForm:ProductForm {
  bool otherOpen,advancedOpen;int refreshPending;
- public DetailsForm(MonitorService s):base(L.T("Details.Title"),570,438){
+ public DetailsForm(MonitorService s):base(L.T("Details.Title"),570,438,s.Root){
   Footer.Visible=false;
-  var remaining=Theme.Label("",52,28);var used=Theme.Label("",26,11);var reset=Theme.Label("",28);var five=Theme.Label("",32,10,Theme.Muted);var credits=Theme.Label("",36,10);var expires=Theme.Label("",28,9,Theme.Muted);var connection=Theme.Label("",28,9,Theme.Muted);
+  var remaining=Theme.Label("",52,28);var used=Theme.Label("",26,11);var reset=Theme.Label("",46);var burn=Theme.Label("",94,10);var five=Theme.Label("",32,10,Theme.Muted);var credits=Theme.Label("",36,10);var expires=Theme.Label("",52,9,Theme.Muted);var connection=Theme.Label("",28,9,Theme.Muted);
   var other=Theme.Label("",215,10);var advanced=Theme.Label("",155,9,Theme.Muted);other.Visible=advanced.Visible=false;
   var pools=L.Button("Details.OtherPools",(_,_)=>{otherOpen=!otherOpen;other.Visible=otherOpen;Fit();},width:200);
   var more=L.Button("Details.Advanced",(_,_)=>{advancedOpen=!advancedOpen;advanced.Visible=advancedOpen;Fit();},width:180);
-  Stack(Theme.Section(L.Label("Details.MainWeekly",30,14),remaining,used,reset,five),Theme.Section(L.Label("Details.ResetsAndCredits",32,11),credits,expires,connection),Theme.Row(pools,more),other,advanced,L.Label("Details.SeparatePools",44,9,Theme.Muted));
+  var officialUsage=Theme.Button("開啟官方用量頁",(_,_)=>OverlayForm.OpenUrl("https://chatgpt.com/codex/settings/usage"));officialUsage.Width=200;
+  Stack(Theme.Section(L.Label("Details.MainWeekly",30,14),remaining,used,reset,burn,five),Theme.Section(L.Label("Details.ResetsAndCredits",32,11),credits,expires,connection),Theme.Row(officialUsage),Theme.Row(pools,more),other,advanced,L.Label("Details.SeparatePools",44,9,Theme.Muted));
   ((QuietButton)more).Role=ButtonRole.Ghost;
   void RefreshText(){
    var snapshot=s.Current;Text=AccessibleName=L.T("Details.Title");var main=snapshot?.Windows.FirstOrDefault(w=>w.LimitId=="codex"&&w.Duration==10080);
    string Unknown(string? v)=>v??L.T("Details.NotProvided");
    string Stamp(long? utc)=>utc is >= -62135596800 and <= 253402300799?DateTimeOffset.FromUnixTimeSeconds(utc.Value).ToLocalTime().ToString("yyyy-MM-dd HH:mm zzz",CultureInfo.InvariantCulture):L.T("Details.NotProvided");
    remaining.Text=L.T("Details.Remaining",L.Percent(main?.Remaining));remaining.ForeColor=Theme.QuotaColor(main?.Remaining);used.Text=L.T("Details.Used",L.Percent(main?.Used));reset.Text=L.T("Details.ResetAt",Stamp(main?.Reset));
+   var forecast=s.Forecast;
+   if(forecast?.WindowState=="WINDOW_NOT_STARTED")reset.Text="本週期尚未開始；第一次使用後才開始計時。";
+   else if(forecast?.WindowStartedAt is {} started)reset.Text+=$"\n週期起點：{TimeZoneInfo.ConvertTimeBySystemTimeZoneId(started,"Taipei Standard Time"):yyyy-MM-dd HH:mm}（台灣時間）";
+   string Rate(double? value)=>value is {} r?$"{r:0.0}%/h":"資料不足";
+   burn.Text=$"燒速：30 分鐘 {Rate(forecast?.Rate30m)} · 2 小時 {Rate(forecast?.Rate2h)}\n本次連續區段：{Rate(forecast?.RateSession)}";
+   if(forecast?.Weekly?.ExhaustAt is {} exhausted)burn.Text+=$"\n照目前速度：{TimeZoneInfo.ConvertTimeBySystemTimeZoneId(exhausted,"Taipei Standard Time"):MM-dd HH:mm} 用完（台灣時間）";
+   if(forecast?.Announced is {} announced)burn.Text+=$"\n公告重置：台灣 {TimeZoneInfo.ConvertTimeBySystemTimeZoneId(announced.Deadline,"Taipei Standard Time"):MM-dd HH:mm} 前；用完需 {announced.NeededRateToFinish:0.0}%/h";
    var fiveWindow=snapshot?.Windows.FirstOrDefault(w=>w.LimitId=="codex"&&w.Duration==300);five.Text=fiveWindow==null?L.T("Details.NoFiveHour"):L.T("Details.FiveReading",L.Percent(fiveWindow.Remaining));
    credits.Text=L.T("Details.ResetsBalance",snapshot?.ResetCredits?.ToString(CultureInfo.InvariantCulture)??L.T("Details.NotProvided"),Unknown(main?.Balance));
    expires.Text=L.T("Details.Expiry",snapshot?.CreditExpirations.Count>0?string.Join(", ",snapshot.CreditExpirations.Select(x=>Stamp(x))):L.T("Details.NotProvided"));
    connection.Text=L.Health(s);
    other.Text=L.T("Details.OtherPools")+"\n\n"+string.Join("\n\n",snapshot?.Windows.Where(w=>w.LimitId!="codex").OrderBy(w=>w.LimitId.Contains("bengalfox")?1:0).Select(w=>L.T("Details.Pool",w.LimitId.Contains("bengalfox")?"Spark":w.LimitName??w.LimitId,L.Window(w.Duration),L.Percent(w.Used),L.Percent(w.Remaining)))??[]);
    advanced.Text=L.T("Details.AdvancedInfo",snapshot?.Version,snapshot?.Assurance,snapshot?.Observed.ToString("O"),L.Health(s))+"\n"+L.T("Details.SourceCoverage")+"\n"+string.Join(" · ",s.Radar.Snapshot().Sources.Select(x=>x.Id+": "+x.Status));
-   foreach(var c in new[]{remaining,used,reset,five,credits,expires,connection,other,advanced})c.AccessibleName=c.Text;
+   foreach(var c in new[]{remaining,used,reset,burn,five,credits,expires,connection,other,advanced})c.AccessibleName=c.Text;
 
   }
   void Change(){if(!IsHandleCreated||IsDisposed||Interlocked.Exchange(ref refreshPending,1)!=0)return;try{BeginInvoke((Action)(()=>{Interlocked.Exchange(ref refreshPending,0);if(!IsDisposed&&!Disposing)RefreshText();}));}catch(InvalidOperationException){Interlocked.Exchange(ref refreshPending,0);}}
@@ -97,7 +107,7 @@ internal sealed class DetailsForm:ProductForm {
  }
 }
 internal sealed class AboutForm:ProductForm {
- public AboutForm(MonitorService s):base(L.T("About.Title"),600,445){
+ public AboutForm(MonitorService s):base(L.T("About.Title"),600,445,s.Root){
   var diagnostics=new Label{AutoSize=false,Dock=DockStyle.Top,Height=200,Tag=200,Visible=false,BackColor=Theme.Surface,ForeColor=Theme.Text,Font=Theme.Font(9),TextAlign=ContentAlignment.TopLeft,Padding=new(8)};
   var status=Theme.Label("",32,9,Theme.Muted);bool preview=false;
   string Data()=>JsonSerializer.Serialize(new{version=L.Version,build=RuntimeIdentity.Build,os=Environment.OSVersion.VersionString,architecture=System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString(),dpi=DeviceDpi,ui_language=L.Language,local_time_zone=TimeZoneInfo.Local.Id,codex_version=s.Current?.Version,capability=s.Current?.Assurance??"UNKNOWN",quota_health=s.Verified?"CONNECTED":"UNAVAILABLE",error_class=s.LastErrorCode,public_sources=s.Radar.Snapshot().Sources.Select(x=>new{x.Id,x.Status,x.HttpStatus,x.Error})},new JsonSerializerOptions{WriteIndented=true});

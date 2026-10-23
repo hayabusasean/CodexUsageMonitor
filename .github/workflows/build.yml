@@ -1,4 +1,4 @@
-name: Windows candidate build
+name: Windows 試用版建置
 
 on:
   push:
@@ -27,16 +27,17 @@ jobs:
       - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
           dotnet-version: '10.0.400'
-      - name: Build, check resources, run isolated fixtures and package
+      - name: 建置、檢查資源、執行隔離測試並打包
         shell: pwsh
         run: ./tests/build_public.ps1
-      - name: Retain candidate files
+      - name: 保留試用包與驗證結果
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: CodexUsageMonitor-windows-x64-candidate
           path: |
-            artifacts/public-build/*/package/*.zip
-            artifacts/public-build/*/package/SHA256SUMS.txt
-            artifacts/public-build/*/build-result.json
+            artifacts/beta-0.5.0/*/*.zip
+            artifacts/beta-0.5.0/*/SHA256SUMS.txt
+            artifacts/beta-0.5.0/*/build-result.json
           if-no-files-found: error
           retention-days: 7
+

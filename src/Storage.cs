@@ -5,7 +5,7 @@ using System.Text.Json;
 namespace CodexUsageMonitor;
 internal sealed class Settings
 {
-    [System.Text.Json.Serialization.JsonPropertyName("ui_language")] public string UiLanguage{get;set;}="en-US";
+    [System.Text.Json.Serialization.JsonPropertyName("ui_language")] public string UiLanguage{get;set;}="zh-TW";
     [System.Text.Json.Serialization.JsonPropertyName("settings_version")] public int SettingsVersion{get;set;}=2;
     public string ChartView{get;set;}="LATEST";
     public bool RadarEnabled{get;set;}=true;
@@ -20,6 +20,7 @@ internal sealed class Settings
             var normalized=System.Text.Json.Nodes.JsonNode.Parse(raw)!.AsObject();
             if(normalized.TryGetPropertyValue("ui_language",out var rawLanguage)&&rawLanguage!=null&&rawLanguage.GetValueKind()!=JsonValueKind.String)normalized.Remove("ui_language");
             var v=JsonSerializer.Deserialize<Settings>(normalized.ToJsonString())??new();
+            if(doc.RootElement.TryGetProperty("Salt",out var legacySalt)&&legacySalt.ValueKind==JsonValueKind.String)v.Salt=legacySalt.GetString()!;
             bool explicitLanguage=doc.RootElement.TryGetProperty("ui_language",out var lang);
             if(!explicitLanguage)explicitLanguage=doc.RootElement.TryGetProperty("UiLanguage",out lang);
             if(explicitLanguage){
@@ -27,7 +28,7 @@ internal sealed class Settings
                 v.UiLanguage=L.Normalize(code);if(code is not ("en-US" or "zh-TW"))v.MigrationDiagnostic="INVALID_LANGUAGE_FALLBACK";
             }else{
                 bool legacy=doc.RootElement.TryGetProperty("Interval",out _)||doc.RootElement.TryGetProperty("OpacityPercent",out _)||doc.RootElement.TryGetProperty("Compact",out _);
-                v.UiLanguage=legacy?"zh-TW":"en-US";v.MigrationDiagnostic=legacy?"LEGACY_ZH_PRESERVED":"NEW_EN_DEFAULT";
+                v.UiLanguage="zh-TW";v.MigrationDiagnostic=legacy?"LEGACY_ZH_PRESERVED":"NEW_ZH_DEFAULT";
             }
             if(!doc.RootElement.TryGetProperty("settings_version",out var ver)||!ver.TryGetInt32(out int n)||n<2){
                 var backup=path+".pre-bilingual.bak";try{if(!File.Exists(backup))File.Copy(path,backup);}catch{v.MigrationDiagnostic="LEGACY_BACKUP_UNAVAILABLE_SETTINGS_PRESERVED";}
@@ -35,7 +36,7 @@ internal sealed class Settings
             v.SettingsVersion=2;v.Validate();return v;
         }catch{
             try{if(new FileInfo(path).Length<=1024*1024&&!File.Exists(path+".invalid-bilingual.bak"))File.Copy(path,path+".invalid-bilingual.bak");}catch{}
-            return new(){MigrationDiagnostic="INVALID_SETTINGS_PRESERVED"};
+            return new(){MigrationDiagnostic="INVALID_SETTINGS_PRESERVED",SaltAvailable=false,protectedSalt="",salt=""};
         }
     }
     public int Interval {get;set;}=90; public int RetentionDays {get;set;}=90; public bool Compact{get;set;} public bool TopMost{get;set;}=true;
@@ -45,8 +46,11 @@ internal sealed class Settings
     public bool Alerts{get;set;}=true;public bool StartHidden{get;set;}public bool Startup{get;set;}
     public string CodexPath{get;set;}="";public string SelectedPool{get;set;}="";
     public int? X{get;set;}public int? Y{get;set;}public int SavedDpi{get;set;}=96;public string ScreenName{get;set;}="";
-    public string Salt{get;set;}=Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(32));
-    public void Validate(){UiLanguage=L.Normalize(UiLanguage);if(ChartView is not ("LATEST" or "FULL"))ChartView="LATEST";if(!new[]{"REMEMBER","STANDARD","COMPACT"}.Contains(StartupMode))StartupMode="REMEMBER";if(OpacityPercent<40||OpacityPercent>100||OpacityPercent%5!=0)OpacityPercent=70;if(!new[]{60,90,180,300}.Contains(Interval))Interval=90;if(!new[]{30,90,180}.Contains(RetentionDays))RetentionDays=90;if(SavedDpi<48||SavedDpi>768)SavedDpi=96;try{if(Convert.FromBase64String(Salt).Length!=32)throw new Exception();}catch{Salt=Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(32));}}
+    string salt=Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(32));string? protectedSalt;
+    [System.Text.Json.Serialization.JsonIgnore]public bool SaltAvailable{get;private set;}=true;
+    [System.Text.Json.Serialization.JsonIgnore] public string Salt{get=>salt;set{salt=value;protectedSalt=null;SaltAvailable=true;}}
+    public string SaltProtected{get=>protectedSalt??=Convert.ToBase64String(System.Security.Cryptography.ProtectedData.Protect(Convert.FromBase64String(salt),null,System.Security.Cryptography.DataProtectionScope.CurrentUser));set{protectedSalt=value;if(string.IsNullOrWhiteSpace(value)){salt="";SaltAvailable=false;return;}try{salt=Convert.ToBase64String(System.Security.Cryptography.ProtectedData.Unprotect(Convert.FromBase64String(value),null,System.Security.Cryptography.DataProtectionScope.CurrentUser));SaltAvailable=true;}catch(System.Security.Cryptography.CryptographicException){salt="";SaltAvailable=false;}catch(FormatException){salt="";SaltAvailable=false;}}}
+    public void Validate(){UiLanguage=L.Normalize(UiLanguage);if(ChartView is not ("LATEST" or "FULL"))ChartView="LATEST";if(!new[]{"REMEMBER","STANDARD","COMPACT"}.Contains(StartupMode))StartupMode="REMEMBER";if(OpacityPercent<40||OpacityPercent>100||OpacityPercent%5!=0)OpacityPercent=70;if(!new[]{60,90,180,300}.Contains(Interval))Interval=90;if(!new[]{30,90,180}.Contains(RetentionDays))RetentionDays=90;if(SavedDpi<48||SavedDpi>768)SavedDpi=96;if(!SaltAvailable)return;try{if(Convert.FromBase64String(Salt).Length!=32)throw new Exception();}catch{Salt=Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(32));}}
 }
 internal static class AtomicJson
 {
@@ -58,10 +62,16 @@ internal static class AtomicJson
     }
     public static void Save<T>(string path,T value)
     {
-        Directory.CreateDirectory(Path.GetDirectoryName(path)!);var temp=path+".tmp";
-        using(var f=new FileStream(temp,FileMode.Create,FileAccess.Write,FileShare.None)){JsonSerializer.Serialize(f,value,new JsonSerializerOptions{WriteIndented=true});f.Flush(true);}
-        File.Move(temp,path,true);
+        var bytes=JsonSerializer.SerializeToUtf8Bytes(value);
+        lock(saveGate){
+            if(File.Exists(path)&&new FileInfo(path).Length==bytes.Length&&File.ReadAllBytes(path).AsSpan().SequenceEqual(bytes))return;
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);var temp=path+"."+Guid.NewGuid().ToString("N")+".tmp";
+            try{using(var f=new FileStream(temp,FileMode.CreateNew,FileAccess.Write,FileShare.None)){f.Write(bytes);f.Flush(true);}File.Move(temp,path,true);BytesWritten+=bytes.Length;}
+            finally{if(File.Exists(temp))File.Delete(temp);}
+        }
     }
+    static readonly object saveGate=new();
+    internal static long BytesWritten{get;private set;}
 }
 internal static class Csv
 {
@@ -132,6 +142,7 @@ internal sealed class HistoryStore
         return new FrozenHistory(dir,asOf,files);
     }
     public string Root{get;} public string? SaveError{get;private set;} public int PendingCount=>queue.Count;public int DroppedBatches{get;private set;}
+    internal event Action<List<UsageSample>>? SamplesSaved;
     readonly object gate=new(); readonly Queue<List<UsageSample>> queue=new();
     readonly Dictionary<string,UsageSample> previous=new();readonly Dictionary<string,HashSet<string>> ids=new();DateOnly? cleaned;
     public HistoryStore(string root){Root=root;foreach(var d in new[]{"history","logs","exports","neutral"})Directory.CreateDirectory(Path.Combine(root,d));}
@@ -189,6 +200,7 @@ internal sealed class HistoryStore
                         previous[Address(s)]=s;
                     }
                     queue.Dequeue();
+                    try{SamplesSaved?.Invoke(batch);}catch{/* Derived observers must not change the result of the committed append. */}
                 }
                 SaveError=DroppedBatches>0?$"歷史曾遺失 {DroppedBatches} 批；目前已恢復":null;return true;
             }catch{SaveError=$"歷史未保存：等待重試（{queue.Count}/120 批）";return false;}
@@ -233,11 +245,17 @@ internal sealed class HistoryStore
         lock(gate){
             var today=DateOnly.FromDateTime(now.UtcDateTime);if(cleaned==today)return;
             try{
-                var owned=Daily("usage").Concat(Daily("events")).Concat(Directory.EnumerateFiles(Path.Combine(Root,"logs"),"app_*.jsonl*").Where(f=>System.Text.RegularExpressions.Regex.IsMatch(Path.GetFileName(f),@"^app_\d{4}-\d{2}-\d{2}\.jsonl(\.1)?$"))).Select(f=>new FileInfo(f)).OrderBy(f=>f.Name).ToList();
+                var diagnosticFolder=Path.Combine(Root,"diagnostics");
+                var diagnosticFiles=Directory.Exists(diagnosticFolder)?Directory.EnumerateFiles(diagnosticFolder).Where(f=>System.Text.RegularExpressions.Regex.IsMatch(Path.GetFileName(f),@"^((first_paint_|runtime-session_)\d{4}-\d{2}-\d{2}\.jsonl|runtime-metrics\.v1\.json)$")):Enumerable.Empty<string>();
+                var owned=Daily("usage").Concat(Daily("events")).Concat(Directory.EnumerateFiles(Path.Combine(Root,"logs"),"app_*.jsonl*").Where(f=>System.Text.RegularExpressions.Regex.IsMatch(Path.GetFileName(f),@"^app_\d{4}-\d{2}-\d{2}\.jsonl(\.1|\.\d{13}-[a-f0-9]{32})?$"))).Concat(diagnosticFiles).Select(f=>new FileInfo(f)).OrderBy(f=>f.Name).ToList();
                 long total=owned.Sum(f=>f.Length);
                 foreach(var f in owned.OrderBy(f=>f.LastWriteTimeUtc)){
                     var match=System.Text.RegularExpressions.Regex.Match(f.Name,@"\d{4}-\d{2}-\d{2}");
-                    if(!DateOnly.TryParseExact(match.Value,"yyyy-MM-dd",out var date)||date>=today)continue;
+                    if(!DateOnly.TryParseExact(match.Value,"yyyy-MM-dd",out var date)){
+                        if(f.Name!="runtime-metrics.v1.json")continue;
+                        date=DateOnly.FromDateTime(f.LastWriteTimeUtc);
+                    }
+                    if(date>=today)continue;
                     if(date<today.AddDays(-days)||total>cap){var length=f.Length;f.Delete();total-=length;ids.Remove(f.FullName);}
                 }
                 cleaned=today;
@@ -273,3 +291,6 @@ internal sealed record FrozenHistory(string DirectoryPath,DateTimeOffset AsOf,Li
  public IEnumerable<T> Rows<T>() where T:new()=>Directory.EnumerateFiles(DirectoryPath,typeof(T)==typeof(UsageSample)?"usage_*.csv":"events_*.csv").Order().SelectMany(Csv.Records<T>);
  public void Dispose(){try{Directory.Delete(DirectoryPath,true);}catch{}}
 }
+
+
+

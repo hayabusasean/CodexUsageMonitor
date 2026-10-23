@@ -28,8 +28,8 @@ internal static class PublicRadarTests {
   Check("T04 DST ambiguous and invalid stay unknown",()=>{
    Assert(AnnouncementParser.Time("November 1, 2026 at 1:30 AM PT",null).utc==null);
    Assert(AnnouncementParser.Time("March 8, 2026 at 2:30 AM PT",null).utc==null);
-   Assert(AnnouncementParser.Time("November 1, 2026 at 1:30 AM PDT",null).utc==DateTimeOffset.Parse("2026-11-01T08:30:00Z"));
-   Assert(AnnouncementParser.Time("November 1, 2026 at 1:30 AM PST",null).utc==DateTimeOffset.Parse("2026-11-01T09:30:00Z"));
+   Assert(AnnouncementParser.Time("November 1, 2026 at 1:30 AM PDT",null).utc==null);
+   Assert(AnnouncementParser.Time("November 1, 2026 at 1:30 AM PST",null).utc==null);
   });
   Check("T05 Around deadline CST relative semantics",()=>{
    Assert(AnnouncementParser.Time("September 7, 2026 around 6 PM PT",null).quality=="APPROXIMATE");

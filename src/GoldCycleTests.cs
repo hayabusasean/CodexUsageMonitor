@@ -17,7 +17,7 @@ internal static class GoldCycleTests {
   Check("E01_confirmed_new_cycle",()=>full.Confirmed&&full.delta_pp==93&&full.cause=="UNKNOWN"&&full.schedule_relation=="BEFORE_SCHEDULE_WINDOW");
   Check("E02_stable_identity",()=>Make(p,c,n).id==full.id);
   Check("pending_first_100",()=>!Make(p,c).Confirmed);
-  Check("E08_partial",()=>Make(p,c with{remaining_percent=95,used_percent_raw=5},n).kind=="PARTIAL_INCREASE");
+  Check("E08_partial_advanced_cycle_is_early_reset",()=>Make(p,c with{remaining_percent=95,used_percent_raw=5},n).kind=="EARLY_RESET");
   Check("E09_metadata_only",()=>Make(p with{remaining_percent=91,used_percent_raw=9},c with{remaining_percent=91,used_percent_raw=9}).kind=="CYCLE_CHANGE_ONLY");
   Check("E10_transient_retract",()=>Make(p,c,n with{remaining_percent=7,used_percent_raw=93,reset_at_utc=p.reset_at_utc}).retracted_reason=="RETURNED_TO_PREVIOUS_CYCLE");
   Check("E11_confirm_99",()=>full.confirmation_sample_id==n.sample_id);

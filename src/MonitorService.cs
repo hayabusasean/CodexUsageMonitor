@@ -6,13 +6,35 @@ internal sealed class MonitorService : IDisposable
     public Settings Settings{get;} public HistoryStore History{get;}public string Root=>History.Root;
     public ResetRadar Radar{get;}
     public LocalQuotaCycleStore LocalCycles{get;}
-    internal void RebuildLocalCycles(){try{var now=DateTimeOffset.UtcNow;if(!LocalCycles.Rebuild(History.Query<UsageSample>(new(now.AddHours(-96),now)),Radar.Snapshot(),now))log.Write("local-cycle",LocalCycles.Diagnostic);}catch{log.Write("local-cycle","REBUILD_FAILED");}}
+    internal void RebuildLocalCycles(){try{var now=DateTimeOffset.UtcNow;if(!LocalCycles.Rebuild(RecentSamples(),Radar.Snapshot(),now))log.Write("local-cycle",LocalCycles.Diagnostic);}catch{log.Write("local-cycle","REBUILD_FAILED");}}
     public MainQuotaClock MainClock{get;}=new();
     public long Monotonic=>mono.ElapsedMilliseconds;
     public DailyResult? Daily{get;private set;}
     public object ServiceTokenActivity{get;private set;}=new{status="NOT_PROVIDED",time_zone="UNKNOWN"};
     DateTimeOffset usageChecked; string usageIdentity="";
-    public void RebuildDaily(){try{var now=DateTimeOffset.UtcNow;Daily=DailyUsageCalculator.Calculate(History.Query<UsageSample>(new(now.AddDays(-4),now)),TimeZoneInfo.Local,DailyUsageCalculator.Boundary(DateOnly.FromDateTime(DateTime.Today.AddDays(-2)),TimeZoneInfo.Local),now);}catch{}}
+    public void RebuildDaily(){try{var now=DateTimeOffset.UtcNow;Daily=DailyUsageCalculator.Calculate(RecentSamples(),TimeZoneInfo.Local,DailyUsageCalculator.Boundary(DateOnly.FromDateTime(DateTime.Today.AddDays(-2)),TimeZoneInfo.Local),now);RebuildForecast(now);}catch{}}
+    readonly object recentGate=new();List<UsageSample> recent=[];
+    internal List<UsageSample> RecentSamples(){List<UsageSample> rows;lock(recentGate)rows=recent.ToList();return AnalysisSamples(rows);}
+    internal List<UsageSample> AnalysisSamples(IEnumerable<UsageSample> rows){Snapshot? current;bool verified;lock(identityGate){current=Current;verified=Verified;}return QuotaWindow.AnalysisSamples(rows,current,verified);}
+    public BurnForecastResult? Forecast{get;private set;}
+    public Announcement? ForecastAnnouncement{get;private set;}
+    internal void RebuildForecast(DateTimeOffset now){
+        var snapshot=Current;if(snapshot==null){Forecast=null;ForecastAnnouncement=null;return;}
+        var weeklyWindows=snapshot.Windows.Where(w=>w.LimitId=="codex"&&w.Duration==10080&&w.Quality=="VALID"&&w.Used.HasValue).ToList();
+        if(weeklyWindows.Count!=1){Forecast=null;ForecastAnnouncement=null;return;}
+        var weekly=weeklyWindows[0];var currentSample=UsageSample.From(snapshot,gap,Settings.Interval).Single(s=>s.limit_id=="codex"&&s.window_duration_mins==10080&&s.source_slot==weekly.Slot);
+        ForecastAnnouncement=Radar.ActiveSignalsAt(now).Where(a=>a.SignalLevel=="INCOMING"&&a.ResetUtc>now&&(ResetRadar.ScopeMatches(a,weekly?.Plan??"")||a.SourceClass=="TEAM_SIGNAL_RELAY"&&a.Scope=="UNKNOWN"&&a.Eligibility=="AS_ANNOUNCED")&&!a.Effect.Contains("BANKED",StringComparison.OrdinalIgnoreCase)&&!a.ResetType.Contains("BANKED",StringComparison.OrdinalIgnoreCase)).OrderBy(a=>a.ResetUtc).FirstOrDefault();
+        var rows=RecentSamples().Where(s=>s.account_context_key==snapshot.AccountKey&&s.comparison_key==currentSample.comparison_key&&s.source_slot==currentSample.source_slot&&s.plan_type==currentSample.plan_type&&s.observed_at_utc<=snapshot.Observed).ToList();
+        if(!rows.Any(s=>s.sample_id==currentSample.sample_id))rows.Add(currentSample);
+        Forecast=BurnForecast.Calculate(rows,now,ForecastAnnouncement);
+    }
+    AdviceNotificationState adviceState=new();
+    readonly object statusGate=new();
+    internal void WriteStatus(DateTimeOffset now,bool ok,bool refreshAnnouncement=false){lock(statusGate)try{if(ok||refreshAnnouncement)RebuildForecast(now);var advice=QuotaAdvice.Evaluate(Forecast,Current,ForecastAnnouncement,now);var path=Path.Combine(Root,"status.v1.json");
+        if(!ok&&File.Exists(path)){var saved=System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(path))!.AsObject();saved["ok"]=false;saved["error_code"]=string.IsNullOrWhiteSpace(LastErrorCode)?"NOT_VERIFIED":LastErrorCode;saved["generated_at"]=now.ToUniversalTime();saved["stale_seconds"]=Current==null?null:Math.Max(0,(int)(now-Current.Observed).TotalSeconds);if(Current!=null&&(now-Current.Observed).TotalSeconds>3*Settings.Interval&&saved["burn"] is System.Text.Json.Nodes.JsonObject burn)burn["confidence"]="STALE";if(refreshAnnouncement){var current=System.Text.Json.JsonSerializer.SerializeToNode(StatusWriter.Create(Current,Forecast,ForecastAnnouncement,ok,LastErrorCode,now,advice.FirstOrDefault()));saved["announced_reset"]=current?["announced_reset"]?.DeepClone();}AtomicJson.Save(path,saved);}
+        else AtomicJson.Save(path,StatusWriter.Create(Current,Forecast,ForecastAnnouncement,ok,LastErrorCode,now,advice.FirstOrDefault()));
+        if(ok&&Settings.Alerts&&Verified){var next=new AdviceNotificationState{LastNotified=new(adviceState.LastNotified)};var messages=next.Observe(advice,Current?.AccountKey??"",now);AtomicJson.Save(Path.Combine(Root,"advice_notification_state.v1.json"),next);adviceState=next;if(messages.Count>0)Alert?.Invoke(messages);}
+    }catch{log.Write("status","STATUS_WRITE_FAILED");}}
     public Snapshot? Current{get;private set;} public string Status{get;private set;}="正在取得額度";public bool Verified{get;private set;}
     public bool Busy{get;private set;}public int Failures{get;private set;}public DateTimeOffset? NextRetry{get;private set;}
     public bool MonitoringStarted=>loop!=null&&!stop.IsCancellationRequested;
@@ -24,9 +46,15 @@ internal sealed class MonitorService : IDisposable
     {
         History=new(root);Radar=new(root);LocalCycles=new(root);Radar.LocalCycles=LocalCycles;Radar.VerifiedLocalScopes=()=>{var snapshot=Current;return snapshot?.Windows.Where(w=>w.LimitId=="codex"&&w.Duration==10080).Select(w=>LocalQuotaCycle.Scope(new UsageSample{account_context_key=snapshot.AccountKey,plan_type=w.Plan,limit_id=w.LimitId,window_duration_mins=w.Duration,source_slot=w.Slot})).ToList()??[];};Settings=Settings.Load(Path.Combine(root,"settings.json"));Settings.Validate();
         log=new(root);alertState=AtomicJson.Load(Path.Combine(root,"notification_state.json"),()=>new AlertState());
+        adviceState=AtomicJson.Load(Path.Combine(root,"advice_notification_state.v1.json"),()=>new AdviceNotificationState());
+        recent=History.Query<UsageSample>(new(DateTimeOffset.UtcNow.AddDays(-7),DateTimeOffset.UtcNow)).ToList();
+        History.SamplesSaved+=batch=>{lock(recentGate){recent=recent.Concat(batch).Where(s=>s.observed_at_utc>=DateTimeOffset.UtcNow.AddDays(-7)).DistinctBy(s=>s.sample_id).OrderBy(s=>s.observed_at_utc).ToList();}};
+        Radar.LocalQuotaIsFull=()=>Verified&&Current?.Windows.Any(w=>w.LimitId=="codex"&&w.Duration==10080&&w.Remaining==100)==true;
         Current=AtomicJson.Load<Snapshot?>(Path.Combine(root,"last_good.json"),()=>null);
         MainClock.Cache(Current);
         if(Current!=null)Status="上次資料，尚未驗證";
+        RebuildForecast(DateTimeOffset.UtcNow);
+        Radar.Changed+=()=>{if(!Busy&&Current!=null){WriteStatus(DateTimeOffset.UtcNow,Verified,true);Changed?.Invoke();}};
     }
     public void Start(){if(loop!=null)return;Radar.SetEnabled(Settings.RadarEnabled);Radar.Start();loop=Task.Run(Run);}
     public bool Refresh(bool manual=false,bool reconnect=false)
@@ -37,7 +65,7 @@ internal sealed class MonitorService : IDisposable
         try{signal.Release();}catch(SemaphoreFullException){}return true;
     }
     public void Resume(){MainClock.Age(Monotonic,DateTimeOffset.UtcNow,true);gap=true;Verified=false;Status="恢復監測，正在重新驗證";Refresh();Changed?.Invoke();}
-    public bool SaveSettings(){Settings.Validate();try{AtomicJson.Save(Path.Combine(Root,"settings.json"),Settings);return true;}catch{Status="SETTINGS_SAVE_FAILED";Changed?.Invoke();return false;}}
+    public bool SaveSettings(){if(!Settings.SaltAvailable){Status="身分保護資料無法解開；原設定保留，請使用原本的 Windows 帳戶。";return false;}Settings.Validate();try{AtomicJson.Save(Path.Combine(Root,"settings.json"),Settings);return true;}catch{Status="設定未保存，請稍後再試。";Changed?.Invoke();return false;}}
     async Task Run()
     {
         History.Recover();RebuildDaily();RebuildLocalCycles();SaveSettings();
@@ -60,6 +88,7 @@ internal sealed class MonitorService : IDisposable
         await pollGate.WaitAsync(ct);Busy=true;lastPoll=mono.ElapsedMilliseconds;Changed?.Invoke();
         var started=DateTimeOffset.UtcNow;
         try{
+            if(!Settings.SaltAvailable)throw new MonitorException("SETTINGS_SALT_UNAVAILABLE");
             if(forceReconnect){client?.Dispose();client=null;forceReconnect=false;gap=true;}
             if(client==null||client.Broken){
                 client?.Dispose();client=null;
@@ -67,13 +96,13 @@ internal sealed class MonitorService : IDisposable
                 string? lastError=null;
                 foreach(var candidate in CodexLocator.Candidates(Settings.CodexPath)){
                     var test=new AppServerClient(log);
-                    try{await test.Connect(candidate,neutral,ct);client=test;VerifiedPath=candidate;break;}
+                    try{await test.Connect(candidate,neutral,ct);client=test;VerifiedPath=candidate;usageCapability="UNKNOWN";usageChecked=default;break;}
                     catch(OperationCanceledException){test.Dispose();throw;}
                     catch(Exception e){lastError=e is MonitorException me?me.Code:e is System.ComponentModel.Win32Exception?"PROCESS_START_DENIED":"PROCESS_START_FAILURE";test.Dispose();log.Write("connect",lastError);}
                 }
                 if(client==null)throw new MonitorException(lastError??"CODEX_NOT_FOUND");
                 client.Notification+=name=>{
-                    if(name=="account/updated"){lock(identityGate){Verified=false;Current=null;MainClock.Invalidate();ServiceTokenActivity=new{status="NOT_PROVIDED",time_zone="UNKNOWN"};usageChecked=default;gap=true;Status="帳戶來源變更，正在重新驗證";}Changed?.Invoke();}
+                    if(name=="account/updated"){lock(identityGate){Verified=false;Current=null;Forecast=null;ForecastAnnouncement=null;MainClock.Invalidate();ServiceTokenActivity=new{status="NOT_PROVIDED",time_zone="UNKNOWN"};usageChecked=default;gap=true;Status="帳戶來源變更，正在重新驗證";}Changed?.Invoke();}
                     if(name=="transport/closed"){MainClock.Failure();Verified=false;gap=true;Status="額度連線中斷；將自動恢復";Changed?.Invoke();Refresh();}
                     if(name=="account/updated"||!Busy)Refresh();
                 };
@@ -94,14 +123,16 @@ internal sealed class MonitorService : IDisposable
             var messages=alertState.Observe(rows);
             bool persisted=false;try{AtomicJson.Save(Path.Combine(Root,"notification_state.json"),alertState);persisted=true;}catch{Status="提醒狀態未保存";}
             if(Settings.Alerts&&persisted&&messages.Count>0)Alert?.Invoke(messages);
-            RebuildDaily();RebuildLocalCycles();try{Radar.Correlate(History.Query<UsageSample>(new(DateTimeOffset.UtcNow.AddHours(-96),DateTimeOffset.UtcNow)));}catch{}log.Write("poll","OK");Changed?.Invoke();
+            RebuildDaily();RebuildLocalCycles();try{Radar.Correlate(RecentSamples());}catch{}WriteStatus(DateTimeOffset.UtcNow,true);log.Write("poll","OK");Changed?.Invoke();
             if(DateTimeOffset.UtcNow-usageChecked>TimeSpan.FromMinutes(15)||usageIdentity!=identity.key){
                 usageChecked=DateTimeOffset.UtcNow;usageIdentity=identity.key;
                 ServiceTokenActivity=new{status="NOT_SUPPORTED",time_zone="UNKNOWN"};
-                // Capability is pinned to the locally verified 0.153.4 schema; other versions stay explicitly unsupported.
-                if(client.Version=="0.153.4"){
+                // Probe the read-only capability on each producer generation; unsupported methods stay disabled.
+                if(usageCapability!="UNSUPPORTED"){
                     try{using var optional=CancellationTokenSource.CreateLinkedTokenSource(ct);optional.CancelAfter(3000);
                         var data=await client.Request("account/usage/read",null,optional.Token);
+                        if(data.ValueKind!=JsonValueKind.Object||!(data.TryGetProperty("summary",out var schemaSummary)&&schemaSummary.ValueKind==JsonValueKind.Object||data.TryGetProperty("dailyUsageBuckets",out var schemaBuckets)&&schemaBuckets.ValueKind==JsonValueKind.Array))throw new MonitorException("USAGE_SCHEMA_UNSUPPORTED");
+                        usageCapability="SUPPORTED";
                         var safe=new Dictionary<string,object?>{{"status","PROVIDED"},{"time_zone","UNKNOWN"},{"as_of",DateTimeOffset.UtcNow}};
                         if(data.TryGetProperty("summary",out var summary)){
                             var numeric=new Dictionary<string,long?>();foreach(var k in new[]{"lifetimeTokens","peakDailyTokens","longestRunningTurnSec","longestStreakDays","currentStreakDays"})numeric[k]=summary.TryGetProperty(k,out var n)&&n.ValueKind==JsonValueKind.Number&&n.TryGetInt64(out var x)&&x>=0?x:null;safe["summary"]=numeric;
@@ -109,15 +140,18 @@ internal sealed class MonitorService : IDisposable
                         var buckets=new List<object>();if(data.TryGetProperty("dailyUsageBuckets",out var arr)&&arr.ValueKind==JsonValueKind.Array)
                             foreach(var b in arr.EnumerateArray().Take(3660))if(b.TryGetProperty("startDate",out var d)&&DateOnly.TryParse(d.GetString(),out var day)&&b.TryGetProperty("tokens",out var n)&&n.ValueKind==JsonValueKind.Number&&n.TryGetInt64(out var count)&&count>=0)buckets.Add(new{start_date=day.ToString("yyyy-MM-dd"),tokens=count});
                         safe["daily_buckets"]=buckets;ServiceTokenActivity=safe;
-                    }catch{ServiceTokenActivity=new{status="NOT_PROVIDED",time_zone="UNKNOWN"};}
+                    }catch(MonitorException e) when(e.Code=="METHOD_UNSUPPORTED"){usageCapability="UNSUPPORTED";ServiceTokenActivity=new{status="NOT_SUPPORTED",time_zone="UNKNOWN"};}
+                    catch{ServiceTokenActivity=new{status="NOT_PROVIDED",time_zone="UNKNOWN"};}
                 }
             }
         }catch(OperationCanceledException){throw;}
         catch(Exception ex){
             MainClock.Failure();gap=true;Verified=false;Failures++;LastErrorCode=ex is MonitorException e?e.Code:ex is UnauthorizedAccessException?"POLICY_DENIED":ex is IOException?"NETWORK_ERROR":"INTERNAL_ERROR";
             Status=Explain(LastErrorCode);log.Write("poll",LastErrorCode,Failures,DateTimeOffset.UtcNow.AddSeconds(Backoff(Failures)));
+            WriteStatus(DateTimeOffset.UtcNow,false,true);
         }finally{Busy=false;pollGate.Release();Changed?.Invoke();}
     }
+    string usageCapability="UNKNOWN";
     public async Task<string> ValidateCandidate(string path,CancellationToken ct)
     {
         if(Path.GetFullPath(path).Equals(Environment.ProcessPath,StringComparison.OrdinalIgnoreCase)||Path.GetFileName(path).Equals("CodexUsageMonitor.exe",StringComparison.OrdinalIgnoreCase))throw new MonitorException("SELF_SOURCE_REJECTED");
@@ -142,12 +176,13 @@ internal sealed class MonitorService : IDisposable
         if((now-Current.Observed).TotalSeconds>Settings.Interval*3)return "資料過期｜"+Status;
         return Verified?Status:"上次資料，尚未驗證｜"+Status;
     }
-    public static string Explain(string code)=>L.T(code switch {
+    public static string Explain(string code)=>code=="SETTINGS_SALT_UNAVAILABLE"?"身分保護資料無法解開；請使用原本的 Windows 帳戶，原設定已保留。":L.T(code switch {
         "SOURCE_NOT_FOUND" or "CODEX_NOT_FOUND"=>"State.NotFound",
         "AUTH_REQUIRED" or "AUTH_UNAUTHORIZED" or "RPC_401" or "UNAUTHORIZED"=>"State.SignIn",
         "PROTOCOL_UNSUPPORTED" or "RPC_METHOD_NOT_FOUND" or "VERSION_UNSUPPORTED" or "METHOD_UNSUPPORTED" or "INVALID_CODEX_VERSION" or "ARCHITECTURE_MISMATCH"=>"State.Unsupported",
         "SOURCE_DATA_MISSING" or "MAIN_WEEKLY_MISSING"=>"State.WeeklyMissing",
         "SOURCE_DATA_INVALID"=>"State.Error",
+        "CODEX_SIGNATURE_INVALID" or "CODEX_PUBLISHER_INVALID"=>"State.CheckSource",
         "SELF_SOURCE_REJECTED" or "SOURCE_INVALID"=>"State.CheckSource",
         "TIMEOUT" or "CONNECT_TIMEOUT" or "RPC_TIMEOUT" or "REQUEST_TIMEOUT"=>"State.Offline",
         "PRODUCER_EXITED" or "EOF" or "TRANSPORT_EOF" or "TRANSPORT_FAILURE"=>"State.Protocol",
@@ -157,4 +192,7 @@ internal sealed class MonitorService : IDisposable
     });
     public void Dispose(){Radar.Dispose();stop.Cancel();client?.Dispose();try{loop?.Wait(1000);}catch{}stop.Dispose();}
 }
+
+
+
 

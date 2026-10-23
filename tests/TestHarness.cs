@@ -42,10 +42,11 @@ internal static class TestHarness
         });
         Check("T02 auth identity scope privacy",()=>{
             var salt=Convert.ToBase64String(new byte[32]);
-            var a=Json("""{"account":{"type":"chatgpt","email":"synthetic@example.invalid","planType":"pro"}}""");
+            var a=Json("""{"account":{"type":"chatgpt","accountId":"fixture-account-one","email":"synthetic@example.invalid","planType":"pro"}}""");
             var one=QuotaNormalizer.Identity(a,salt,"a");var two=QuotaNormalizer.Identity(a,salt,"b");
-            Assert(one==two&&one.assurance=="SCOPE_NOT_FULLY_VERIFIED"&&!one.key.Contains("@"));
-            var b=Json("""{"account":{"type":"chatgpt","email":"other@example.invalid","planType":"pro"}}""");Assert(one!=QuotaNormalizer.Identity(b,salt,"a"));
+            Assert(one==two&&one.assurance=="ACCOUNT_STABLE"&&!one.key.Contains("@"));
+            var b=Json("""{"account":{"type":"chatgpt","accountId":"fixture-account-two","email":"other@example.invalid","planType":"pro"}}""");Assert(one!=QuotaNormalizer.Identity(b,salt,"a"));
+            var emailOnly=Json("""{"account":{"type":"chatgpt","email":"synthetic@example.invalid"}}""");Assert(QuotaNormalizer.Identity(emailOnly,salt,"a").assurance=="EMAIL_SCOPED");
             foreach(var raw in new[]{"""{"account":null}""","""{"account":{"type":"apiKey"}}"""}){
                 bool caught=false;try{QuotaNormalizer.Identity(Json(raw),salt,"a");}catch(MonitorException){caught=true;}Assert(caught);
             }
@@ -61,7 +62,8 @@ internal static class TestHarness
             foreach(var (before,after,expected) in new (decimal,decimal,string?)[]{(0,100,"ZERO_TO_FULL_OBSERVED"),(20,100,"FULL_REPLENISHMENT_OBSERVED"),(0,83,"QUOTA_INCREASE_OBSERVED"),(20,95,"QUOTA_INCREASE_OBSERVED"),(100,100,null),(30,20,"QUOTA_DECREASE_OBSERVED")}){
                 var ev=EventDetector.Compare(Sample(before),Sample(after,1));Assert(expected==null?ev.Count==0:ev.Count==1&&ev[0].event_type==expected);Assert(ev.Select(e=>e.event_id).SequenceEqual(EventDetector.Compare(Sample(before),Sample(after,1)).Select(e=>e.event_id)));
             }
-            Assert(EventDetector.Compare(Sample(100),Sample(100,1) with{reset_at_unix_seconds=1800000010}).Single().event_type=="RESET_TIMESTAMP_CHANGED");
+            Assert(EventDetector.Compare(Sample(100),Sample(100,1) with{reset_at_unix_seconds=1800000010,reset_at_utc=DateTimeOffset.FromUnixTimeSeconds(1800000010)}).Count==0);
+            Assert(EventDetector.Compare(Sample(100),Sample(100,1) with{reset_at_unix_seconds=1800000121,reset_at_utc=DateTimeOffset.FromUnixTimeSeconds(1800000121)}).Single().event_type=="RESET_TIMESTAMP_CHANGED");
         });
         Check("T16 T17 gaps interval cause remains unknown",()=>{
             var p=Sample(0);var c=Sample(100,1) with{had_gap=true,source_generation="next",reset_credits_available_count=1,observed_at_utc=p.observed_at_utc.AddHours(8)};

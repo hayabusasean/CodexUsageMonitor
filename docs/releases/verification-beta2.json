@@ -1,0 +1,139 @@
+{
+  "schema": "codex-usage-public-release-verification.v1",
+  "version": "0.5.0-beta2",
+  "original_audit_utc": "2026-10-23T01:39:18.108704+08:00",
+  "original_audit_result": "PASS",
+  "exe_sha256": "21ff85e3b5edb5bffbfbe22a1457fda72838bee87c0b74ef7cb0e64daf4e0bde",
+  "zip_sha256": "8f0457ba70c4902a454fff2c4446dd4730df69cfd2efcb2f2d6b9bb348b5b86e",
+  "zip_entry_count": 9,
+  "test_flag_count": 35,
+  "test_source_file_count": 40,
+  "test_declared_type_count": 56,
+  "production_test_flag_matches": 0,
+  "production_test_type_matches": 0,
+  "source_rpc_allowlist": [
+    "account/rateLimits/read",
+    "account/read",
+    "account/usage/read",
+    "initialize"
+  ],
+  "tests": [
+    {
+      "suite": "analytics-050",
+      "checks": 52,
+      "passed": 52,
+      "skipped": 0,
+      "failed": 0
+    },
+    {
+      "suite": "radar-050",
+      "checks": 30,
+      "passed": 30,
+      "skipped": 0,
+      "failed": 0
+    },
+    {
+      "suite": "integration-050",
+      "checks": 32,
+      "passed": 31,
+      "skipped": 1,
+      "failed": 0
+    },
+    {
+      "suite": "first-paint-diagnostics",
+      "checks": 19,
+      "passed": 19,
+      "skipped": 0,
+      "failed": 0
+    },
+    {
+      "suite": "public",
+      "checks": 66,
+      "passed": 66,
+      "skipped": 0,
+      "failed": 0
+    },
+    {
+      "suite": "self",
+      "checks": 29,
+      "passed": 29,
+      "skipped": 0,
+      "failed": 0
+    },
+    {
+      "suite": "gold-cycle",
+      "checks": 39,
+      "passed": 39,
+      "skipped": 0,
+      "failed": 0
+    },
+    {
+      "suite": "final-phase",
+      "checks": 36,
+      "passed": 36,
+      "skipped": 0,
+      "failed": 0
+    },
+    {
+      "suite": "rc4-field-trial",
+      "checks": 45,
+      "passed": 45,
+      "skipped": 0,
+      "failed": 0
+    },
+    {
+      "suite": "rc4-coverage",
+      "checks": 20,
+      "passed": 20,
+      "skipped": 0,
+      "failed": 0
+    },
+    {
+      "suite": "rc4-signal-polish",
+      "checks": 5,
+      "passed": 5,
+      "skipped": 0,
+      "failed": 0
+    },
+    {
+      "suite": "rc4-active-unread",
+      "checks": 12,
+      "passed": 12,
+      "skipped": 0,
+      "failed": 0
+    },
+    {
+      "suite": "rc4-history-event",
+      "checks": 10,
+      "passed": 10,
+      "skipped": 0,
+      "failed": 0
+    }
+  ],
+  "test_checks": 395.0,
+  "test_passed": 394.0,
+  "test_skipped": 1.0,
+  "test_failed": 0.0,
+  "live_audit": {
+    "scope": "PRIVATE_ISOLATED_COPY",
+    "seconds": 720.769,
+    "successful_polls": 8,
+    "new_usage_rows": 8,
+    "new_events": 9,
+    "poll_events": 6,
+    "startup_backfill_events": 3,
+    "parent_process_io_write_bytes": 725507,
+    "content_write_bytes_at_last_poll": 721367,
+    "model_call_count_measured": false
+  },
+  "limits_zh_tw": "摘要來自已完成驗證的最終包；不包含私人設定、原始歷史或執行路徑，不宣稱所有 DPI 或完整一小時測量已通過。",
+  "public_copy_rebuild": {
+    "checks": 394,
+    "passed": 393,
+    "skipped": 1,
+    "failed": 0,
+    "excluded_private_backup_check_count": 1,
+    "compiled_inputs_match_frozen_build": true,
+    "compiled_input_count": 87
+  }
+}

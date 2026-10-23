@@ -1,102 +1,19 @@
-# CodexUsageMonitor
+# CodexUsageMonitor 0.5.0-beta2
 
-**每週 Codex 額度，放在桌面上看就好。**
+新版說明統一使用繁體中文，完整操作、升級、燒速公式、通知與隱私說明請見 [README.md](README.md)。
 
-[English](README.md) · 繁體中文
+[0.5.0-beta2 預發行頁](https://github.com/hayabusasean/CodexUsageMonitor/releases/tag/v0.5.0-beta2) 提供 Windows x64 可攜包與 SHA-256；[新版功能與三張實機截圖](README.md#實機畫面)見首頁。升級前先從舊版右鍵選單選「結束」，再開新版 `CodexUsageMonitor.exe`；保留 `%LOCALAPPDATA%\CodexUsageMonitor` 以接續設定與歷史。
 
-[下載 Windows x64 版 v0.4.1](https://github.com/hayabusasean/CodexUsageMonitor/releases/tag/v0.4.1) · [看第一次重置的故事](docs/stories/first-reset.zh-TW.md) · [回報問題](https://github.com/hayabusasean/CodexUsageMonitor/issues)
+第一次啟動新版前，請先另存含有舊 `Salt` 的 `settings.json`，並妥善保管、不外傳。0.4.1 讀不到新版 DPAPI 的 `SaltProtected`；退版前必須先結束新版並還原升級前的設定，不能假定 `pre-bilingual.bak` 一定可用。沒有可用備份時，先不要直接啟動 0.4.1；詳見 [升級與退版說明](README.md#開始試用與升級)。
 
-<p><img src="docs/screenshots/gold/compact-crop.png" width="236" alt="實際小浮窗：每週剩餘78%、下次讀取倒數66秒、雷達來源可讀率67%"></p>
+要以同一份正式 EXE 使用獨立資料，可設定 `CODEX_USAGE_MONITOR_HOME` 為一般本機資料夾的絕對路徑；未設定時沿用原本的 `%LOCALAPPDATA%\CodexUsageMonitor`。程式先將 8.3 短名與 SUBST 別名解析成實際本機路徑，再拒絕原正式資料夾、`CODEX_HOME`、這兩者的子資料夾與上層資料夾。也拒絕磁碟根目錄、網路或 device 路徑；目標與既存上層資料夾不可是 junction、符號連結等資料夾捷徑。同一實際資料夾的別名共用執行鎖。不修改系統 `LOCALAPPDATA` 或 `CODEX_HOME`，新資料目錄仍正常每 90 秒查詢額度。獨立資料目錄不會建立、修改或刪除 Windows 開機捷徑；設定頁的開機啟動選項停用，複製設定中的開機啟動值也不會套用到全域捷徑。詳見 [獨立資料目錄](README.md#使用獨立資料目錄)。
 
-最近 Codex 用得有點兇，一直點開 Usage 看剩多少很煩，乾脆做了這個 Windows 小工具。把額度掛在桌面、留下本機使用紀錄，也順便看幾個公開來源有沒有重置消息。
+排查問題時，可只提供目前資料目錄的 `diagnostics`：`first_paint_YYYY-MM-DD.jsonl` 每個視窗實例首次繪製前後共記兩行；`runtime-session_YYYY-MM-DD.jsonl` 與 `runtime-metrics.v1.json` 可核對執行的 EXE、成功輪詢及寫入量。診斷不含 email、accountId、帳戶雜湊、token 或 Salt，但啟動紀錄會包含本機資料夾路徑；不必附上設定或歷史 CSV。
 
-免費、開源。介面預設英文，可以切換繁體中文。這是個人做的非官方工具，與 OpenAI 無關。
+浮窗現在顯示每週剩餘、燒速、重置倒數與預計用完時間。下次查詢秒數移到 tooltip；右鍵第一項可切換顯示／隱藏，單擊通知區圖示可叫回。來源可讀率不再出現在浮窗上。
 
-## 怎麼開始
+`rate_2h` 使用跳格中點計算完整可觀測視窗的增加量，包含沒再跳格的尾段；回放 2026-10-22 23:01 得到 `4.0%/h`。跳不到兩個不同格或累積不足 2 個百分點時顯示「資料不足」。每週與公告重置分別提供預測，介面以較早者倒數。
 
-先安裝並登入官方 Codex。接著到下載頁選 **`CodexUsageMonitor-v0.4.1-win-x64.zip`**，整包解壓縮，打開 **`CodexUsageMonitor.exe`**。不用 Installer，也不用把 API Key 交給這個工具。GitHub 自動列出的 **Source code** 是原始碼，不是一般使用者的執行包。
+工具維持唯讀：不送 model turn、不兌換券、不讀 `auth.json`，也不存 email／token。歷史 CSV 的欄位、schema 1、只追加、去重與尾端修復保留。提醒每個條件 6 小時內最多一次；公告全球重置前先保留券。
 
-拖曳浮窗就能移動；角落的小按鈕可切換顯示模式，右鍵可開使用紀錄、重置公告與設定。秒數代表**下次讀取額度還要多久**，不是重置保證倒數。資料存於 `%LOCALAPPDATA%\CodexUsageMonitor`，不放 EXE 旁邊。
-
-更新時先從舊工具的選單離開，再開新 EXE。重複開第二份不會自動替換正在跑的版本，因為程式會保護同一份歷史只由一個程序寫入。保留本機資料目錄，設定與歷史就能接續。
-
-## 這次 Gold 版
-
-保留星球、紫藍玻璃面板，重要資訊加一點香檳金。額度補滿的事件現在有**金色摘要，而且放在曲線外面**，不用自己在圖裡找，也不會為了顯眼把資料蓋住。
-
-歷史可以看最近區段、完整範圍或事件聚焦，支援時間軸操作、調整表格與圖表高度、備註，以及 CSV／詳細分析 Log 匯出。100% 降到 99% 看得出來；有缺測的地方就留缺口，不補造資料。
-
-重置雷達把「還沒讀」與「訊號仍有效」分開。對應本機週期已補滿後，舊提醒會退場，原始消息仍留著。這次也修正了使用紀錄重複重繪、詳情頁刷新／尺寸，以及開新版本卻喚回舊程式的混淆。
-
-![重置雷達：7%回到100%的金色證據卡，6個來源中4個可讀](docs/screenshots/gold/radar.png)
-
-*9月13日實際使用畫面，回看9月12日的補額事件。不是概念圖，也不是當時就有這張新版介面。*
-
-## 第一次守著它等到重置
-
-黃燈亮著，我先忍住，沒有用掉剩下的那張重置券。後來在 FB Codex 討論區看到大家分享更具體的消息，就繼續留意。
-
-額度一路剩到 **7%**，再看，變成 **100%**。券也還在。
-
-老實說，那一下真的很爽。😂
-
-不過這次不是 Tool 猜中了重置時間。更具體的消息來自社群，Tool 也沒有證明自己及時抓到了那則後續的紅燈公告。它負責提醒我值得留意，再把前後額度留下來。對我來說，這就已經很實用了。
-
-[當天原始照片與時間紀錄 →](docs/stories/first-reset.zh-TW.md)
-
-## 小燈和數字在說什麼
-
-| 顯示 | 意義 |
-| --- | --- |
-| 大百分比 | 每週剩餘；數字變黃／紅是低額度提醒，與雷達分開。 |
-| 小秒數 | 下一次額度讀取倒數；失敗重試會另有狀態。 |
-| 雷達百分比 | **設定來源的可讀取比例**，不是重置機率。 |
-| 黃色 `!`／小點 | 新的／已讀但有效的注意訊號，可去看原始来源與社群後續。 |
-| 紅色 `!`／小點 | 新的／已讀但有效的較明確即將重置消息，仍不保證你的帳號會何時重置。 |
-| 金色事件卡 | 本機已觀察到補額，不等於證明全域原因。 |
-
-這些圖中的 **67%** 只是 **6個設定來源中4個可讀**。不是掃完67%的網路，也不是有67%機率重置。同一篇貼文被兩站轉送，不等於兩份獨立確認。
-
-## 其他畫面
-
-<details>
-<summary>使用紀錄與金色事件</summary>
-
-![金色事件摘要，7%到100%，增加93個百分點](docs/screenshots/gold/gold-event-crop.png)
-
-![實際使用紀錄頁](docs/screenshots/gold/history.png)
-
-保留作者當時的視窗與捲動位置；數字、時間、曲線缺口未修改。
-</details>
-
-<details>
-<summary>額度詳情與設定</summary>
-
-![額度詳情，各池分開顯示](docs/screenshots/gold/quota-details.png)
-
-![星際玻璃設定頁](docs/screenshots/gold/settings.png)
-
-截圖裡的個人設定不代表程式預設值。
-</details>
-
-## 隱私與限制
-
-額度透過本機官方 Codex app-server 讀取。監控工具本身不要求 API Key、不讀瀏覽器 Cookie，也不直接讀 `auth.json`；官方 Codex 則使用自己的登入。監看不啟動模型回合、不使用重置券，也不購買額度。
-
-歷史與匯出留在本機，除非你自己分享。公開消息的來源網站仍會看到一般 HTTPS 連線資訊。工具沒有使用者遙測，但詳細 Log 可能包含帳號背景或使用模式，請先檢查再分享。
-
-雷達只看有限來源，可能遇到擋爬、改版、轉送延遲或漏訊息。「可讀」不保證站上已出現最新貼文。程式以 Windows x64 為目標；先前 rc.3 曾在 Windows 11 正常使用一整天，不代表新版 Gold 已重測所有 Win11、DPI 或多螢幕環境。EXE 尚未簽章，Windows 可能顯示警告；請核對來源與 checksum，不要關閉安全防護。
-
-[隱私、監測來源與限制](docs/privacy-and-limits.zh-TW.md) · [版本紀錄](CHANGELOG.md)
-
-## 開發這件事
-
-這是我第一次在 GitHub 分享作品。我負責說想要什麼、實際用、再要求修改；開發、修正、整理、打包和上傳，大部分都由 Codex 協助完成。
-
-我自己也每天用。新功能先停一陣子，有問題歡迎回報，但這是個人作品，不是保證即時支援的服務。
-
-## 授權
-
-[MIT](LICENSE) · Copyright (c) 2026 hayabusasean。第三方聲明依其原有條款。
-
-本專案不隸屬 OpenAI，也未受其背書或贊助。
+[完整使用說明](README.md) · [建置與測試](README_BUILD.md) · [版本紀錄](CHANGELOG.md) · [MIT 授權](LICENSE)

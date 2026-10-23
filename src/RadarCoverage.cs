@@ -15,7 +15,8 @@ internal static class RadarCoverage {
  // Normal scheduling includes up to 90 seconds jitter per interval.
  internal static TimeSpan FreshWindow(RadarSourceDefinition d)=>TimeSpan.FromSeconds(2*(d.IntervalMinutes*60+90));
  internal static RadarCoveragePoint Measure(RadarState state,bool enabled,DateTimeOffset now){
-  var defs=enabled?ResetRadar.Sources:[];var latest=Rc4Radar.LatestConfiguredSources(state).ToDictionary(x=>x.Id);
+  var latest=Rc4Radar.LatestConfiguredSources(state).ToDictionary(x=>x.Id);
+  var defs=enabled?ResetRadar.Sources.Where(d=>!latest.TryGetValue(d.Id,out var value)||!PermanentlyBlocked(value)).ToArray():[];
   bool complete=defs.Length>0&&defs.All(d=>latest.TryGetValue(d.Id,out var s)&&s.LastAttempt!=null);
   bool IsReadable(RadarSourceDefinition d)=>latest.TryGetValue(d.Id,out var s)&&Readable(s,d,now);
   int total=defs.Length,readable=defs.Count(IsReadable);
@@ -24,6 +25,7 @@ internal static class RadarCoverage {
   return new(now,complete?(int)Math.Round(readable*100d/total,MidpointRounding.AwayFromZero):null,readable,total,
    official.Count(IsReadable),official.Length,team.Count(IsReadable),team.Length,community.Count(IsReadable),community.Length);
  }
+ internal static bool PermanentlyBlocked(SourceStatus value)=>value.Status=="BLOCKED"&&value.HttpStatus==403;
  internal static string Percent(RadarCoveragePoint p)=>p.coverage_percent?.ToString(System.Globalization.CultureInfo.InvariantCulture)??"--";
 }
 internal sealed class RadarCoverageView:Control {

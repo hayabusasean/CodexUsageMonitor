@@ -31,11 +31,23 @@ internal sealed class SpacePanel:Panel {
  internal void HideNativeScroll(){if(!IsHandleCreated||hidingScroll||(GetStyle(Handle,-16)&0x00300000)==0)return;try{hidingScroll=true;ShowScrollBar(Handle,3,false);}finally{hidingScroll=false;}}
  protected override void OnHandleCreated(EventArgs e){base.OnHandleCreated(e);HideNativeScroll();}
  protected override void OnLayout(LayoutEventArgs e){base.OnLayout(e);HideNativeScroll();}
- Bitmap? artwork;Size composedSize;string composedScene="";
+ Bitmap? artwork;Size composedSize;string composedScene="";int composedDpi;
+ internal FirstPaintDiagnostics? FirstPaintLog;internal int SurfaceBuilds{get;private set;}internal double SurfaceBuildMs{get;private set;}
+ internal FirstPaintSurfaceState SurfaceState()=>new(Theme.HighContrast?"high_contrast":composedScene==""?(R2.Is(this)?R2.Scene(this):"legacy"):composedScene,DeviceDpi,ClientSize.Width,ClientSize.Height,artwork?.Width,artwork?.Height,SurfaceBuilds,SurfaceBuildMs,ComposedBackground.Builds,Theme.HighContrast);
  internal SpacePanel(){DoubleBuffered=true;ResizeRedraw=true;BackColor=Theme.Canvas;SetStyle(ControlStyles.AllPaintingInWmPaint,true);}
  protected override void OnSizeChanged(EventArgs e){base.OnSizeChanged(e);Invalidate(true);}
- internal void PrepareSurface(){if(Theme.HighContrast)return;string scene=R2.Is(this)?R2.Scene(this):"legacy";if(artwork!=null&&composedSize==ClientSize&&composedScene==scene)return;var next=scene=="legacy"?StellarSurface.Background(ClientSize):R2.Background(ClientSize,scene);var old=artwork;artwork=next;composedSize=ClientSize;composedScene=scene;old?.Dispose();}
+ internal void PrepareSurface(){if(Theme.HighContrast)return;string scene=R2.Is(this)?R2.Scene(this):"legacy";if(artwork!=null&&composedSize==ClientSize&&composedScene==scene&&composedDpi==DeviceDpi)return;long started=System.Diagnostics.Stopwatch.GetTimestamp();var next=ComposedBackground.Get(ClientSize,scene,DeviceDpi);var old=artwork;artwork=next;composedSize=ClientSize;composedScene=scene;composedDpi=DeviceDpi;SurfaceBuilds++;SurfaceBuildMs=System.Diagnostics.Stopwatch.GetElapsedTime(started).TotalMilliseconds;old?.Dispose();}
  internal void PaintSurface(Graphics g){using(var fill=new SolidBrush(Theme.Canvas))g.FillRectangle(fill,ClientRectangle);if(Theme.HighContrast)return;PrepareSurface();g.DrawImageUnscaled(artwork!,Point.Empty);}
- protected override void OnPaintBackground(PaintEventArgs e)=>PaintSurface(e.Graphics);
+ protected override void OnPaintBackground(PaintEventArgs e){bool first=FirstPaintLog?.Pending==true&&FirstPaintLog.Begin(SurfaceState());bool failed=false;try{PaintSurface(e.Graphics);}catch{failed=true;throw;}finally{if(first)FirstPaintLog!.Complete(SurfaceState(),failed);}}
+ protected override void OnScroll(ScrollEventArgs e){base.OnScroll(e);Invalidate(true);Update();}
+ protected override void WndProc(ref Message m){base.WndProc(ref m);if(m.Msg is 0x114 or 0x115 or 0x20A)Invalidate(true);}
  protected override void Dispose(bool disposing){if(disposing)artwork?.Dispose();base.Dispose(disposing);}
+}
+// Keep only a small number of completed surfaces; a reopened window copies pixels
+// instead of decoding and rescaling the source artwork during its first paint.
+internal static class ComposedBackground {
+ static readonly Dictionary<(Size size,string scene,int dpi),Bitmap> cache=[];
+ static readonly Queue<(Size size,string scene,int dpi)> order=[];
+ internal static int Builds{get;private set;}
+ internal static Bitmap Get(Size size,string scene,int dpi){var key=(size,scene,dpi);lock(cache){if(!cache.TryGetValue(key,out var bitmap)){bitmap=scene=="legacy"?StellarSurface.Background(size):R2.Background(size,scene);cache.Add(key,bitmap);order.Enqueue(key);Builds++;while(order.Count>8){var old=order.Dequeue();cache[old].Dispose();cache.Remove(old);}}return new Bitmap(bitmap);}}
 }
