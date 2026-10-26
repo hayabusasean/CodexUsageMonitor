@@ -33,6 +33,16 @@ jobs:
       - name: 建置、檢查資源、執行隔離測試並打包
         shell: pwsh
         run: ./tests/build_public.ps1
+      - name: 保留隔離測試結果（含失敗時）
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: isolated-test-results
+          path: |
+            artifacts/beta-0.5.0/*/test-summary.json
+            artifacts/beta-0.5.0/*/tests/**/*.json
+          if-no-files-found: warn
+          retention-days: 7
       - name: 保留試用包與驗證結果
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:

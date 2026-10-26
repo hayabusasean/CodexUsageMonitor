@@ -25,6 +25,10 @@ $summary=@(foreach($suite in $files.Keys){
   }
   else{throw "測試結果格式無法辨識：$suite"}
  })
+ if($failed.Count -gt 0){
+  Write-Host ("FAILED_SUITE: "+$suite)
+  foreach($failure in $failed){Write-Host (ConvertTo-Json -InputObject $failure -Compress -Depth 6)}
+ }
  $skipped=@($items|Where-Object {$_.PSObject.Properties.Name -notcontains 'pass' -and $_.PSObject.Properties.Name -contains 'result' -and $_.result -eq 'N/A'})
  [pscustomobject]@{suite=$suite;checks=$items.Count;passed=$items.Count-$failed.Count-$skipped.Count;skipped=$skipped.Count;failed=$failed.Count;skipped_items=$skipped;file=[IO.Path]::GetRelativePath($projectRoot,$path)}
 })
