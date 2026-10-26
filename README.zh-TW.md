@@ -2,7 +2,7 @@
 
 新版說明統一使用繁體中文，完整操作、升級、燒速公式、通知與隱私說明請見 [README.md](README.md)。
 
-[0.5.0-beta2 預發行頁](https://github.com/hayabusasean/CodexUsageMonitor/releases/tag/v0.5.0-beta2) 提供 Windows x64 可攜包與 SHA-256；[新版功能與三張實機截圖](README.md#實機畫面)見首頁。升級前先從舊版右鍵選單選「結束」，再開新版 `CodexUsageMonitor.exe`；保留 `%LOCALAPPDATA%\CodexUsageMonitor` 以接續設定與歷史。
+[0.5.0-beta2 預發行頁](https://github.com/hayabusasean/CodexUsageMonitor/releases/tag/v0.5.0-beta2) 提供 Windows x64 可攜包與 SHA-256；[新版功能與四張實機截圖（含 10/26 使用紀錄）](README.md#實機畫面)見首頁。升級前先從舊版右鍵選單選「結束」，再開新版 `CodexUsageMonitor.exe`；保留 `%LOCALAPPDATA%\CodexUsageMonitor` 以接續設定與歷史。
 
 第一次啟動新版前，請先另存含有舊 `Salt` 的 `settings.json`，並妥善保管、不外傳。0.4.1 讀不到新版 DPAPI 的 `SaltProtected`；退版前必須先結束新版並還原升級前的設定，不能假定 `pre-bilingual.bak` 一定可用。沒有可用備份時，先不要直接啟動 0.4.1；詳見 [升級與退版說明](README.md#開始試用與升級)。
 
