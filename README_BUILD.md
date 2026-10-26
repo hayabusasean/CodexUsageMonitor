@@ -10,7 +10,7 @@
 ./tests/build_beta.ps1
 ```
 
-腳本負責還原、建置正式程式與獨立測試專案、執行指定檢查，並建立 0.5.0-beta3 可攜包。輸出位於 `artifacts/beta-0.5.0/`。此流程不取代正在執行的程式，也不向網路發布版本；實際驗收結果另見測試輸出的 JSON 與本次驗收報告。
+腳本負責還原、建置正式程式與獨立測試專案、執行指定檢查，並建立 0.5.0-beta4 可攜包。輸出位於 `artifacts/beta-0.5.0/`。此流程不取代正在執行的程式，也不向網路發布版本；實際驗收結果另見測試輸出的 JSON 與本次驗收報告。
 
 十三組結果（包含 `first-paint-diagnostics`）由 `tests/SummarizeBetaTests050.ps1` 自動彙整為該次輸出目錄的 `test-summary.json`；缺檔、失敗或無法辨識的結果會使流程中止。`tests/AuditRelease050.ps1 -RunRoot <輸出目錄>` 可在不執行正式 EXE 的情況下，核對 ZIP、bundle、雜湊與測試入口排除。
 
@@ -18,7 +18,7 @@
 
 ```powershell
 $run = './artifacts/beta-0.5.0/<此次輸出目錄>'
-./tests/AuditRelease050.ps1 -RunRoot $run -ReportPath './docs/releases/v0.5.0-beta3.md' -FinalPackage
+./tests/AuditRelease050.ps1 -RunRoot $run -ReportPath './docs/releases/v0.5.0-beta4.md' -FinalPackage
 ```
 
 `-FinalPackage` 會額外要求包版本與目前專案一致，且 bundle 內的產品 assembly 與目前 Release `obj` 完全相同。成功後，結果會以 UTF-8、同資料夾暫存檔及原子替換保存為該次輸出目錄的 `release-audit.json`，同時輸出 JSON。內容標記這是最終候選包，列出實際 EXE／ZIP 的 SHA-256，並逐檔核對 ZIP 與 `portable` 目錄；它不會啟動正式 EXE，也不會把使用驗收當成已通過。
@@ -63,6 +63,6 @@ dotnet publish src/CodexUsageMonitor.csproj -c Release -r win-x64 --self-contain
 
 `--v050-ui-test` 保存原生視窗的 PrintWindow 靜態 PNG；`--ui-dpi96` 啟用獨立的 96 邏輯 DPI 程序，省略時使用目前 144 DPI。它不會改動實體螢幕設定。靜態擷取不算開窗錄影。
 
-測試專案另有 `--v050-screen-record`、`--record-pilot` 入口。它只擷取中性背景內的測試視窗，需取得可驗證前景；前景或遮擋檢查失敗就中止。`tests/encode_ui_recordings.py` 僅能將成功保存的影格依實際時間編成 GIF，不會擷取桌面。本次 pilot 沒有取得可用影格，不能將已備妥的程式視為錄影驗收通過；詳細證據與限制見 [beta2 發行說明](docs/releases/v0.5.0-beta3.md)。
+測試專案另有 `--v050-screen-record`、`--record-pilot` 入口。它只擷取中性背景內的測試視窗，需取得可驗證前景；前景或遮擋檢查失敗就中止。`tests/encode_ui_recordings.py` 僅能將成功保存的影格依實際時間編成 GIF，不會擷取桌面。本次 pilot 沒有取得可用影格，不能將已備妥的程式視為錄影驗收通過；詳細證據與限制見 [beta2 發行說明](docs/releases/v0.5.0-beta4.md)。
 
 四張裝飾背景為本專案圖像資產；控制項、曲線與驗收畫面由程式繪製。未散布字型。完整操作與資料安全說明見 [README.md](README.md)。

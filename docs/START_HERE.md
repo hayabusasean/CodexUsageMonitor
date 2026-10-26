@@ -14,9 +14,9 @@
 
 ## 第一步：下載對的檔案
 
-[直接下載 v0.5.0-beta3 的 Windows 壓縮檔](https://github.com/hayabusasean/CodexUsageMonitor/releases/download/v0.5.0-beta3/CodexUsageMonitor-v0.5.0-beta3-win-x64.zip)
+[直接下載 v0.5.0-beta4 的 Windows 壓縮檔](https://github.com/hayabusasean/CodexUsageMonitor/releases/download/v0.5.0-beta4/CodexUsageMonitor-v0.5.0-beta4-win-x64.zip)
 
-檔名應是 **`CodexUsageMonitor-v0.5.0-beta3-win-x64.zip`**。也可以打開[本版下載頁](https://github.com/hayabusasean/CodexUsageMonitor/releases/tag/v0.5.0-beta3)，找到 `Assets`（下載檔案），選同名 ZIP。一般下載公開檔案不必建立 GitHub 帳號。
+檔名應是 **`CodexUsageMonitor-v0.5.0-beta4-win-x64.zip`**。也可以打開[本版下載頁](https://github.com/hayabusasean/CodexUsageMonitor/releases/tag/v0.5.0-beta4)，找到 `Assets`（下載檔案），選同名 ZIP。一般下載公開檔案不必建立 GitHub 帳號。
 
 `Source code (zip)`、`Source code (tar.gz)`、綠色 `Code → Download ZIP` 都是原始碼。除非你打算自行編譯，否則不要選它們。
 
@@ -77,7 +77,7 @@
 
 ## 升級與退版
 
-**從 beta2 升到 beta3：** 先在舊版選「離開」，保留舊版資料夾與資料備份，再解壓縮新版到另一個資料夾並啟動。資料仍在 `%LOCALAPPDATA%\CodexUsageMonitor`；不要用舊備份覆蓋新紀錄。這次不更改歷史表格格式，也不自動清洗既有重複資料。
+**從 beta2／beta3 升到 beta4：** 先在舊版選「離開」，保留舊版資料夾與資料備份，再解壓縮新版到另一個資料夾並啟動。資料仍在 `%LOCALAPPDATA%\CodexUsageMonitor`；不要用舊備份覆蓋新紀錄。這次不更改歷史表格格式，也不自動清洗既有重複資料。
 
 **從 0.4.1 升級：** 在舊版已離開、尚未第一次開新版時，先備份本工具的資料夾，尤其 `settings.json` 與 `history`。可在檔案總管網址列貼上 `%LOCALAPPDATA%\CodexUsageMonitor` 找到它。備份只留在自己電腦，不上傳。
 

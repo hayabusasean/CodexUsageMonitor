@@ -93,15 +93,6 @@ internal static class StartupLink
     {
         string path=isolatedPath??DefaultPath;
         if(!enabled){if(File.Exists(path))File.Delete(path);return;}
-        var type=Type.GetTypeFromProgID("WScript.Shell")??throw new IOException("SHORTCUT_UNAVAILABLE");
-        dynamic shell=Activator.CreateInstance(type)!;dynamic link=shell.CreateShortcut(path);
-        try{link.TargetPath=Path.GetFullPath(exe);link.WorkingDirectory=Path.GetDirectoryName(exe);link.Description="CodexUsageMonitor";link.Save();}
-        finally{Marshal.FinalReleaseComObject(link);Marshal.FinalReleaseComObject(shell);}
+        WindowsShortcut.Save(path,exe);
     }
 }
-
-
-
-
-
-

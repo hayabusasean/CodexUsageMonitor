@@ -65,6 +65,7 @@ https://github.com/hayabusasean/CodexUsageMonitor
 | --- | --- |
 | 能發出哪些額度請求、如何找官方程式 | `src/AppServerClient.cs`、`src/MonitorService.cs` |
 | 官方程式的簽章、啟動與退出 | `src/CodexTrust.cs`、`src/OwnedProcess.cs` |
+| 開機捷徑與中文路徑處理 | `src/Program.cs` 的 `StartupLink`、`src/WindowsShortcut.cs` |
 | 帳號資料如何處理、API Key 帳號是否拒絕 | `src/Models.cs` |
 | 本機儲存、重複紀錄、設定保護 | `src/Storage.cs`、`src/RuntimeIdentity.cs` |
 | 公開網站清單、轉址及請求限制 | `src/ResetRadar.cs`、`src/Rc4Radar.cs` |

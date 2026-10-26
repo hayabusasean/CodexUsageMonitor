@@ -1,19 +1,19 @@
 {
   "schema_version": 2,
   "kind": "PUBLIC_SOURCE_RELEASE",
-  "version": "0.5.0-beta3",
-  "informational_version": "0.5.0-beta3",
+  "version": "0.5.0-beta4",
+  "informational_version": "0.5.0-beta4",
   "repository": "https://github.com/hayabusasean/CodexUsageMonitor",
-  "tag": "v0.5.0-beta3",
+  "tag": "v0.5.0-beta4",
   "project_license": "MIT",
   "copyright": "Copyright (c) 2026 hayabusasean",
-  "exe_sha256": "bd6b7c202afdda6590db3b96c3c00a9ad25cbb8e5acd166d3d653841104ffeaf",
-  "zip_sha256": "ab1bb8b72cea1d1085a0c4ac204214ca178018b08a7c6b1f8fcda9d20173e463",
-  "entry_count": 182,
+  "exe_sha256": "3c600851983d9f42b01b97f7ffc18cb171e6638227c437897b5d211b23bdfd32",
+  "zip_sha256": "f80345babe430ca40e880ddb1eef12e6ce7fedd6b64a7d91a84b389aaaf54bd1",
+  "entry_count": 185,
   "manifest_self_excluded": true,
   "representation": "exact git index blob bytes",
   "review_scope": "Targeted maintainer review and documented tests; not independent security certification",
-  "build_source_inputs_verified": 87,
+  "build_source_inputs_verified": 88,
   "privacy_check": {
     "scope": "Changed text files only; limited token-prefix and private-key-marker scan",
     "matching_patterns_found": 0,
@@ -29,7 +29,7 @@
     {
       "path": ".github/ISSUE_TEMPLATE/bug_report.yml",
       "bytes": 1877,
-      "sha256": "0558b6306eabe6615b02623f09a07bd5d640ff644cd521e55616c0bc31944a21"
+      "sha256": "f7feeab34d4d42eb5fe744afd96f71795b988b4a6092aece9120d3869a8ec793"
     },
     {
       "path": ".github/ISSUE_TEMPLATE/feature_request.md",
@@ -38,8 +38,8 @@
     },
     {
       "path": ".github/workflows/build.yml",
-      "bytes": 1456,
-      "sha256": "1814bb0f32867bd102fe3290b2515c1a2cb40c973c67a4745a5fefa71a2a47d0"
+      "bytes": 1858,
+      "sha256": "5d87b442ad7470299807c2faa35e579fc75eba1e3ed77d6d6bafe64902797b32"
     },
     {
       "path": ".gitignore",
@@ -48,8 +48,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 5135,
-      "sha256": "616bb25fd4e7c4e84561646e0e492df7f027b12057b4daa7c3e2d941ecfdafde"
+      "bytes": 5513,
+      "sha256": "de9995fafa558d6d611812eff2c4868f8edc18a6d260b2c4675c09e8612e03b4"
     },
     {
       "path": "CONTRIBUTING.md",
@@ -74,17 +74,17 @@
     {
       "path": "README.md",
       "bytes": 7141,
-      "sha256": "52a2c560273f66cee1f0f3fd43afe9f4818efe6d58583fd97599cdfab0fcc5e0"
+      "sha256": "d72cdfb5483cd5859bf246b362efbf3e7af17e21ea940ed3da2a5df6911edf5a"
     },
     {
       "path": "README.zh-TW.md",
       "bytes": 548,
-      "sha256": "c7d97704b00b0bf91ea8e6d71b3018c837dfe4de4f714ebba53233c25ce5c236"
+      "sha256": "12cddee9ddbf382e4a12f7f39984d584d3244b6fe23d0e9c4c936abd3a71b95e"
     },
     {
       "path": "README_BUILD.md",
       "bytes": 5859,
-      "sha256": "4c33dd6b7c183a2fc2f517ba0302eda689f20d101e13e6efd299ee6b6aed5dce"
+      "sha256": "7cb5c54841422b0bdf6318d11c117d25f29de56be8cccf2e0221f48e4d4b8aff"
     },
     {
       "path": "SECURITY.md",
@@ -99,22 +99,22 @@
     {
       "path": "docs/ADVANCED.md",
       "bytes": 9599,
-      "sha256": "4ebae9d06af885c97de5d92153e956ce97405bb67069f5888293433cc254aa3b"
+      "sha256": "dae7795238430453e4c10dec2ebd0df5afb98c8eb392eb9ec3f14a0dafa2f411"
     },
     {
       "path": "docs/AI_HELP.md",
-      "bytes": 5179,
-      "sha256": "5e9df1a44111a6bb044eefb2a12b1b3ff94ac1d96eb5e8abc5eacf0960b2fe9f"
+      "bytes": 5281,
+      "sha256": "2e1d08faad726e5e198b1bda2bc4aa8cf97a8a73e96b5261852ef284021e03d0"
     },
     {
       "path": "docs/PORTABLE_README.txt",
       "bytes": 2434,
-      "sha256": "3313cd26dbfe0507dc636ee78f1687fad96af78bac1a034e331b3a81a06cd9f5"
+      "sha256": "10662b207fdd703edaad3c1c687cb4856f785fdd642caa7137b85532301695de"
     },
     {
       "path": "docs/START_HERE.md",
-      "bytes": 7868,
-      "sha256": "6388f253825116a08269b054e0f6ddd400790ebba8151ee60c318962bedc2ac4"
+      "bytes": 7876,
+      "sha256": "6f97b1b930857a7c0ffd0265ffc64ba22c74b223fef5990858a31eb293dfbec9"
     },
     {
       "path": "docs/field-trial/reset-radar-2026-09-12.md",
@@ -147,6 +147,11 @@
       "sha256": "517f00ed116ea8a336a7f43451a60d3c5266f552a8e2dc6b550aba31241887ca"
     },
     {
+      "path": "docs/releases/v0.5.0-beta4.md",
+      "bytes": 3175,
+      "sha256": "f25d12d8e4967d1abd01fd3a40c0f56d7760f440b49d138cc0dc5b93ca77e01e"
+    },
+    {
       "path": "docs/releases/verification-beta2.json",
       "bytes": 3263,
       "sha256": "c41c413ee274527029b67030738d30382e53bd75d2cc814eb6f2862015d31f3e"
@@ -157,9 +162,14 @@
       "sha256": "789582e0ba672463207d3588021641af0278070bb0863f1655b670b1c6aa9d85"
     },
     {
+      "path": "docs/releases/verification-beta4.json",
+      "bytes": 4216,
+      "sha256": "a8252e96fd9b5d9be3f7f6312ed43dcd054dd015c11f1846daca759427c6033c"
+    },
+    {
       "path": "docs/reviews/2026-10-26.md",
-      "bytes": 2653,
-      "sha256": "e23b60da948aee145c0ebe11f33544e25b2c9f3e8e0f1ad88bd5f89c940b8cca"
+      "bytes": 4567,
+      "sha256": "f505ab5acd38c8e40270a56f5cfa1d10cce077499bf3618e541c43310258b876"
     },
     {
       "path": "docs/screenshots/beta2/compact-zh-TW.png",
@@ -374,7 +384,7 @@
     {
       "path": "src/CodexUsageMonitor.csproj",
       "bytes": 1637,
-      "sha256": "2de69310919878b5190e7ca1bb95ae96b1fead9711bf8262695552c69a285f73"
+      "sha256": "3a4beab55568e43549fda97e77398951c14cd08498613dedfb530b554df727bd"
     },
     {
       "path": "src/DailyUsageCalculator.cs",
@@ -449,7 +459,7 @@
     {
       "path": "src/L.cs",
       "bytes": 3421,
-      "sha256": "7fb2df76138ca220c9f6644c0e26821a841f7149a7edd971b3d57b3576f54231"
+      "sha256": "914ef57fc7a8e2293ae60e3844e0d190dd63de616544233e7c690fb8f2149517"
     },
     {
       "path": "src/LocalQuotaCycle.cs",
@@ -488,8 +498,8 @@
     },
     {
       "path": "src/Program.cs",
-      "bytes": 8142,
-      "sha256": "c402370cb3185097e0c93e08620c56ddd90fda379c26d1aa6ebd48f65440ce2f"
+      "bytes": 7632,
+      "sha256": "218854e14c047d1028bee025b6f1de8cbca959138f09d4cdb4884c69442151e8"
     },
     {
       "path": "src/PublicHistoryTests.cs",
@@ -742,6 +752,11 @@
       "sha256": "6365cbc56cefc1d19904435caa9bd80216503515bd4da42b25a738a65c9fac42"
     },
     {
+      "path": "src/WindowsShortcut.cs",
+      "bytes": 2927,
+      "sha256": "c5499126003e7cd63c2da528762d996e024ced2adfbe931b2a263ef2196ef0fe"
+    },
+    {
       "path": "src/app.manifest",
       "bytes": 845,
       "sha256": "a41a5cb3bd8bd19f7e265bfdf64531682d9bc7e6951ee21b1cbfd57843566285"
@@ -793,13 +808,13 @@
     },
     {
       "path": "tests/SummarizeBetaTests050.ps1",
-      "bytes": 2573,
-      "sha256": "111c39d8918912772db0b3e393d1bef9e9423a61c5d79c4ad2a3fef3349d4947"
+      "bytes": 2742,
+      "sha256": "c8bc9462286ca6977e32d64ad716f6d0d5e1aecf341d73d5d8afd0c713f9aa5a"
     },
     {
       "path": "tests/TestHarness.cs",
-      "bytes": 17750,
-      "sha256": "0e25baf741f120e21112abc6beac33552f919197c1ea8d61948d816d5b6b6698"
+      "bytes": 20824,
+      "sha256": "4bb6c450fc2205b04bfa7a189718293b7034cc9379b5629dc0939d1c15779f2f"
     },
     {
       "path": "tests/V050IntegrationTests.cs",

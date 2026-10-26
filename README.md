@@ -6,17 +6,17 @@
 
 ## 第一次來，從這裡開始
 
-### [⬇ 下載 Windows 試用版 v0.5.0-beta3](https://github.com/hayabusasean/CodexUsageMonitor/releases/download/v0.5.0-beta3/CodexUsageMonitor-v0.5.0-beta3-win-x64.zip)
+### [⬇ 下載 Windows 試用版 v0.5.0-beta4](https://github.com/hayabusasean/CodexUsageMonitor/releases/download/v0.5.0-beta4/CodexUsageMonitor-v0.5.0-beta4-win-x64.zip)
 
-[下載頁與版本說明](https://github.com/hayabusasean/CodexUsageMonitor/releases/tag/v0.5.0-beta3) · [一步一步教學](docs/START_HERE.md) · [讓自己的 AI 帶你使用](docs/AI_HELP.md) · [費用與資料安全](PRIVACY.md)
+[下載頁與版本說明](https://github.com/hayabusasean/CodexUsageMonitor/releases/tag/v0.5.0-beta4) · [一步一步教學](docs/START_HERE.md) · [讓自己的 AI 帶你使用](docs/AI_HELP.md) · [費用與資料安全](PRIVACY.md)
 
 **適合誰？** 使用 Windows 64 位元電腦，而且已在電腦安裝支援的官方 Codex、用 ChatGPT 帳號登入的人。只在瀏覽器登入 ChatGPT 還不夠。這份下載不是 Mac、Linux 或 Windows ARM 專用版；不同官方版本、帳號與螢幕配置不保證都適用。
 
-**這是測試版。** v0.5.0-beta3 比 v0.4.1 新，但仍保留測試版標記。GitHub 側邊的 `Latest` 可能指向較舊的正式版；請用上面的明確下載連結。不要下載 `Source code` 或綠色 `Code → Download ZIP`：那是給開發者看的程式碼，不是直接開啟的軟體。
+**這是測試版。** v0.5.0-beta4 比 v0.4.1 新，但仍保留測試版標記。GitHub 側邊的 `Latest` 可能指向較舊的正式版；請用上面的明確下載連結。不要下載 `Source code` 或綠色 `Code → Download ZIP`：那是給開發者看的程式碼，不是直接開啟的軟體。
 
 ### 下載後怎麼開？
 
-1. 在下載好的 `CodexUsageMonitor-v0.5.0-beta3-win-x64.zip` 上按右鍵，選 **「解壓縮全部」**。
+1. 在下載好的 `CodexUsageMonitor-v0.5.0-beta4-win-x64.zip` 上按右鍵，選 **「解壓縮全部」**。
 2. 打開解壓縮後的資料夾，雙擊 **`CodexUsageMonitor.exe`**。不需要另裝程式開發工具或 .NET Runtime，也不用以系統管理員身分執行。
 3. 工具會嘗試找到電腦上的官方 Codex。正常取得資料後就會顯示額度；預設約每 90 秒更新一次。
 
@@ -90,6 +90,6 @@ https://github.com/hayabusasean/CodexUsageMonitor
 
 先看[常見問題](docs/START_HERE.md#遇到問題先看這裡)。仍無法解決，可到 [GitHub 回報](https://github.com/hayabusasean/CodexUsageMonitor/issues)，提供版本、Windows 版本、操作步驟與遮掉私人資訊的截圖。需要摘要時，從「關於 → 複製問題摘要」先預覽再複製；不要公開整包設定、登入檔或完整歷史。
 
-[本次更新與測試範圍](docs/releases/v0.5.0-beta3.md) · [程式碼檢查紀錄](docs/reviews/2026-10-26.md) · [進階說明](docs/ADVANCED.md) · [自行編譯](README_BUILD.md) · [版本紀錄](CHANGELOG.md) · [MIT 授權](LICENSE)
+[本次更新與測試範圍](docs/releases/v0.5.0-beta4.md) · [程式碼檢查紀錄](docs/reviews/2026-10-26.md) · [進階說明](docs/ADVANCED.md) · [自行編譯](README_BUILD.md) · [版本紀錄](CHANGELOG.md) · [MIT 授權](LICENSE)
 
 個人維護、盡力處理回報，不承諾即時支援。本專案不隸屬 OpenAI，也未受其背書。

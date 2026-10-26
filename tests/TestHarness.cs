@@ -131,6 +131,39 @@ internal static class TestHarness
         Check("T21 isolated startup shortcut reversible spaces",()=>{
             var path=Path.Combine(root,"測試 shortcut.lnk");StartupLink.Set(true,Environment.ProcessPath!,path);Assert(File.Exists(path));StartupLink.Set(false,Environment.ProcessPath!,path);Assert(!File.Exists(path));
         });
+        Check("T21 Unicode shortcut parent target and properties roundtrip",()=>{
+            string folder=Path.Combine(root,"Unicode 中文 हिन्दी space");Directory.CreateDirectory(folder);
+            string target=Path.Combine(folder,"程式 with space.exe");File.WriteAllBytes(target,[0]);
+            string shortcut=Path.Combine(folder,"捷徑 中文 हिन्दी.lnk");
+            try{
+                StartupLink.Set(true,target,shortcut);Assert(File.Exists(shortcut));
+                object instance=new WindowsShortcut.ShellLinkObject();
+                try{
+                    ((System.Runtime.InteropServices.ComTypes.IPersistFile)instance).Load(shortcut,0);
+                    var link=(WindowsShortcut.IShellLinkW)instance;
+                    var value=new StringBuilder(32768);link.GetPath(value,value.Capacity,IntPtr.Zero,4);
+                    Assert(string.Equals(value.ToString(),Path.GetFullPath(target),StringComparison.OrdinalIgnoreCase));
+                    value.Clear();link.GetWorkingDirectory(value,value.Capacity);Assert(string.Equals(value.ToString(),folder,StringComparison.OrdinalIgnoreCase));
+                    value.Clear();link.GetDescription(value,value.Capacity);Assert(value.ToString()=="CodexUsageMonitor");
+                    value.Clear();link.GetArguments(value,value.Capacity);Assert(value.Length==0);
+                }finally{System.Runtime.InteropServices.Marshal.FinalReleaseComObject(instance);}
+            }finally{StartupLink.Set(false,target,shortcut);Assert(!File.Exists(shortcut));}
+            Assert(Directory.GetFiles(folder,"*.tmp.lnk").Length==0);
+        });
+        Check("T21 shortcut replacement preserves neighboring file",()=>{
+            string folder=Path.Combine(root,"shortcut replacement 中文");Directory.CreateDirectory(folder);
+            string path=Path.Combine(folder,"CodexUsageMonitor.lnk"),other=Path.Combine(folder,"unrelated.txt");
+            File.WriteAllText(other,"preserve");StartupLink.Set(true,Environment.ProcessPath!,path);
+            StartupLink.Set(true,Environment.ProcessPath!,path);Assert(File.Exists(path));
+            StartupLink.Set(false,Environment.ProcessPath!,path);Assert(!File.Exists(path)&&File.ReadAllText(other)=="preserve");
+            Assert(Directory.GetFiles(folder,"*.tmp.lnk").Length==0);
+        });
+        Check("T21 failed shortcut save preserves existing destination",()=>{
+            string blocked=Path.Combine(root,"blocked-shortcut.lnk");Directory.CreateDirectory(blocked);
+            string sentinel=Path.Combine(blocked,"preserve.txt");File.WriteAllText(sentinel,"preserve");
+            bool failed=false;try{StartupLink.Set(true,Environment.ProcessPath!,blocked);}catch(Exception e) when(e is IOException or UnauthorizedAccessException){failed=true;}
+            Assert(failed&&File.ReadAllText(sentinel)=="preserve");Assert(Directory.GetFiles(root,"*.tmp.lnk").Length==0);
+        });
         Check("T01 native architecture path validation",()=>{
             CodexLocator.ValidateArchitecture(Environment.ProcessPath!);
             bool reject=false;try{CodexLocator.ValidateArchitecture("codex.cmd");}catch(MonitorException){reject=true;}Assert(reject);
@@ -161,6 +194,7 @@ internal static class TestHarness
             }).GetAwaiter().GetResult());
         }
         AtomicJson.Save(Path.Combine(root,"results.json"),results);
+        Environment.ExitCode=results.Any(x=>JsonSerializer.SerializeToElement(x).GetProperty("result").GetString()=="FAIL")?1:0;
     }
     public static void Producer(string[] args)
     {
@@ -185,4 +219,3 @@ internal static class TestHarness
         }
     }
 }
-

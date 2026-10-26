@@ -1,4 +1,4 @@
-CodexUsageMonitor 0.5.0-beta3 — Codex 額度小幫手
+CodexUsageMonitor 0.5.0-beta4 — Codex 額度小幫手
 
 這是免費、非官方的 Windows 64 位元測試工具。不是 OpenAI 的產品。
 
@@ -35,6 +35,6 @@ AI 指引：https://github.com/hayabusasean/CodexUsageMonitor/blob/main/docs/AI_
 
 安全說明：https://github.com/hayabusasean/CodexUsageMonitor/blob/main/PRIVACY.md
 問題回報：https://github.com/hayabusasean/CodexUsageMonitor/issues
-版本下載：https://github.com/hayabusasean/CodexUsageMonitor/releases/tag/v0.5.0-beta3
+版本下載：https://github.com/hayabusasean/CodexUsageMonitor/releases/tag/v0.5.0-beta4
 
 這份 README 使用完整網址，離線仍可讀操作方法；上網後可把網址貼到瀏覽器。

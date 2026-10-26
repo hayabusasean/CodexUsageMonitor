@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "version": "0.5.0-beta4",
+  "source_reference": "refs/tags/v0.5.0-beta4",
+  "review_date": "2026-10-26",
+  "sdk": "10.0.400",
+  "review_scope": "Targeted maintainer code review, local tests and separate cloud CI; not independent security certification",
+  "tests": {
+    "suites": 13,
+    "checks": 401,
+    "passed": 400,
+    "skipped": 1,
+    "failed": 0,
+    "groups": [
+      {
+        "suite": "analytics-050",
+        "checks": 51,
+        "passed": 51,
+        "skipped": 0,
+        "failed": 0
+      },
+      {
+        "suite": "radar-050",
+        "checks": 30,
+        "passed": 30,
+        "skipped": 0,
+        "failed": 0
+      },
+      {
+        "suite": "integration-050",
+        "checks": 36,
+        "passed": 35,
+        "skipped": 1,
+        "failed": 0
+      },
+      {
+        "suite": "first-paint-diagnostics",
+        "checks": 19,
+        "passed": 19,
+        "skipped": 0,
+        "failed": 0
+      },
+      {
+        "suite": "public",
+        "checks": 66,
+        "passed": 66,
+        "skipped": 0,
+        "failed": 0
+      },
+      {
+        "suite": "self",
+        "checks": 32,
+        "passed": 32,
+        "skipped": 0,
+        "failed": 0
+      },
+      {
+        "suite": "gold-cycle",
+        "checks": 39,
+        "passed": 39,
+        "skipped": 0,
+        "failed": 0
+      },
+      {
+        "suite": "final-phase",
+        "checks": 36,
+        "passed": 36,
+        "skipped": 0,
+        "failed": 0
+      },
+      {
+        "suite": "rc4-field-trial",
+        "checks": 45,
+        "passed": 45,
+        "skipped": 0,
+        "failed": 0
+      },
+      {
+        "suite": "rc4-coverage",
+        "checks": 20,
+        "passed": 20,
+        "skipped": 0,
+        "failed": 0
+      },
+      {
+        "suite": "rc4-signal-polish",
+        "checks": 5,
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0
+      },
+      {
+        "suite": "rc4-active-unread",
+        "checks": 12,
+        "passed": 12,
+        "skipped": 0,
+        "failed": 0
+      },
+      {
+        "suite": "rc4-history-event",
+        "checks": 10,
+        "passed": 10,
+        "skipped": 0,
+        "failed": 0
+      }
+    ]
+  },
+  "shortcut_regressions": [
+    {
+      "id": "T21 isolated startup shortcut reversible spaces",
+      "classification": "SYNTHETIC",
+      "result": "PASS"
+    },
+    {
+      "id": "T21 Unicode shortcut parent target and properties roundtrip",
+      "classification": "SYNTHETIC",
+      "result": "PASS"
+    },
+    {
+      "id": "T21 shortcut replacement preserves neighboring file",
+      "classification": "SYNTHETIC",
+      "result": "PASS"
+    },
+    {
+      "id": "T21 failed shortcut save preserves existing destination",
+      "classification": "SYNTHETIC",
+      "result": "PASS"
+    }
+  ],
+  "ui": {
+    "dpi": [
+      96,
+      144
+    ],
+    "checks": 86,
+    "failed": 0,
+    "classification": "SYNTHETIC_WINDOWS_ON_NON_INPUT_DESKTOP_STATIC_CAPTURE",
+    "live_account_monitoring_retested": false
+  },
+  "exe_sha256": "3c600851983d9f42b01b97f7ffc18cb171e6638227c437897b5d211b23bdfd32",
+  "zip_sha256": "f80345babe430ca40e880ddb1eef12e6ce7fedd6b64a7d91a84b389aaaf54bd1",
+  "exe_bytes": 53040037,
+  "zip_bytes": 47625323,
+  "signature": "UNSIGNED",
+  "release_payload_files": [
+    "CodexUsageMonitor.exe",
+    "LICENSE",
+    "manifest.json",
+    "README.txt",
+    "THIRD_PARTY_NOTICES.md",
+    "licenses/DOTNET-LICENSE.txt",
+    "licenses/DOTNET-THIRD-PARTY-NOTICES.txt",
+    "licenses/MICROSOFT-THIRD-PARTY-NOTICES.txt",
+    "licenses/WINDOWSDESKTOP-LICENSE.txt"
+  ],
+  "cloud_failure_before_fix": {
+    "commit": "4325eedcc253adf4e28cccec0a46b74be5371565",
+    "run": "https://github.com/hayabusasean/CodexUsageMonitor/actions/runs/40286042143",
+    "test": "T21 isolated startup shortcut reversible spaces",
+    "error": "FileNotFoundException"
+  },
+  "cloud_ci_status": "See GitHub Actions for the exact source commit; local counts are not a claim of cloud success",
+  "limits": [
+    "No independent security certification",
+    "No full packet capture or formal verification",
+    "No complete Windows/display compatibility matrix",
+    "No changes to the user running installation or private history"
+  ]
+}

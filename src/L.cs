@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Resources;
 namespace CodexUsageMonitor;
 internal static class L {
- public const string Version="0.5.0-beta3";
+ public const string Version="0.5.0-beta4";
  static readonly ConcurrentDictionary<string,ResourceManager> Managers=new();
  static readonly HashSet<string> Groups=["History","Radar","Report"];
  static string language="zh-TW";

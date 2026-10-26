@@ -14,7 +14,7 @@ body:
     attributes:
       label: 工具版本
       description: 可以在「關於」查看。
-      placeholder: 例如 0.5.0-beta3
+      placeholder: 例如 0.5.0-beta4
     validations:
       required: true
   - type: input
