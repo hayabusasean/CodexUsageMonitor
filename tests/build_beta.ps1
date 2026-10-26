@@ -52,7 +52,7 @@ try{
  $exe=Join-Path $portable 'CodexUsageMonitor.exe'
  foreach($pdb in Get-ChildItem $portable -Filter '*.pdb' -File){Remove-Item -LiteralPath $pdb.FullName}
  Copy-Item -LiteralPath (Join-Path $projectRoot 'licenses') -Destination (Join-Path $portable 'licenses') -Recurse
- Copy-Item -LiteralPath (Join-Path $projectRoot 'README.md') -Destination (Join-Path $portable 'README.txt')
+ Copy-Item -LiteralPath (Join-Path $projectRoot 'docs\PORTABLE_README.txt') -Destination (Join-Path $portable 'README.txt')
  foreach($name in @('LICENSE','THIRD_PARTY_NOTICES.md')){Copy-Item -LiteralPath (Join-Path $projectRoot $name) -Destination $portable}
  $exeHash=(Get-FileHash -LiteralPath $exe -Algorithm SHA256).Hash.ToLowerInvariant()
  $manifest=[ordered]@{version=$version;sdk=$sdkVersion;exe_sha256=$exeHash;publication='本機試用包，尚未發布到網路';tests=if($SkipTests){'略過'}else{'自動測試結果另見實際通過及略過數'};native_visual_acceptance='另見驗收報告';signature='本工具未簽章；官方 codex.exe 另驗證 Authenticode'}

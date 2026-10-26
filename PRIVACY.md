@@ -1,29 +1,59 @@
-# Privacy
+# 費用與資料安全：先看懂，再決定使用
 
-CodexUsageMonitor keeps settings, observations, notes, diagnostics and its announcement cache in **%LOCALAPPDATA%\CodexUsageMonitor**. Copying the program does not synchronise data to another computer.
+[回首頁](README.md) · [新手教學](docs/START_HERE.md) · [交給 AI 檢查](docs/AI_HELP.md)
 
-## Data access and network activity
+這份說明描述本專案目前的設計，不是安全認證。程式仍是測試版；我們不能保證零漏洞、所有電腦都正常，或未來官方介面永遠不變。
 
-The app starts its own official Codex app-server child process and sends a restricted set of read-only account/quota requests over standard input/output. It does not directly read auth.json, cookies, credentials, project files, prompts or responses from your development work. The official app-server retains its own authentication updates and network behaviour.
+## 需要 API Key 或額外付費嗎？
 
-Reset Radar makes ordinary HTTPS GET requests to a small allowlist of public announcement pages. These requests do not attach account credentials or usage history. Receiving sites see ordinary request metadata, such as your IP address. Radar can be disabled in Settings.
+本工具免費，不要求 API Key、密碼或信用卡。請先在官方 Codex 裡用 ChatGPT 帳號登入；程式會拒絕只有 API Key 的帳號。
 
-There is no monitor telemetry, cloud history, automatic upload, translation service, advertising or model-turn request. The monitor does not consume resets, purchase credits or change Codex settings.
+監測功能只查詢帳號及額度資訊，不送出 AI 生成任務、不代買點數、不兌換重置券。**依目前程式碼，不會因為監測而產生模型推理費用。** 原本的訂閱與你在 Codex 做的工作照原服務規則計算；另外請 AI 幫你檢查或操作，也可能使用該 AI 的額度。不要把「本工具免費」理解成「Codex 或所有 AI 都免費」。
 
-## Local observations and exports
+查核依據：`src/AppServerClient.cs` 的 `IsAllowed`、`src/Models.cs` 的 `Identity`、`src/MonitorService.cs`。
 
-History includes observation times, quota values, gaps, reset metadata and available credit/reset counts. Account and source comparison boundaries are retained locally to avoid comparing incompatible observations. Retention is configurable; the default is 90 days.
+## 它在電腦裡會看什麼？
 
-Analysis Log exports the entire selected period. It contains usage-time patterns even after identifiers are removed. It is not automatically safe to publish. Notes are excluded by default and may contain private information if you opt in. The exporter removes known secret patterns, email addresses, personal paths and raw account/source identifiers; no filter replaces a review of what you choose to share.
+工具會搜尋部分官方程式安裝位置，驗證找到的 `codex.exe`，啟動它的帳號／額度查詢介面，再接收回報。為了找到程式，可能讀取安裝路徑、程式檔與相關安裝資料；不是「完全不讀電腦檔案」。
 
-CSV and report data use invariant numbers and stable field names. Announcement text and notes are untrusted data, never executable instructions. The fixed report prompt explicitly tells external analysis tools to treat them that way.
+監測功能不讀開發專案內容、提示詞、回答、瀏覽器 Cookie，也不直接開啟官方登入檔 `auth.json`。官方 Codex 回傳的帳號資訊可能在記憶體中短暫處理；用來區分紀錄的識別值經轉換後保存在本機，不把原始 email 或 token 寫入歷史。
 
-About's **Copy diagnostics** provides a smaller previewable summary without the detailed usage timeline. Prefer this for ordinary bug reports. Public examples are labelled as synthetic fixtures or author-authorized real screenshots. Do not post a complete personal analysis report in an issue.
+**官方 Codex 是另一個程式**：它仍使用自己的登入、設定及網路連線。這份說明不能替官方程式、Windows、代理伺服器或使用者自行安裝的其他元件作安全保證。
 
-The app does not send an exported report anywhere. If you manually share it with an external AI or another person, that destination's terms and privacy practices apply.
+查核依據：`src/AppServerClient.cs`、`src/CodexTrust.cs`、`src/OwnedProcess.cs`、`src/Models.cs`。
 
-## Removing data
+## 會連網、回傳給作者嗎？
 
-Exit the monitor before managing its application-data folder. Removing the EXE alone leaves settings and history in place for manual updates. Remove the product's own LocalAppData folder only if you intentionally want to discard its history. Never remove Codex authentication or project data to troubleshoot this utility.
+額度查詢會透過官方 Codex 連線。重置消息功能也會讀取部分公開網站，包括 OpenAI 的公告／狀態頁，以及兩個第三方消息轉送站。**這不是完全離線的工具。**
 
-This describes the monitor's behaviour, not a guarantee about OpenAI, Windows or a network proxy. See [Security](SECURITY.md) for reporting a privacy defect.
+本工具的公開消息請求不夾帶帳號登入資料或用量歷史，但網站仍能看到一般網路資訊，例如 IP、查詢時間。可以在設定關閉「檢查公開重置消息」；這不會讓官方額度查詢變成離線。
+
+本工具沒有作者端的用量回報、廣告、雲端歷史或自動上傳功能。手動開啟消息連結時，會交給你的瀏覽器；瀏覽器本身的登入與隱私設定另當別論。
+
+查核依據：`src/ResetRadar.cs` 的來源清單、`AllowedHosts`、`HttpClientHandler` 與請求程式；完整網址見[消息來源](docs/privacy-and-limits.zh-TW.md)。
+
+## 資料存哪裡？
+
+預設保存在 `%LOCALAPPDATA%\CodexUsageMonitor`，不是放在 EXE 旁邊。內容包括設定、額度與觀察時間、歷史變化、備註、公開消息快取，以及排錯紀錄。預設保留天數為 90 天，可在設定調整；容量限制與清理規則仍適用。
+
+它們是這台電腦上的資料，不會因複製 EXE 自動同步。設定中的識別保護資料與原 Windows 帳戶有關，不要隨意交換設定檔。
+
+查核依據：`src/Storage.cs`、`src/RuntimeIdentity.cs`、`src/RadarJournal.cs`。
+
+## 什麼可以提供給別人看？
+
+一般問題先提供版本、操作步驟、安全截圖，或「關於 → 複製問題摘要」中的小份摘要。摘要不含完整用量時間線，仍請先預覽。
+
+CSV 與詳細分析報告可能呈現你什麼時候工作、使用量、帳號背景或自己寫的備註。報告有遮蔽已知敏感資料的處理，但**遮蔽不是保證**；也不要把整個 `diagnostics` 資料夾當成可直接公開，部分檔案含本機路徑。
+
+工具本身不會把匯出檔傳到 AI。你手動交給 AI、社群或其他人時，就要考慮對方的資料政策。不要公開 `settings.json`、登入檔、金鑰、驗證碼、公司資料或未檢查的完整歷史。
+
+查核依據：`src/ReportExporter.cs`、`src/Forms.cs` 的 `AboutForm`、`src/RuntimeSessionMetrics.cs`。
+
+## 沒有管理員權限，就代表安全嗎？
+
+不是。工具設定為一般使用者權限執行，不要求提高權限，但一般權限仍可接觸許多該使用者能讀到的資料。唯讀額度請求的限制也不是整個程式被作業系統隔離的證明。
+
+程式會檢查它啟動的官方 Codex 是否具有預期簽章；**CodexUsageMonitor 自己的 EXE 目前仍未簽章**，兩者不能混淆。檔案校驗值只能幫忙比對檔案，不能證明沒有惡意行為。原始碼與下載的 EXE 是否對應，還需要另外核對編譯與發行證據。
+
+請保留 Windows 與防毒保護。公司電腦先遵循公司政策；不放心就先不要執行。安全問題請看 [SECURITY.md](SECURITY.md)。

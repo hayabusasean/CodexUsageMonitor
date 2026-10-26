@@ -1,27 +1,31 @@
-# Security
+# 安全問題與回報方式
 
-## Report a vulnerability privately
+## 先知道目前的範圍
 
-Please use [GitHub private vulnerability reporting](https://github.com/hayabusasean/CodexUsageMonitor/security/advisories/new) for sensitive security findings.
+目前供新使用者參考的版本與下載入口，以 [首頁](README.md)和[發行頁](https://github.com/hayabusasean/CodexUsageMonitor/releases)為準。較新測試版不等於已經獨立完成資安認證；本專案由個人盡力維護，沒有承諾回應時限或企業支援。
 
-Include the affected version, impact and minimal reproduction. Remove credentials, personal paths, account responses and unrelated private data. Do not post exploit details or someone else's information in a public issue.
+工具本身尚未加上發布者數位簽章。檔案校驗值只用來核對檔案，不保證安全。不要為了執行它而關閉防毒、略過公司限制或提供登入資料。
 
-For ordinary functional bugs without sensitive security implications, use the [bug report form](https://github.com/hayabusasean/CodexUsageMonitor/issues/new?template=bug_report.yml).
+## 一般使用問題
 
-## Scope and support
+例如找不到 Codex、視窗顯示不完整、歷史曲線讀不到，請先看[新手教學](docs/START_HERE.md)，再用[問題回報](https://github.com/hayabusasean/CodexUsageMonitor/issues/new?template=bug_report.yml)。提供版本、操作步驟及必要截圖即可，不要貼設定檔、登入檔或完整私人歷史。
 
-Reports are especially useful when they show a breach of the monitor's intended boundaries: read-only quota access, no direct credential-file access, no conversation or project-content inspection, no model turns, no purchases or resets, local history, public-source-only Radar and cleanup limited to processes the monitor owns.
+## 疑似資料外洩或其他安全漏洞
 
-The current public version is **v0.4.0-rc.3**, a pre-release. Maintenance and fixes are best effort; there is no promised response time, security certification or supported-version SLA.
+優先使用 [GitHub 私密漏洞回報](https://github.com/hayabusasean/CodexUsageMonitor/security/advisories/new)。請寫受影響版本、風險、最小重現方式，並移除個資、金鑰、登入回應與無關檔案。不要把完整利用方式或別人的資料貼在公開討論區。
 
-The Windows executable is unsigned. Published checksums help compare files; they do not establish publisher identity or guarantee that software is safe. Follow your computer's security policy rather than disabling security protections.
+若私密回報頁不可用，先不要公開細節。可以在一般問題區只留下「需要私密回報管道」，不附漏洞或敏感資料。
 
-The build workflow uses read-only repository permissions and pinned actions. It does not require Codex credentials, use **pull_request_target**, push changes or publish Releases.
+特別歡迎檢查：是否超出帳號／額度查詢範圍、是否意外讀取專案或登入內容、是否傳出本機資料、是否觸發模型任務／購買／兌換，以及是否誤動不屬於本工具的資料或程序。
 
-## 繁體中文
+## 供技術查核
 
-敏感安全問題請使用 [GitHub 私密漏洞回報](https://github.com/hayabusasean/CodexUsageMonitor/security/advisories/new)，提供受影響版本、影響與最小重現步驟。請移除憑證、個人路徑、帳號原始回應及無關私人資料，不要把漏洞利用細節或他人的資料貼到公開 issue。
+額度請求白名單在 `src/AppServerClient.cs`；權限設定在 `src/app.manifest`。公開消息網路邊界在 `src/ResetRadar.cs`。資料、匯出與子程序邊界請從 [AI 查核索引](docs/AI_HELP.md)逐項追查。
 
-一般功能問題可使用[問題回報表單](https://github.com/hayabusasean/CodexUsageMonitor/issues/new?template=bug_report.yml)。
+自動建置使用唯讀儲存庫權限及固定版本的 GitHub Actions，不需要 Codex 登入資料；一般建置不會自動發布 Release。測試通過、作者審查或 AI 意見均不能當成獨立安全認證。
 
-目前公開版本為 **v0.4.0-rc.3 預發行版**，由個人盡力維護，沒有承諾回應時限或安全認證。程式尚未數位簽章；雜湊僅供檔案比對，並非安全保證或發布者身分證明。請遵循電腦的安全政策。
+[費用與資料安全](PRIVACY.md) · [本輪程式碼檢查](docs/reviews/2026-10-26.md)
+
+## English
+
+Use private vulnerability reporting for sensitive findings. Do not post credentials, private histories or exploit details in public issues. This is an unsigned, personally maintained experimental application with no independent security certification or response-time commitment. See the current README for the recommended version; do not infer support from old release documents.

@@ -1,3 +1,5 @@
+> Current privacy and cost information: [PRIVACY.md](../PRIVACY.md). For current download and AI-assisted setup, use the [README](../README.md). The field-trial status and screenshot observations below are historical, not current availability guarantees.
+
 # Privacy, sources and limits
 
 [Home](../README.md) · [繁體中文](privacy-and-limits.zh-TW.md)

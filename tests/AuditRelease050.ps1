@@ -11,7 +11,8 @@ Set-StrictMode -Version Latest
 $projectRoot=[IO.Path]::GetFullPath((Split-Path -Parent $PSScriptRoot))
 $RunRoot=[IO.Path]::GetFullPath($RunRoot)
 if(!$ReportPath){
-    $publicReport=Join-Path $projectRoot 'docs\releases\v0.5.0-beta2.md'
+    [xml]$activeProject=Get-Content -LiteralPath (Join-Path $projectRoot 'src\CodexUsageMonitor.csproj') -Raw
+    $publicReport=Join-Path $projectRoot ('docs\releases\v'+[string]$activeProject.Project.PropertyGroup.Version+'.md')
     $ReportPath=if(Test-Path -LiteralPath $publicReport){$publicReport}else{Join-Path $projectRoot 'docs\驗收報告-0.5.0-beta.md'}
 }
 if(!$HostModelAssemblyPath){

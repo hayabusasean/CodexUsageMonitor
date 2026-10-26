@@ -157,7 +157,7 @@ internal sealed class HistoryStore
     }
     void Append<T>(string path,List<T> records,Func<T,string> id) where T:new()
     {
-        var known=GetIds<T>(path);var newRows=records.Where(r=>!known.Contains(id(r))).ToList();if(newRows.Count==0)return;
+        var known=GetIds<T>(path);var newRows=records.Where(r=>!known.Contains(id(r))).DistinctBy(id).ToList();if(newRows.Count==0)return;
         bool header=!File.Exists(path)||new FileInfo(path).Length==0;
         try{
             using var f=new FileStream(path,FileMode.Append,FileAccess.Write,FileShare.Read);
@@ -291,6 +291,3 @@ internal sealed record FrozenHistory(string DirectoryPath,DateTimeOffset AsOf,Li
  public IEnumerable<T> Rows<T>() where T:new()=>Directory.EnumerateFiles(DirectoryPath,typeof(T)==typeof(UsageSample)?"usage_*.csv":"events_*.csv").Order().SelectMany(Csv.Records<T>);
  public void Dispose(){try{Directory.Delete(DirectoryPath,true);}catch{}}
 }
-
-
-

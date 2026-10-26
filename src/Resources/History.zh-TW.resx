@@ -94,10 +94,10 @@
     <value>紀錄備註</value>
   </data>
   <data name="ExportCSV" xml:space="preserve">
-    <value>匯出 CSV</value>
+    <value>匯出表格</value>
   </data>
   <data name="ExportAnalysis" xml:space="preserve">
-    <value>匯出分析 Log</value>
+    <value>匯出分析報告</value>
   </data>
   <data name="FullExportHint" xml:space="preserve">
     <value>匯出包含完整選定期間，不受分頁或圖表視圖限制。</value>
@@ -127,10 +127,10 @@
     <value>迄日，yyyy-MM-dd</value>
   </data>
   <data name="Pool" xml:space="preserve">
-    <value>額度池</value>
+    <value>額度類別</value>
   </data>
   <data name="Window" xml:space="preserve">
-    <value>額度時窗</value>
+    <value>計算期間</value>
   </data>
   <data name="Quality" xml:space="preserve">
     <value>觀察品質</value>
@@ -139,7 +139,7 @@
     <value>事件類型</value>
   </data>
   <data name="AllSamples" xml:space="preserve">
-    <value>全部採樣</value>
+    <value>全部紀錄</value>
   </data>
   <data name="Weekly" xml:space="preserve">
     <value>每週</value>
@@ -148,7 +148,7 @@
     <value>5 小時</value>
   </data>
   <data name="AllWindows" xml:space="preserve">
-    <value>全部時窗</value>
+    <value>全部期間</value>
   </data>
   <data name="AllQuality" xml:space="preserve">
     <value>全部品質</value>
@@ -205,7 +205,7 @@
     <value>新的可比觀察區段</value>
   </data>
   <data name="ChangeTooltip" xml:space="preserve">
-    <value>pp 代表百分點。此欄是相鄰可比觀察間的剩餘額度變化。</value>
+    <value>顯示相鄰兩筆紀錄的額度差。例如 20% 變成 25%，就是增加 5 個百分點。</value>
   </data>
   <data name="PageStatus" xml:space="preserve">
     <value>第 {0} / {1} 頁 · {2} 筆紀錄</value>
@@ -297,16 +297,16 @@
     <value>Reset Radar 參考：{0} · 涵蓋率 {1}% · {2} · {3} · 訊號 {4} · 涵蓋率時間 {5}</value>
   </data>
   <data name="EventRadarNone" xml:space="preserve">
-    <value>Reset Radar 參考：附近沒有已保存的訊號證據。</value>
+    <value>重置消息參考：附近沒有已保存的相關消息。</value>
   </data>
   <data name="EventResetAt" xml:space="preserve">
-    <value>觀察到的 reset_at：{0}  →  {1}</value>
+    <value>官方回報的重置時間：{0}  →  {1}</value>
   </data>
   <data name="EventBankedReset" xml:space="preserve">
-    <value>觀察到的完整 Reset 券：{0}  →  {1}</value>
+    <value>觀察到的重置券張數：{0}  →  {1}</value>
   </data>
   <data name="EventEvidenceBoundary" xml:space="preserve">
-    <value>證據界線：Radar 內容只用來提示是否值得注意，不能證明本機額度變化的原因。</value>
+    <value>消息只供參考，不能證明這次額度變化的原因。</value>
   </data>
   <data name="SourceNotProvided" xml:space="preserve">
     <value>來源未提供</value>

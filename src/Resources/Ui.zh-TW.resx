@@ -91,13 +91,13 @@
     <value>可用完整重置券</value>
   </data>
   <data name="Details.CreditBalance" xml:space="preserve">
-    <value>來源回報點數</value>
+    <value>官方回報點數</value>
   </data>
   <data name="Details.Expires" xml:space="preserve">
     <value>有效期</value>
   </data>
   <data name="Details.OtherPools" xml:space="preserve">
-    <value>其他額度池</value>
+    <value>其他額度</value>
   </data>
   <data name="Details.Advanced" xml:space="preserve">
     <value>進階資料</value>
@@ -139,7 +139,7 @@
     <value>登入 Windows 時啟動</value>
   </data>
   <data name="Settings.StartHidden" xml:space="preserve">
-    <value>啟動時隱藏至系統匣</value>
+    <value>啟動時只顯示右下角圖示</value>
   </data>
   <data name="Settings.CheckConnection" xml:space="preserve">
     <value>檢查連線</value>
@@ -172,10 +172,10 @@
     <value>關於 CodexUsageMonitor</value>
   </data>
   <data name="About.CopyDiagnostics" xml:space="preserve">
-    <value>複製診斷摘要</value>
+    <value>複製問題摘要</value>
   </data>
   <data name="About.Copied" xml:space="preserve">
-    <value>已複製診斷摘要</value>
+    <value>已複製問題摘要</value>
   </data>
   <data name="About.Unofficial" xml:space="preserve">
     <value>非官方社群工具，與 OpenAI 無隸屬關係。</value>
@@ -193,7 +193,7 @@
     <value>離開</value>
   </data>
   <data name="Overlay.CachedAge" xml:space="preserve">
-    <value>快取 · {0} 秒前</value>
+    <value>上次資料 · {0} 秒前</value>
   </data>
   <data name="Overlay.StaleAge" xml:space="preserve">
     <value>更新於 {0} 分鐘前</value>
@@ -208,7 +208,7 @@
     <value>{0}：已觀察用量 {1}</value>
   </data>
   <data name="Overlay.AlertTip" xml:space="preserve">
-    <value>新的 Codex 重置公告</value>
+    <value>有新的重置消息</value>
   </data>
   <data name="Overlay.AlertWatchTip" xml:space="preserve">
     <value>新的重置觀察訊號</value>
@@ -223,7 +223,7 @@
     <value>重置即將發生 — 已查看，訊號仍有效</value>
   </data>
   <data name="Overlay.AlertCompletedTip" xml:space="preserve">
-    <value>Reset Radar 已完成公告 — 開啟詳情</value>
+    <value>來源回報重置已完成 — 查看詳情</value>
   </data>
   <data name="Overlay.ModeName" xml:space="preserve">
     <value>切換顯示模式</value>
@@ -247,13 +247,13 @@
     <value>進階來源選項</value>
   </data>
   <data name="Settings.Radar" xml:space="preserve">
-    <value>重置公告</value>
+    <value>重置消息</value>
   </data>
   <data name="Settings.RadarEnabled" xml:space="preserve">
-    <value>檢查公開重置公告</value>
+    <value>檢查公開重置消息</value>
   </data>
   <data name="Settings.RadarHint" xml:space="preserve">
-    <value>僅檢查有限公開來源；公告可能延遲或漏失。</value>
+    <value>查看部分公開網站；消息可能延遲或漏掉，不保證帳號會重置。</value>
   </data>
   <data name="Settings.PollSeconds" xml:space="preserve">
     <value>秒</value>
@@ -280,13 +280,13 @@
     <value>儲存後將恢復自動尋找。</value>
   </data>
   <data name="Settings.Validating" xml:space="preserve">
-    <value>正在驗證來源…</value>
+    <value>正在檢查官方程式…</value>
   </data>
   <data name="Settings.SourceValidated" xml:space="preserve">
-    <value>來源驗證完成 · {0}</value>
+    <value>官方程式檢查完成 · {0}</value>
   </data>
   <data name="Settings.SourceInvalid" xml:space="preserve">
-    <value>來源驗證失敗，保留既有連線。</value>
+    <value>程式檢查未通過，保留既有連線。</value>
   </data>
   <data name="Settings.SelfSource" xml:space="preserve">
     <value>這是浮窗程式，請選擇官方 Codex 程式。</value>
@@ -347,13 +347,13 @@
 {3}</value>
   </data>
   <data name="Details.SeparatePools" xml:space="preserve">
-    <value>各額度池分別計量。單憑回升不能判定原因。</value>
+    <value>不同額度分開計算。額度回升不代表已確認原因。</value>
   </data>
   <data name="Details.SourceCoverage" xml:space="preserve">
     <value>只檢查可用的公開來源，公告可能延遲或漏失。</value>
   </data>
   <data name="About.Storage" xml:space="preserve">
-    <value>歷史保存在本機這個工具自己的 LocalAppData 資料夾。</value>
+    <value>設定與使用紀錄保存在這台電腦，不會自動上傳。</value>
   </data>
   <data name="About.Build" xml:space="preserve">
     <value>版本 {0} · Windows x64 · 未簽章</value>
@@ -362,7 +362,7 @@
     <value>MIT License — Copyright (c) 2026 hayabusasean.</value>
   </data>
   <data name="About.DiagnosticsPreview" xml:space="preserve">
-    <value>安全診斷預覽</value>
+    <value>問題摘要預覽</value>
   </data>
   <data name="About.DiagnosticsHint" xml:space="preserve">
     <value>不包含用量時間線、帳號 ID、備註或個人路徑。</value>
@@ -389,7 +389,7 @@
     <value>額度詳情</value>
   </data>
   <data name="Menu.Reset" xml:space="preserve">
-    <value>重置公告</value>
+    <value>重置消息</value>
   </data>
   <data name="Menu.Settings" xml:space="preserve">
     <value>設定</value>

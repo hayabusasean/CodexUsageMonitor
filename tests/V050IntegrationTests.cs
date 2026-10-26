@@ -117,6 +117,28 @@ internal static class V050IntegrationTests
             long diagnosticsBytes=Directory.GetFiles(Path.Combine(data,"diagnostics"),"*.jsonl").Sum(p=>new FileInfo(p).Length);Assert(entry.GetProperty("phase").GetString()=="PROCESS_EXIT"&&entry.GetProperty("exe_sha256").GetString()!.Length==64&&entry.GetProperty("json_rewrite_bytes").GetInt64()>0&&entry.GetProperty("append_growth_bytes").GetInt64()==diagnosticsBytes+7&&entry.GetProperty("current_receipt_excluded").GetBoolean());
             using var boot=JsonDocument.Parse(File.ReadAllLines(Directory.GetFiles(Path.Combine(data,"diagnostics"),"runtime-session_*.jsonl").Single()).Single());Assert(boot.RootElement.GetProperty("data_root").GetString()==Path.GetFullPath(data));
         });
+        Check("REVIEW_01 repeated sample within one batch is written once",()=>{
+            var store=new HistoryStore(Path.Combine(root,"review-duplicate-batch"));
+            Assert(store.Save([sample,sample,sample]));
+            var rows=store.Query<UsageSample>(new(now.AddDays(-1),now.AddDays(1))).ToList();
+            Assert(rows.Count==1&&rows[0].sample_id==sample.sample_id);
+        });
+        Check("REVIEW_02 duplicate batch stays deduplicated after reopening",()=>{
+            string folder=Path.Combine(root,"review-duplicate-reopen");
+            var store=new HistoryStore(folder);Assert(store.Save([sample,sample]));
+            var reopened=new HistoryStore(folder);reopened.Recover();Assert(reopened.Save([sample,sample]));
+            Assert(reopened.Query<UsageSample>(new(now.AddDays(-1),now.AddDays(1))).Count()==1);
+        });
+        Check("REVIEW_03 API-key-only accounts are refused",()=>{
+            foreach(var kind in new[]{"apiKey","apikey"}){
+                using var response=JsonDocument.Parse(JsonSerializer.Serialize(new{account=new{type=kind}}));
+                bool refused=false;try{QuotaNormalizer.Identity(response.RootElement,Convert.ToBase64String(new byte[32]),"test");}
+                catch(MonitorException e){refused=e.Code=="API_KEY_ONLY";}Assert(refused);
+            }
+        });
+        Check("REVIEW_04 model purchase reset and login requests remain refused",()=>{
+            foreach(var method in new[]{"turn/start","thread/start","account/rateLimitResetCredit/consume","account/sendAddCreditsNudgeEmail","account/login/start","account/logout","command/exec","config/value/write"})Assert(!AppServerClient.IsAllowed(method));
+        });
         AtomicJson.Save(Path.Combine(root,"integration-v050-tests.json"),new{results,failed});Environment.ExitCode=failed>0?1:0;
     }
 }

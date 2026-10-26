@@ -1,21 +1,24 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "kind": "PUBLIC_SOURCE_RELEASE",
-  "version": "0.5.0-beta2",
-  "informational_version": "0.5.0-beta2",
+  "version": "0.5.0-beta3",
+  "informational_version": "0.5.0-beta3",
   "repository": "https://github.com/hayabusasean/CodexUsageMonitor",
-  "tag": "v0.5.0-beta2",
+  "tag": "v0.5.0-beta3",
   "project_license": "MIT",
   "copyright": "Copyright (c) 2026 hayabusasean",
-  "exe_sha256": "21ff85e3b5edb5bffbfbe22a1457fda72838bee87c0b74ef7cb0e64daf4e0bde",
-  "zip_sha256": "8f0457ba70c4902a454fff2c4446dd4730df69cfd2efcb2f2d6b9bb348b5b86e",
-  "entry_count": 172,
+  "exe_sha256": "bd6b7c202afdda6590db3b96c3c00a9ad25cbb8e5acd166d3d653841104ffeaf",
+  "zip_sha256": "ab1bb8b72cea1d1085a0c4ac204214ca178018b08a7c6b1f8fcda9d20173e463",
+  "entry_count": 182,
   "manifest_self_excluded": true,
+  "representation": "exact git index blob bytes",
+  "review_scope": "Targeted maintainer review and documented tests; not independent security certification",
+  "build_source_inputs_verified": 87,
   "privacy_check": {
-    "real_identifier_matches": 0,
-    "anonymized_fixture_rows": 2295,
-    "private_runtime_included": false,
-    "author_provided_new_screenshots": 3
+    "scope": "Changed text files only; limited token-prefix and private-key-marker scan",
+    "matching_patterns_found": 0,
+    "private_runtime_files_added": false,
+    "limitations": "Not proof that all source or binaries are free of secrets or vulnerabilities"
   },
   "files": [
     {
@@ -25,8 +28,8 @@
     },
     {
       "path": ".github/ISSUE_TEMPLATE/bug_report.yml",
-      "bytes": 2220,
-      "sha256": "b569f7a50a196dd68214f0c17fbb184edfb19af0a1d5ebed63421d8a6dd37082"
+      "bytes": 1877,
+      "sha256": "0558b6306eabe6615b02623f09a07bd5d640ff644cd521e55616c0bc31944a21"
     },
     {
       "path": ".github/ISSUE_TEMPLATE/feature_request.md",
@@ -35,8 +38,8 @@
     },
     {
       "path": ".github/workflows/build.yml",
-      "bytes": 1272,
-      "sha256": "f9f9ddd1611631dfbac86b76b6a2dcf1efbcb51f69fa3c59c9b379b6b184d3f6"
+      "bytes": 1456,
+      "sha256": "1814bb0f32867bd102fe3290b2515c1a2cb40c973c67a4745a5fefa71a2a47d0"
     },
     {
       "path": ".gitignore",
@@ -45,13 +48,73 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 4747,
-      "sha256": "60b7fb3c75b574beb1fd4bb1dbf64231dfe5d0da4b1401122e5fbf76d0cd8fda"
+      "bytes": 5135,
+      "sha256": "616bb25fd4e7c4e84561646e0e492df7f027b12057b4daa7c3e2d941ecfdafde"
     },
     {
       "path": "CONTRIBUTING.md",
-      "bytes": 4065,
-      "sha256": "a004af5b1bfce50bb4730a9f5a95affa7d56ef556f5abcd2f5dbbcc334cd5082"
+      "bytes": 926,
+      "sha256": "1b75c54c8696737cd97a6a6ed5bc038757b5825ec77c1d7da865f078e689a647"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 1069,
+      "sha256": "5faadd24b021829c364edffa38607373f91385312d537886df1ae8b77680f3e6"
+    },
+    {
+      "path": "NuGet.Config",
+      "bytes": 179,
+      "sha256": "fd6836e883aa6bf334e587a02ff7239f68713f4baac6d749f743a2b489b1769c"
+    },
+    {
+      "path": "PRIVACY.md",
+      "bytes": 4970,
+      "sha256": "04e179421347deabbe313e31a6eb8f1b4ed59d2059b08c0c452c2b271c175205"
+    },
+    {
+      "path": "README.md",
+      "bytes": 7141,
+      "sha256": "52a2c560273f66cee1f0f3fd43afe9f4818efe6d58583fd97599cdfab0fcc5e0"
+    },
+    {
+      "path": "README.zh-TW.md",
+      "bytes": 548,
+      "sha256": "c7d97704b00b0bf91ea8e6d71b3018c837dfe4de4f714ebba53233c25ce5c236"
+    },
+    {
+      "path": "README_BUILD.md",
+      "bytes": 5859,
+      "sha256": "4c33dd6b7c183a2fc2f517ba0302eda689f20d101e13e6efd299ee6b6aed5dce"
+    },
+    {
+      "path": "SECURITY.md",
+      "bytes": 2591,
+      "sha256": "a752eda840012e4fbff623e6ccb9d56d04679cc17692a67145012c582954097d"
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "bytes": 2221,
+      "sha256": "efbed153cf366545c024c24b8856f5a57a2cae13713e5c407816d2c58eb8fd70"
+    },
+    {
+      "path": "docs/ADVANCED.md",
+      "bytes": 9599,
+      "sha256": "4ebae9d06af885c97de5d92153e956ce97405bb67069f5888293433cc254aa3b"
+    },
+    {
+      "path": "docs/AI_HELP.md",
+      "bytes": 5179,
+      "sha256": "5e9df1a44111a6bb044eefb2a12b1b3ff94ac1d96eb5e8abc5eacf0960b2fe9f"
+    },
+    {
+      "path": "docs/PORTABLE_README.txt",
+      "bytes": 2434,
+      "sha256": "3313cd26dbfe0507dc636ee78f1687fad96af78bac1a034e331b3a81a06cd9f5"
+    },
+    {
+      "path": "docs/START_HERE.md",
+      "bytes": 7868,
+      "sha256": "6388f253825116a08269b054e0f6ddd400790ebba8151ee60c318962bedc2ac4"
     },
     {
       "path": "docs/field-trial/reset-radar-2026-09-12.md",
@@ -59,24 +122,44 @@
       "sha256": "ee9a1c7e13d202d08606a47a9ec1a22952174c55d0e53abfe36023ed0d4dabcb"
     },
     {
+      "path": "docs/field-trial/usage-history-2026-10-26.md",
+      "bytes": 1451,
+      "sha256": "a8b623fe13a7c32f94ffb2bac7261333c225907d82ed78a441bb425bc51b99c2"
+    },
+    {
       "path": "docs/privacy-and-limits.en.md",
-      "bytes": 4262,
-      "sha256": "077181277eff1247229a348d3dc1de9c760e3ec46f3cd1d5211b92d5d2ad43a0"
+      "bytes": 4518,
+      "sha256": "d2c84b2bc91432937abc98a27c1e999f88fb3e3c1ff3a71a9f9277649729f7c7"
     },
     {
       "path": "docs/privacy-and-limits.zh-TW.md",
-      "bytes": 3496,
-      "sha256": "8237b296fa807d6f3d1970d43f0bdcfd045230750beffabc1410fc03b380c1ec"
+      "bytes": 2162,
+      "sha256": "bce971b86c6bf8d421643a6cf563c17c895d530d4e0c136bd1713fe5fb852c36"
     },
     {
       "path": "docs/releases/v0.5.0-beta2.md",
-      "bytes": 6239,
-      "sha256": "dda481ef7d2b4520252fb9089b4ab71980587bc6689d83349dc4adf59a98ecbb"
+      "bytes": 6560,
+      "sha256": "81dccc55a5b848b450ac1fe500acda1dc6e6074398e53b91a92469cff7fd3398"
+    },
+    {
+      "path": "docs/releases/v0.5.0-beta3.md",
+      "bytes": 2649,
+      "sha256": "517f00ed116ea8a336a7f43451a60d3c5266f552a8e2dc6b550aba31241887ca"
     },
     {
       "path": "docs/releases/verification-beta2.json",
       "bytes": 3263,
       "sha256": "c41c413ee274527029b67030738d30382e53bd75d2cc814eb6f2862015d31f3e"
+    },
+    {
+      "path": "docs/releases/verification-beta3.json",
+      "bytes": 3971,
+      "sha256": "789582e0ba672463207d3588021641af0278070bb0863f1655b670b1c6aa9d85"
+    },
+    {
+      "path": "docs/reviews/2026-10-26.md",
+      "bytes": 2653,
+      "sha256": "e23b60da948aee145c0ebe11f33544e25b2c9f3e8e0f1ad88bd5f89c940b8cca"
     },
     {
       "path": "docs/screenshots/beta2/compact-zh-TW.png",
@@ -127,6 +210,11 @@
       "path": "docs/screenshots/field-case/05-full-day-history.png",
       "bytes": 82890,
       "sha256": "c5f1b314e83362c39f0a4f581eb895db638848dc26f9dd0766c089954f197443"
+    },
+    {
+      "path": "docs/screenshots/field-case/06-usage-history-2026-10-26.png",
+      "bytes": 2168490,
+      "sha256": "aee35da94880e99f420af501eff4acb0bfc61748c3840ceeec2f5d01b92e7fe4"
     },
     {
       "path": "docs/screenshots/field-trial/reset-radar-watch-compact-2026-09-12-zh-TW.png",
@@ -209,11 +297,6 @@
       "sha256": "0cfc9000e88f14411532c929ed46c55ee9cfe633c27ddb423e2552f062307a37"
     },
     {
-      "path": "LICENSE",
-      "bytes": 1069,
-      "sha256": "5faadd24b021829c364edffa38607373f91385312d537886df1ae8b77680f3e6"
-    },
-    {
       "path": "licenses/DOTNET-LICENSE.txt",
       "bytes": 1139,
       "sha256": "d7a68596ab69b06f51ca278a6545148e4269a9381c26d597c13df5d88e08cf5b"
@@ -232,41 +315,6 @@
       "path": "licenses/WINDOWSDESKTOP-LICENSE.txt",
       "bytes": 1137,
       "sha256": "a89886665765362eb77e0f8e26602c924520041d1711b2eedc136434fe4d01ab"
-    },
-    {
-      "path": "NuGet.Config",
-      "bytes": 179,
-      "sha256": "fd6836e883aa6bf334e587a02ff7239f68713f4baac6d749f743a2b489b1769c"
-    },
-    {
-      "path": "PRIVACY.md",
-      "bytes": 3026,
-      "sha256": "0c574e4f2d00415f429d4bdcb46732e9a8b54cfd5ce2d613a23ec2e116b28b04"
-    },
-    {
-      "path": "README_BUILD.md",
-      "bytes": 5718,
-      "sha256": "9a09f74c890c1eb90df01b52adfed82f325bbd5a136bd0162adddade1ba93ad5"
-    },
-    {
-      "path": "README.md",
-      "bytes": 13817,
-      "sha256": "6396c7410e7a7a303f0e81d5222801c9276ccdc06002f6d69e66d3fa970de31e"
-    },
-    {
-      "path": "README.zh-TW.md",
-      "bytes": 3145,
-      "sha256": "66cb38c52071e70b848d89b01c3b09d8ed9e2a5cfc0d233f3b4478f02bf26d95"
-    },
-    {
-      "path": "SECURITY.md",
-      "bytes": 2309,
-      "sha256": "434a8bffdf53c0e2aad9808bb509256be693f0f099c96fb049a98333e965ec74"
-    },
-    {
-      "path": "src/app.manifest",
-      "bytes": 845,
-      "sha256": "a41a5cb3bd8bd19f7e265bfdf64531682d9bc7e6951ee21b1cbfd57843566285"
     },
     {
       "path": "src/AppServerClient.cs",
@@ -325,8 +373,8 @@
     },
     {
       "path": "src/CodexUsageMonitor.csproj",
-      "bytes": 1644,
-      "sha256": "a281abee019b56f6845eff8c9910e9d66c41d592df75a3029512236a770071cc"
+      "bytes": 1637,
+      "sha256": "2de69310919878b5190e7ca1bb95ae96b1fead9711bf8262695552c69a285f73"
     },
     {
       "path": "src/DailyUsageCalculator.cs",
@@ -400,8 +448,8 @@
     },
     {
       "path": "src/L.cs",
-      "bytes": 3463,
-      "sha256": "7d51213b8c1de8a7d5cee439be442c2dd04a94d63841e43e1fce0f901e069bad"
+      "bytes": 3421,
+      "sha256": "7fb2df76138ca220c9f6644c0e26821a841f7149a7edd971b3d57b3576f54231"
     },
     {
       "path": "src/LocalQuotaCycle.cs",
@@ -605,8 +653,8 @@
     },
     {
       "path": "src/Resources/History.zh-TW.resx",
-      "bytes": 11244,
-      "sha256": "7764281dfd934bb9dbb14c615de5bbd76222d28aa10668d647a154541de80277"
+      "bytes": 10917,
+      "sha256": "0bb1d5093af1dad5262b13e54e22e07528bfc259d8326b2363d9052e75f9161f"
     },
     {
       "path": "src/Resources/Radar.resx",
@@ -635,8 +683,8 @@
     },
     {
       "path": "src/Resources/Ui.zh-TW.resx",
-      "bytes": 17663,
-      "sha256": "62a39e496602d8b06ec2671e42fb27eebac4a2c44414579d166ac10fcec79831"
+      "bytes": 17273,
+      "sha256": "3e25deec06bf91202810ff8b459b339084ed170622426f72c5d6cec500152cdc"
     },
     {
       "path": "src/RuntimeIdentity.cs",
@@ -670,8 +718,8 @@
     },
     {
       "path": "src/Storage.cs",
-      "bytes": 21243,
-      "sha256": "ade3392d5bdecc7b13f67954d2fa288b6c8fe8c9d582ac9acd7c9e687c7270fd"
+      "bytes": 20959,
+      "sha256": "5c0398da9099dcc7cd5f4245335126ebb228089170e20200bb761807fdf13b96"
     },
     {
       "path": "src/Theme.cs",
@@ -694,29 +742,19 @@
       "sha256": "6365cbc56cefc1d19904435caa9bd80216503515bd4da42b25a738a65c9fac42"
     },
     {
+      "path": "src/app.manifest",
+      "bytes": 845,
+      "sha256": "a41a5cb3bd8bd19f7e265bfdf64531682d9bc7e6951ee21b1cbfd57843566285"
+    },
+    {
       "path": "tests/Analytics050Tests.cs",
       "bytes": 9943,
       "sha256": "5eb32add6fc0db08af820ae085e5d8b820d1b8f79bfac2888abf3dc58e05643a"
     },
     {
-      "path": "tests/app.manifest",
-      "bytes": 744,
-      "sha256": "cc88203f44d8fa73be84f294d0dfbaf61a358d74d3f4ed8853a8167c94d23ef8"
-    },
-    {
       "path": "tests/AuditRelease050.ps1",
-      "bytes": 16088,
-      "sha256": "0bd987aef78d00f279bad1d32fed2d6560e0074e87dde8c780a01fedda72b43a"
-    },
-    {
-      "path": "tests/build_beta.ps1",
-      "bytes": 6208,
-      "sha256": "aa507c9538e30ac00044e93a26bebfe551ce59c4bef01de7d4c3d2d2daab3d2d"
-    },
-    {
-      "path": "tests/build_public.ps1",
-      "bytes": 217,
-      "sha256": "a74c4b800274ef4429143e2ced54a5780dadba4cb0bdf4bc65ecd5f6e848deef"
+      "bytes": 16245,
+      "sha256": "347907a4c67743a5245fd9c3dd0f913bf7b3b940f192974283e775fab579ef3a"
     },
     {
       "path": "tests/CodexUsageMonitor.Tests.csproj",
@@ -734,14 +772,79 @@
       "sha256": "ff8c13b84fa7cf5c9933f3a47a64df80d45625aacc04c7ee64353f3539361126"
     },
     {
-      "path": "tests/encode_ui_recordings.py",
-      "bytes": 9387,
-      "sha256": "0a0d6cd520b0fd0cf1fdc4b28431a57a0aec70ad3bc5d3ce26bf2d57deb2b498"
-    },
-    {
       "path": "tests/FirstPaintDiagnosticsTests.cs",
       "bytes": 9882,
       "sha256": "e3b5a0366094c3e58a9b7bf06d1db8caf95842784abb9892e5d0b9552f8c6808"
+    },
+    {
+      "path": "tests/LiveAudit050Tests.cs",
+      "bytes": 2599,
+      "sha256": "69a3dd007a7ab04a25bfd55f73fb98cd33915ef83501723a7d5cf08cd121b302"
+    },
+    {
+      "path": "tests/RadarForecast050Tests.cs",
+      "bytes": 8052,
+      "sha256": "35409c2bf7434eecad77847e6e06ef6765b28f05625e5a69b17385818e9ee0f2"
+    },
+    {
+      "path": "tests/RunFinalExeAuditBeta2.ps1",
+      "bytes": 9714,
+      "sha256": "1dd4fda48bcc3745b327798516011656801ec2fcf9d8dfb14426c2888c0785de"
+    },
+    {
+      "path": "tests/SummarizeBetaTests050.ps1",
+      "bytes": 2573,
+      "sha256": "111c39d8918912772db0b3e393d1bef9e9423a61c5d79c4ad2a3fef3349d4947"
+    },
+    {
+      "path": "tests/TestHarness.cs",
+      "bytes": 17750,
+      "sha256": "0e25baf741f120e21112abc6beac33552f919197c1ea8d61948d816d5b6b6698"
+    },
+    {
+      "path": "tests/V050IntegrationTests.cs",
+      "bytes": 23801,
+      "sha256": "4ecdf1d6326ffdf903cdab08aab98e4577bf306fe07de878e1515d2a0dc6d211"
+    },
+    {
+      "path": "tests/V050ScreenRecordTests.cs",
+      "bytes": 9931,
+      "sha256": "5b5bd64cb8893ea737f9897be1f5151e33430f7d3414c83e3415f64361b77f7f"
+    },
+    {
+      "path": "tests/V050UiTests.cs",
+      "bytes": 9640,
+      "sha256": "b4a0cfdb1116de14775c5ae5167be0f274556db9f9ff5093d0968246825a53f2"
+    },
+    {
+      "path": "tests/WriteSourceManifest050.ps1",
+      "bytes": 15214,
+      "sha256": "8797c924cc091157bdc9d1388894687e597aaab3fc9f3cd647f980b696d80c84"
+    },
+    {
+      "path": "tests/app.manifest",
+      "bytes": 744,
+      "sha256": "cc88203f44d8fa73be84f294d0dfbaf61a358d74d3f4ed8853a8167c94d23ef8"
+    },
+    {
+      "path": "tests/build_beta.ps1",
+      "bytes": 6223,
+      "sha256": "b44aed3a49aa2cae7343b701eaeab2993647893c755f178cd5a1109126538540"
+    },
+    {
+      "path": "tests/build_public.ps1",
+      "bytes": 217,
+      "sha256": "a74c4b800274ef4429143e2ced54a5780dadba4cb0bdf4bc65ecd5f6e848deef"
+    },
+    {
+      "path": "tests/check_public_docs.py",
+      "bytes": 3861,
+      "sha256": "1c2407c9e6179dc5b053439e72492dac017904403d5f1f1ed6dce7f6cca26007"
+    },
+    {
+      "path": "tests/encode_ui_recordings.py",
+      "bytes": 9387,
+      "sha256": "0a0d6cd520b0fd0cf1fdc4b28431a57a0aec70ad3bc5d3ce26bf2d57deb2b498"
     },
     {
       "path": "tests/fixtures/DAILY_USAGE_TEST_CASES_R003.json",
@@ -824,59 +927,9 @@
       "sha256": "8398cbfcf19e4e9abfe9dcd3277fabb33f7fb5bf2ce40438ef4ac7113d402c5a"
     },
     {
-      "path": "tests/LiveAudit050Tests.cs",
-      "bytes": 2599,
-      "sha256": "69a3dd007a7ab04a25bfd55f73fb98cd33915ef83501723a7d5cf08cd121b302"
-    },
-    {
-      "path": "tests/RadarForecast050Tests.cs",
-      "bytes": 8052,
-      "sha256": "35409c2bf7434eecad77847e6e06ef6765b28f05625e5a69b17385818e9ee0f2"
-    },
-    {
       "path": "tests/run_final_private_desktop.py",
       "bytes": 3139,
       "sha256": "238bd236827767a27bb368cc16b62dc0482cb68f41f0c9ded8a5e128ad4e38b7"
-    },
-    {
-      "path": "tests/RunFinalExeAuditBeta2.ps1",
-      "bytes": 9714,
-      "sha256": "1dd4fda48bcc3745b327798516011656801ec2fcf9d8dfb14426c2888c0785de"
-    },
-    {
-      "path": "tests/SummarizeBetaTests050.ps1",
-      "bytes": 2573,
-      "sha256": "111c39d8918912772db0b3e393d1bef9e9423a61c5d79c4ad2a3fef3349d4947"
-    },
-    {
-      "path": "tests/TestHarness.cs",
-      "bytes": 17750,
-      "sha256": "0e25baf741f120e21112abc6beac33552f919197c1ea8d61948d816d5b6b6698"
-    },
-    {
-      "path": "tests/V050IntegrationTests.cs",
-      "bytes": 22108,
-      "sha256": "ef9063a081293af35b077d3ac29b998ef3b4fd1b63cf82b970588ec01e7b585b"
-    },
-    {
-      "path": "tests/V050ScreenRecordTests.cs",
-      "bytes": 9931,
-      "sha256": "5b5bd64cb8893ea737f9897be1f5151e33430f7d3414c83e3415f64361b77f7f"
-    },
-    {
-      "path": "tests/V050UiTests.cs",
-      "bytes": 9640,
-      "sha256": "b4a0cfdb1116de14775c5ae5167be0f274556db9f9ff5093d0968246825a53f2"
-    },
-    {
-      "path": "tests/WriteSourceManifest050.ps1",
-      "bytes": 15214,
-      "sha256": "8797c924cc091157bdc9d1388894687e597aaab3fc9f3cd647f980b696d80c84"
-    },
-    {
-      "path": "THIRD_PARTY_NOTICES.md",
-      "bytes": 2221,
-      "sha256": "efbed153cf366545c024c24b8856f5a57a2cae13713e5c407816d2c58eb8fd70"
     }
   ]
 }

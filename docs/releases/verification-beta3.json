@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "version": "0.5.0-beta3",
+  "review_date": "2026-10-26",
+  "source_reference": "refs/tags/v0.5.0-beta3",
+  "base_commit": "b93de501deb3687fe01afc496371d5d28af5f6a5",
+  "sdk": "10.0.400",
+  "code_review_scope": "TARGETED_MAINTAINER_REVIEW_NOT_INDEPENDENT_SECURITY_CERTIFICATION",
+  "tests": {
+    "suites": 13,
+    "checks": 398,
+    "passed": 397,
+    "skipped": 1,
+    "failed": 0,
+    "groups": [
+      {
+        "suite": "analytics-050",
+        "checks": 51,
+        "passed": 51,
+        "skipped": 0,
+        "failed": 0
+      },
+      {
+        "suite": "radar-050",
+        "checks": 30,
+        "passed": 30,
+        "skipped": 0,
+        "failed": 0
+      },
+      {
+        "suite": "integration-050",
+        "checks": 36,
+        "passed": 35,
+        "skipped": 1,
+        "failed": 0
+      },
+      {
+        "suite": "first-paint-diagnostics",
+        "checks": 19,
+        "passed": 19,
+        "skipped": 0,
+        "failed": 0
+      },
+      {
+        "suite": "public",
+        "checks": 66,
+        "passed": 66,
+        "skipped": 0,
+        "failed": 0
+      },
+      {
+        "suite": "self",
+        "checks": 29,
+        "passed": 29,
+        "skipped": 0,
+        "failed": 0
+      },
+      {
+        "suite": "gold-cycle",
+        "checks": 39,
+        "passed": 39,
+        "skipped": 0,
+        "failed": 0
+      },
+      {
+        "suite": "final-phase",
+        "checks": 36,
+        "passed": 36,
+        "skipped": 0,
+        "failed": 0
+      },
+      {
+        "suite": "rc4-field-trial",
+        "checks": 45,
+        "passed": 45,
+        "skipped": 0,
+        "failed": 0
+      },
+      {
+        "suite": "rc4-coverage",
+        "checks": 20,
+        "passed": 20,
+        "skipped": 0,
+        "failed": 0
+      },
+      {
+        "suite": "rc4-signal-polish",
+        "checks": 5,
+        "passed": 5,
+        "skipped": 0,
+        "failed": 0
+      },
+      {
+        "suite": "rc4-active-unread",
+        "checks": 12,
+        "passed": 12,
+        "skipped": 0,
+        "failed": 0
+      },
+      {
+        "suite": "rc4-history-event",
+        "checks": 10,
+        "passed": 10,
+        "skipped": 0,
+        "failed": 0
+      }
+    ]
+  },
+  "regression": {
+    "duplicates_failed_before_fix": 2,
+    "new_checks_passed_after_fix": 4,
+    "existing_history_rewritten": false
+  },
+  "ui": {
+    "dpi": [
+      96,
+      144
+    ],
+    "checks": 86,
+    "failed": 0,
+    "classification": "SYNTHETIC_WINDOWS_ON_NON_INPUT_DESKTOP",
+    "capture": "STATIC_PRINTWINDOW_NOT_VIDEO",
+    "manually_inspected": [
+      "history-96-1.png",
+      "settings-144-1.png"
+    ],
+    "real_account_monitoring_retested": false
+  },
+  "exe_sha256": "bd6b7c202afdda6590db3b96c3c00a9ad25cbb8e5acd166d3d653841104ffeaf",
+  "zip_sha256": "ab1bb8b72cea1d1085a0c4ac204214ca178018b08a7c6b1f8fcda9d20173e463",
+  "exe_bytes": 53039968,
+  "zip_bytes": 47625155,
+  "signature": "UNSIGNED",
+  "release_payload_files": [
+    "CodexUsageMonitor.exe",
+    "LICENSE",
+    "README.txt",
+    "THIRD_PARTY_NOTICES.md",
+    "licenses/DOTNET-LICENSE.txt",
+    "licenses/DOTNET-THIRD-PARTY-NOTICES.txt",
+    "licenses/MICROSOFT-THIRD-PARTY-NOTICES.txt",
+    "licenses/WINDOWSDESKTOP-LICENSE.txt",
+    "manifest.json"
+  ],
+  "limits": [
+    "No independent security audit",
+    "No complete packet capture or formal verification",
+    "No full matrix of Windows versions or display arrangements",
+    "No replacement of the running user installation"
+  ],
+  "document_checks": {
+    "result": "PASS",
+    "documents": 12,
+    "local_links": 64,
+    "resource_values": 378
+  },
+  "package_audit": {
+    "result": "PASS",
+    "report_hashes_match": true,
+    "managed_matches_current_obj": true,
+    "test_flag_literals_checked": 35,
+    "test_source_files_checked": 40,
+    "test_type_names_checked": 56,
+    "test_flags_found": [],
+    "test_types_found": [],
+    "executed_release_exe": false
+  },
+  "build_source_inputs_verified": 87
+}
